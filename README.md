@@ -3,6 +3,8 @@ Decompiling objects from SM64DS so we can allocate them dynamically using DLs.
 
 Feel free to use the source code here for your own projects, giving credit would be appreciated :).
 
+If you ever notice any inconsistencies with the original objects, feel free to create an issue or message me on Discord so I can investigate.
+
 ## General
 
 The source code in this repo uses a custom version of the SM64DS patch template headers.
