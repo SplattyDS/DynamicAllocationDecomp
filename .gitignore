@@ -1,0 +1,9 @@
+*.nds
+*.lnk
+*.sav
+*.bin
+*.dylib
+*build/*.*
+*newcode.bin
+*newcode.elf
+*newcode.sym
