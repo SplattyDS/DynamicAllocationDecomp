@@ -3,6 +3,7 @@
 *.sav
 *.bin
 *.dylib
+*mangler/*.*
 *build/*.*
 *newcode.bin
 *newcode.elf
