@@ -8,7 +8,7 @@ struct Player;
 struct CylinderClsn;
 struct ShadowModel;
 
-
+// vtable at 0x02099edc
 struct ActorBase //internal name: fBase
 {
 	enum AliveState
@@ -189,16 +189,12 @@ struct Actor : public ActorBase				//internal name: dActor
 
 	Actor();
 
-	virtual int  InitResources() override;
 	virtual bool BeforeInitResources() override;
 	virtual void AfterInitResources(unsigned vfSuccess) override;
-	virtual int  CleanupResources() override;
 	virtual bool BeforeCleanupResources() override;
 	virtual void AfterCleanupResources(unsigned vfSuccess) override;
-	virtual int  Behavior() override;
 	virtual bool BeforeBehavior() override;
 	virtual void AfterBehavior(unsigned vfSuccess) override;
-	virtual int  Render() override;
 	virtual bool BeforeRender() override;
 	virtual void AfterRender(unsigned vfSuccess) override;
 	virtual ~Actor();

@@ -48,7 +48,7 @@ export LD      := $(PREFIX)ld
 #---------------------------------------------------------------------------------
 TARGET   := newcode
 BUILD    := build
-SOURCES  := untested/L_CastleGroundsSpecifics libfat_source
+SOURCES  := source/P_TreasureChest libfat_source
 INCLUDES := include
 DATA     := data  
 GRAPHICS := gfx  
@@ -58,7 +58,7 @@ GRAPHICS := gfx
 #---------------------------------------------------------------------------------
 ARCH :=
 
-CFLAGS := -Wall -Wextra -Werror -Wno-unused-parameter -Wno-parentheses \
+CFLAGS := -Wall -Wextra -Werror -Wno-unused-result -Wno-unused-parameter -Wno-parentheses \
           -Os -march=armv5te -mtune=arm946e-s -fomit-frame-pointer -fwrapv \
           $(ARCH) $(INCLUDE) -DARM9 -nodefaultlibs -I. -fno-builtin -c
 

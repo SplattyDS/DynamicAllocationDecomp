@@ -2,9 +2,13 @@
 *.lnk
 *.sav
 *.bin
+*.bak
 *.dylib
 *mangler/*.*
 *build/*.*
 *newcode.bin
 *newcode.elf
 *newcode.sym
+*newcode1.bin
+*newcode1.elf
+*newcode1.sym
