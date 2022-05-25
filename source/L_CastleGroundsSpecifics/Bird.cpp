@@ -48,7 +48,7 @@ int Bird::InitResources()
 	
 	pos.y += 0xa000_f;
 	vertAccel = 0;
-	termVel = -32000_f;
+	termVel = -0x32000_f;
 	
 	isLeader = true;
 	leaderID = uniqueID;
