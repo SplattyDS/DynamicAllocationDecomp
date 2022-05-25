@@ -44,7 +44,7 @@ int Bubble::Behavior()
 
 void Bubble::Despawn()
 {
-	Sound::PlayBank3(0xb, camSpacePos);
+	Sound::Play(3, 0xb, camSpacePos);
 	Particle::System::NewSimple(0x2, pos.x, pos.y, pos.z);
 	Destroy();
 	return;
