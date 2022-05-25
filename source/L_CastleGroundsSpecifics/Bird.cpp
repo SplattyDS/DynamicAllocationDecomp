@@ -52,9 +52,7 @@ int Bird::InitResources()
 	
 	isLeader = true;
 	leaderID = uniqueID;
-	destination.x = pos.x;
-	destination.y = pos.y;
-	destination.z = pos.z;
+	destination = pos;
 	state = 0;
 	
 	return 1;
@@ -77,12 +75,10 @@ int Bird::Behavior()
 	
 	modelAnim.mat4x3 = modelAnim.mat4x3.RotationZ(ang.z);
 	modelAnim.mat4x3 = modelAnim.mat4x3.RotationY(ang.y);
-	
-	modelAnim.mat4x3.c3.x = pos.x >> 3;
-	modelAnim.mat4x3.c3.y = pos.y >> 3;
-	modelAnim.mat4x3.c3.z = pos.z >> 3;
+	modelAnim.mat4x3.c3 = pos >> 3;
 	
 	DropShadowRadHeight(shadow, modelAnim.mat4x3, 0x1e000_f, 0x7d0000_f, 0xf);
+	
 	modelAnim.Advance();
 	
 	return 1;
@@ -91,7 +87,7 @@ int Bird::Behavior()
 // 0x02111870
 int Bird::Render()
 {
-	modelAnim.Render(nullptr);
+	modelAnim.Render();
 	return 1;
 }
 
@@ -108,13 +104,10 @@ void Bird::State0_Main()
 	{
 		if (1 < param1 & 0xf)
 		{
-			Vector3_16 birdAng;
-			birdAng.x = motionAng.x;
-			birdAng.y = motionAng.y;
-			birdAng.z = motionAng.z;
-			
+			Vector3_16 birdAng = motionAng;
 			int numBirdsToSpawn = (param1 & 0xf) - 1;
 			int numBirdsSpawned = 0;
+			
 			if (0 < numBirdsToSpawn)
 			{
 				do
@@ -140,7 +133,6 @@ void Bird::State0_Main()
 	}
 	
 	state = 1;
-	return;
 }
 
 // 0x021115d8
@@ -175,8 +167,6 @@ void Bird::State1_Main()
 	speedMult = INITIAL_SPEED_MULTIPLIER;
 	state = 3;
 	flags &= 0xfffeffff;
-	
-	return;
 }
 
 // 0x0211145c
@@ -196,6 +186,7 @@ void Bird::State2_Main()
 		{
 			int numBirdsToSpawn = (param1 & 0xf) - 1;
 			int numBirdsSpawned = 0;
+			
 			if (0 < numBirdsToSpawn)
 			{
 				do
@@ -221,8 +212,6 @@ void Bird::State2_Main()
 	speedMult = INITIAL_SPEED_MULTIPLIER;
 	state = 3;
 	flags &= 0xfffeffff;
-	
-	return;
 }
 
 // 0x02111234
@@ -270,7 +259,6 @@ void Bird::State3_Main()
 	}
 	
 	Destroy();
-	return;
 }
 
 // 0x02111224
@@ -278,5 +266,4 @@ void Bird::SetLeader(unsigned newLeaderID)
 {
 	isLeader = false;
 	leaderID = newLeaderID;
-	return;
 }

@@ -40,17 +40,13 @@ int Flag::Behavior()
 {
 	modelAnim.Advance();
 	modelAnim.mat4x3 = modelAnim.mat4x3.RotationY(ang.y);
-	
-	modelAnim.mat4x3.c3.x = pos.x >> 3;
-	modelAnim.mat4x3.c3.y = pos.y >> 3;
-	modelAnim.mat4x3.c3.z = pos.z >> 3;
-	
+	modelAnim.mat4x3.c3 = pos >> 3;
 	return 1;
 }
 
 // 0x0211211c
 int Flag::Render()
 {
-	modelAnim.Render(nullptr);
+	modelAnim.Render();
 	return 1;
 }

@@ -53,6 +53,7 @@ int MetalNet::InitResources()
 		if (CURRENT_GAMEMODE != 1 && 149 < NumStars())
 			return 0;
 	}
+	
 	return 1;
 }
 
@@ -90,7 +91,7 @@ int MetalNet::Behavior()
 // 0x02111ea8
 int MetalNet::Render()
 {
-	model.Render(nullptr);
+	model.Render();
 	return 1;
 }
 

@@ -147,6 +147,7 @@ int CastleWater::InitResources()
 		WATER_HEIGHT = waterHeight;
 	
 	SpawnMistParticles();
+	
 	return 1;
 }
 
@@ -174,7 +175,7 @@ int CastleWater::Behavior()
 int CastleWater::Render()
 {
 	texSRT.Update(model.data);
-	model.Render(nullptr);
+	model.Render();
 	return 1;
 }
 
@@ -202,6 +203,4 @@ void CastleWater::SpawnMistParticles()
 	
 	for (int i = 0; i < NUM_MIST_PARTICLES; i++)
 		Actor::Spawn(0xc5, 0, mistPos[i], nullptr, areaID, -1);
-	
-	return;
 }
