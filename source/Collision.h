@@ -251,8 +251,8 @@ struct CylinderClsn
 	unsigned vulnerableFlags;
 	unsigned hitFlags;
 	unsigned otherObjID;
-	CylinderClsn* prev; //0x2c
-	CylinderClsn* next; //0x30
+	CylinderClsn* prev;
+	CylinderClsn* next;
 	
 	CylinderClsn();
 	virtual ~CylinderClsn();
