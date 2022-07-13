@@ -1,4 +1,4 @@
-#include "General.h"
+#include "Bubble.h"
 
 SpawnInfo Bubble::spawnData =
 {
@@ -46,7 +46,7 @@ void Bubble::Despawn()
 {
 	Sound::Play(3, 0xb, camSpacePos);
 	Particle::System::NewSimple(0x2, pos.x, pos.y, pos.z);
-	Destroy();
+	MarkForDestruction();
 	return;
 }
 
@@ -56,7 +56,7 @@ bool Bubble::IsCloseToWaterSurface()
 	raycaster.SetFlag_2();
 	raycaster.SetObjAndPos(Vector3{pos.x, pos.y + 0x1f4000_f, pos.z}, this);
 	
-	if (raycaster.DetectClsn() && raycaster.result.surfaceInfo.clps.IsWater())
+	if (raycaster.DetectClsn() && raycaster.result.surfaceInfo.clps.isWater)
 		return true;
 	
 	return false;

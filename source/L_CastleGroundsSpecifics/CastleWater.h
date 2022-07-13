@@ -16,10 +16,10 @@ struct CastleWater : Platform
 	//CastleWater();								// 0x02111d8c
 	void SpawnMistParticles();					// 0x02111b1c
 	
-	virtual int InitResources() override;		// 0x02111c74
-	virtual int CleanupResources() override;	// 0x02111bd4
-	virtual int Behavior() override;			// 0x02111c4c
-	virtual int Render() override;				// 0x02111c18
+	virtual s32 InitResources() override;		// 0x02111c74
+	virtual s32 CleanupResources() override;	// 0x02111bd4
+	virtual s32 Behavior() override;			// 0x02111c4c
+	virtual s32 Render() override;				// 0x02111c18
 	//virtual void ~CastleWater() override;		// 0x02111a70
 	//virtual void ~CastleWater() override;		// 0x02111abc
 };

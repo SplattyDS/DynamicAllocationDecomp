@@ -6,7 +6,7 @@
 
 struct Input
 {
-	enum Buttons : uint16_t
+	enum Buttons : u16
 	{
 		A = 1 << 0,
 		B = 1 << 1,
@@ -26,34 +26,34 @@ struct Input
 
 	Fix12s magRelated0;
 	Fix12s magRelated1;
-	uint16_t buttonsHeld;
-	uint16_t buttonsPressed;
+	u16 buttonsHeld;
+	u16 buttonsPressed;
 	Fix12s magnitude;
 	Fix12s dirX;
 	Fix12s dirZ;
-	short angle; //0x0000 is toward the camera, 0x4000 is right
-	uint8_t touchscreenX; //0 is at the left
-	uint8_t touchscreenY; //0 is at the top
-	uint8_t touchscreenDelay;
-	uint8_t touchOffDelay;
+	s16 angle; //0x0000 is toward the camera, 0x4000 is right
+	u8 touchscreenX; //0 is at the left
+	u8 touchscreenY; //0 is at the top
+	u8 touchscreenDelay;
+	u8 touchOffDelay;
 	bool touchscreenBeingUsed;
-	uint8_t unk15;
-	uint16_t unk16;
+	u8 unk15;
+	u16 unk16;
 };
 
 struct InputRelated
 {
-	unsigned unk00;
-	unsigned unk04;
-	uint16_t unk08;
-	uint16_t buttonsHeld;
-	short    cameraAngleY;
-	uint16_t unk0e;
-	unsigned unk10;
-	unsigned unk14;
-	unsigned unk18;
-	unsigned unk1c;
-	unsigned unk20;
+	u32 unk00;
+	u32 unk04;
+	u16 unk08;
+	u16 buttonsHeld;
+	s16 cameraAngleY;
+	u16 unk0e;
+	u32 unk10;
+	u32 unk14;
+	u32 unk18;
+	u32 unk1c;
+	u32 unk20;
 };
 
 static_assert(sizeof(InputRelated) == 0x24);

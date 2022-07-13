@@ -16,7 +16,7 @@ SpawnInfo Flag::spawnData =		// 0x02113b7c
 };
 
 // 0x02112190
-int Flag::InitResources()
+s32 Flag::InitResources()
 {
 	Model::LoadFile(modelFile);
 	modelAnim.SetFile(modelFile.filePtr, 1, 0);
@@ -28,7 +28,7 @@ int Flag::InitResources()
 }
 
 // 0x021120ec
-int Flag::CleanupResources()
+s32 Flag::CleanupResources()
 {
 	modelFile.Release();
 	animFile.Release();
@@ -36,7 +36,7 @@ int Flag::CleanupResources()
 }
 
 // 0x02112144
-int Flag::Behavior()
+s32 Flag::Behavior()
 {
 	modelAnim.Advance();
 	modelAnim.mat4x3 = modelAnim.mat4x3.RotationY(ang.y);
@@ -45,7 +45,7 @@ int Flag::Behavior()
 }
 
 // 0x0211211c
-int Flag::Render()
+s32 Flag::Render()
 {
 	modelAnim.Render();
 	return 1;

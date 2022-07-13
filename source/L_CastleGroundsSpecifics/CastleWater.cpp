@@ -2,21 +2,15 @@
 
 namespace
 {
-	FixedSizeCLPS_Block<1> clpsBlock =	// 0x02112c38
-	{
-		{'C', 'L', 'P', 'S'},
-		0x0008,
-		0x0001,
-		{
-			// low: 0x00000fe0, high: 0x000000ff
-        	CLPS(0x0, 1, 0x3f, 0x0, 0x0, 0x0, 0, 0, 0, 0xff)
-        }
-	};
+	// 0x02112c38
+	using clpsBlock = StaticCLPS_Block<
+		{ .isWater = true }					// low: 0x00000fe0, high: 0x000000ff
+	>;
 	
 	const char waterMatName[] = "water_mat";	// 0x02112b7c
 	
 	Fix12i waterScales[] = {0x1000_f};	// 0x02112234
-	short waterRots[] = {0};			// 0x0211222c
+	s16 waterRots[] = {0};			// 0x0211222c
 	Fix12i waterTranss[] = {0x00000000_f, 0x0000002e_f, 0x0000005b_f, 0x00000089_f, // 0x021122ec
 							0x000000b6_f, 0x000000e4_f, 0x00000111_f, 0x0000013f_f,
 							0x0000016c_f, 0x0000019a_f, 0x000001c7_f, 0x000001f5_f,
@@ -71,7 +65,7 @@ namespace
 		&waterAnims[0]
 	};
 	
-	constexpr int NUM_MIST_PARTICLES = 7;
+	constexpr s32 NUM_MIST_PARTICLES = 7;
 	
 	static Vector3 mistPosVS[] =		// 0x02113de0
 	{
@@ -123,7 +117,7 @@ SpawnInfo CastleWater::spawnData = // 0x021139f4
 };
 
 // 0x02111c74
-int CastleWater::InitResources()
+s32 CastleWater::InitResources()
 {
 	// the moat was drained and the player is not in VS mode
 	if (CURRENT_GAMEMODE != 1 && (SAVE_DATA.miscStates2 & 0x08) != 0)
@@ -139,7 +133,7 @@ int CastleWater::InitResources()
 	Platform::UpdateClsnPosAndRot();
 	
 	MovingMeshCollider::LoadFile(clsnFile);
-	clsn.SetFile(clsnFile.filePtr, clsnNextMat, 0x1000_f, ang.y, (CLPS_Block&)clpsBlock);
+	clsn.SetFile(clsnFile.filePtr, clsnNextMat, 0x1000_f, ang.y, clpsBlock::instance<>);
 	clsn.Enable();
 	
 	Fix12i waterHeight = pos.y - 0x64000_f;
@@ -152,7 +146,7 @@ int CastleWater::InitResources()
 }
 
 // 0x02111bd4
-int CastleWater::CleanupResources()
+s32 CastleWater::CleanupResources()
 {
 	modelFile.Release();
 	clsnFile.Release();
@@ -164,7 +158,7 @@ int CastleWater::CleanupResources()
 }
 
 // 0x02111c4c
-int CastleWater::Behavior()
+s32 CastleWater::Behavior()
 {
 	texSRT.speed = 0x1000_f;
 	texSRT.Advance();
@@ -172,7 +166,7 @@ int CastleWater::Behavior()
 }
 
 // 0x02111c18
-int CastleWater::Render()
+s32 CastleWater::Render()
 {
 	texSRT.Update(model.data);
 	model.Render();
@@ -201,6 +195,6 @@ void CastleWater::SpawnMistParticles()
 			mistPos = &mistPosDrained[0];
 	}
 	
-	for (int i = 0; i < NUM_MIST_PARTICLES; i++)
+	for (s32 i = 0; i < NUM_MIST_PARTICLES; i++)
 		Actor::Spawn(0xc5, 0, mistPos[i], nullptr, areaID, -1);
 }

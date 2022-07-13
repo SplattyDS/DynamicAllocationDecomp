@@ -21,8 +21,8 @@ struct Message
 {
 	struct SpriteRef
 	{
-		unsigned unk0;
-		unsigned unk4;
+		u32 unk0;
+		u32 unk4;
 		
 		static SpriteRef COIN;
 		static SpriteRef* NUMBER_PTRS[20]; //first 10 are gold versions of 0-9, last 10 are red versions of 0-9
@@ -41,49 +41,50 @@ struct Message
 							'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï',
 							'Ð', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', '×', 'Ø', 'Ù', 'Ú', 'Û', 'Ü', 'Ý', 'Þ', 'ß'};*/
 							
-	unsigned textOffset;
-	short textBoxWidth;
-	short textBoxHeight; // in lines
+	u32 textOffset;
+	s16 textBoxWidth;
+	s16 textBoxHeight; // in lines
 	
 	static void PrepareTalk();
 	static void EndTalk();
 	
 	static void AddChar(char charInFontEncoding);
-	static void Display(unsigned msgID);
+	static void Display(u32 msgID);
 	//Add 9 to the horizontal spacing to show multiple digits.
 	// (usual values)                                                               -1                           1              0
-	static void ShowNumber(bool bottomScreen, SpriteRef& number, int x, int y, int dontInvertGradient, unsigned arg5, unsigned arg6);
+	[[deprecated("Use OAM::Render instead")]]
+	static void ShowNumber(bool bottomScreen, SpriteRef& number, s32 x, s32 y, s32 dontInvertGradient, u32 arg5, u32 arg6);
 };
 
 struct MsgFile
 {
-	unsigned magic;
-	unsigned sectionSize;
-	uint16_t numMsgs;
-	uint16_t unk0a;
-	unsigned unk0c;
+	u32 magic;
+	u32 sectionSize;
+	u16 numMsgs;
+	u16 unk0a;
+	u32 unk0c;
 	
-	Message& message(int id) {return *(Message*)((char*)this + 0x10 + 0x08 * id);}
-	char* rawMsgText(int id) {return *(char**)((char*)this + 0x08 + sectionSize + message(id).textOffset);}
+	Message& message(s32 id) {return *(Message*)((char*)this + 0x10 + 0x08 * id);}
+	char* rawMsgText(s32 id) {return *(char**)((char*)this + 0x08 + sectionSize + message(id).textOffset);}
 };
 
 struct MsgIDCharEntry
 {
-	uint16_t perCharID;
-	uint16_t msgID;
+	u16 perCharID;
+	u16 msgID;
 };
 
 extern "C"
 {	
-	extern int MSG_LINE_HEIGHT;
-	extern int CURR_MSG_ID;
+	extern s32 MSG_LINE_HEIGHT;
+	extern s32 CURR_MSG_ID;
 	extern Message* CURR_MSG_PTR;
 	extern char* CURR_MSG_TEXT_CHAR;
 	extern Message* MSG_ARR_PTR;
 	extern MsgFile* MSG_FILE_PTR;
 	extern MsgIDCharEntry MSG_ID_CHAR_MAP[0x62];
-	extern uint16_t UTF16_TO_FONT_TABLE[0x100];
-	extern uint8_t TALK_FONT_CHAR_WIDTHS[0x100];
+	extern u16 UTF16_TO_FONT_TABLE[0x100];
+	extern u8 TALK_FONT_CHAR_WIDTHS[0x100];
 }
 
 using MsgGenTextFunc = void(*)();

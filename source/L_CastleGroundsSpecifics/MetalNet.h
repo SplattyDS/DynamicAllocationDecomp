@@ -12,10 +12,10 @@ struct MetalNet : Platform
 	
 	//MetalNet();									// 0x02112048
 	
-	virtual int InitResources() override;		// 0x02111f40
-	virtual int CleanupResources() override;	// 0x02111e60
-	virtual int Behavior() override;			// 0x02111ed0
-	virtual int Render() override;				// 0x02111ea8
+	virtual s32 InitResources() override;		// 0x02111f40
+	virtual s32 CleanupResources() override;	// 0x02111e60
+	virtual s32 Behavior() override;			// 0x02111ed0
+	virtual s32 Render() override;				// 0x02111ea8
 	virtual void OnPendingDestroy() override;	// 0x02111ea4
 	//virtual void ~MetalNet() override;			// 0x02111dc4
 	//virtual void ~MetalNet() override;			// 0x02111e08

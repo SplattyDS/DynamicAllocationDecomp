@@ -1,4 +1,4 @@
-#include "General.h"
+#include "TreasureChest.h"
 
 namespace
 {
@@ -33,9 +33,9 @@ SpawnInfo TreasureChest::spawnData =
 	0x00000000_f
 };
 
-int TreasureChest::InitResources()
+s32 TreasureChest::InitResources()
 {
-	Model::LoadFile(NUMBER_MODEL_PTR);
+	Model::LoadFile(RED_NUMBER_MODEL_PTR);
 	Model::LoadFile(modelFile);
 	modelAnim.SetFile(modelFile.filePtr, 1, -1);
 	
@@ -54,15 +54,15 @@ int TreasureChest::InitResources()
 	return 1;
 }
 
-int TreasureChest::CleanupResources()
+s32 TreasureChest::CleanupResources()
 {
 	animFile.Release();
 	modelFile.Release();
-	NUMBER_MODEL_PTR.Release();
+	RED_NUMBER_MODEL_PTR.Release();
 	return 1;
 }
 
-int TreasureChest::Behavior()
+s32 TreasureChest::Behavior()
 {
 	CallState();
 	cylClsn.Clear();
@@ -70,7 +70,7 @@ int TreasureChest::Behavior()
 	return 1;
 }
 
-int TreasureChest::Render()
+s32 TreasureChest::Render()
 {
 	modelAnim.Render();
 	return 1;
@@ -82,7 +82,7 @@ void TreasureChest::UpdateModelTransform()
 	modelAnim.mat4x3.c3 = pos >> 3;
 }
 
-void TreasureChest::ChangeState(unsigned newState)
+void TreasureChest::ChangeState(u32 newState)
 {
 	state = newState;
 	(this->*states[state].init)();
@@ -113,8 +113,8 @@ void TreasureChest::State0_Main()
 		return;
 	Player* player = (Player*)actor;
 	
-	int numOpenChests = 0;
-	int count = 0;
+	s32 numOpenChests = 0;
+	s32 count = 0;
 	TreasureChest* currChest = nullptr;
 	while((currChest = (TreasureChest*)FindWithActorID(TREASURE_CHEST_ACTOR_ID, currChest)))
 	{
@@ -136,7 +136,7 @@ void TreasureChest::State0_Main()
 		else
 			Sound::PlayBank2_2D(0x26);
 		
-		Sound::PlayBank3(player->isUnderwater ? 0x22 : 0x20, camSpacePos);
+		Sound::Play(3, player->isUnderwater ? 0x22 : 0x20, camSpacePos);
 		ChangeState(1);
 	}
 	else
@@ -160,7 +160,7 @@ void TreasureChest::State1_Init()
 void TreasureChest::State1_Main()
 {
 	modelAnim.Advance();
-	if ((int)modelAnim.currFrame == 0x14)
+	if ((s32)modelAnim.currFrame == 0x14)
 	{
 		Player* player = ClosestPlayer();
 		Vector3 spawnPos { pos.x, pos.y + 0xc8000_f, pos.z };

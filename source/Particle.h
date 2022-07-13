@@ -421,31 +421,31 @@ namespace Particle
 			HAS_EFFECT_RADIUS_CONVERGE = 1 << 29
 		};
 		
-		unsigned flags; //0x0c004345 for particle 0x00bc
+		u32 flags; //0x0c004345 for particle 0x00bc
 		Fix12i rate; //in particles per frame
 		Fix12i startHorzDist;
 		Vector3_16f dir; //0x0c, ???
-		uint16_t color;
+		u16 color;
 		Fix12i horzSpeed; //restart system for effect
 		Fix12i vertSpeed; //positive means go down, for some reason //restart system for effect
 		Fix12i scale; //restart system for effect
 		Fix12s horzScale; //milestone: 0x20
-		uint16_t unk22; //0x00e7 for particle 0x00bc
-		short minAngSpeed; //0x00000000 for particle 0x00bc
-		short maxAngSpeed;
-		uint16_t frames; //of the system, 0 = infinity
-		uint16_t lifetime; //of the individual particles
-		uint8_t scaleRand;
-		uint8_t lifetimeRand;
-		uint8_t speedRand;
-		uint8_t unk2f; //0x00 for particle 0x00bc, probably padding
-		uint8_t spawnPeriod; //number of frames between spawns (WARNING: DENOMINATOR)
-		uint8_t alpha; //on a scale of 0x00 to 0x1f
-		uint8_t speedFalloff; //higher means faster and for longer. Below 0x80: slow down, above 0x80: speed up
-		uint8_t spriteID;
-		uint8_t altLength; //0x01 for particle 0x00bc (WARNING: DENOMINATOR)
+		u16 unk22; //0x00e7 for particle 0x00bc
+		s16 minAngSpeed; //0x00000000 for particle 0x00bc
+		s16 maxAngSpeed;
+		u16 frames; //of the system, 0 = infinity
+		u16 lifetime; //of the individual particles
+		u8 scaleRand;
+		u8 lifetimeRand;
+		u8 speedRand;
+		u8 unk2f; //0x00 for particle 0x00bc, probably padding
+		u8 spawnPeriod; //number of frames between spawns (WARNING: DENOMINATOR)
+		u8 alpha; //on a scale of 0x00 to 0x1f
+		u8 speedFalloff; //higher means faster and for longer. Below 0x80: slow down, above 0x80: speed up
+		u8 spriteID;
+		u8 altLength; //0x01 for particle 0x00bc (WARNING: DENOMINATOR)
 		Fix12s velStretchFactor; //respective flag must be enabled
-		uint8_t texRepeatFlags; //1, 2, 3: horizontally x 2^n, 4, 8, 0xc: vertically x 2^(n/4)
+		u8 texRepeatFlags; //1, 2, 3: horizontally x 2^n, 4, 8, 0xc: vertically x 2^(n/4)
 	};
 
 	struct ScaleTransition
@@ -453,65 +453,65 @@ namespace Particle
 		Fix12s scaleStart;
 		Fix12s scaleMiddle;
 		Fix12s scaleEnd;
-		uint8_t trans1End; //from 0x00 to 0xff
-		uint8_t trans2Start;
-		uint16_t useAltLength; //least significant byte is 1 means that there is no transition. It will start at scaleEnd.
-		uint16_t unk0a;
+		u8 trans1End; //from 0x00 to 0xff
+		u8 trans2Start;
+		u16 useAltLength; //least significant byte is 1 means that there is no transition. It will start at scaleEnd.
+		u16 unk0a;
 	};
 	
 	struct ColorTransition
 	{
-		uint16_t colorStart;
-		uint16_t colorEnd; //colorMiddle is in the main info
-		uint8_t trans1Start;
-		uint8_t trans2Start;
-		uint8_t trans2End;
-		uint8_t unk07;
-		uint8_t interpFlags;
-		uint8_t unk09;
-		uint16_t unk0a;
+		u16 colorStart;
+		u16 colorEnd; //colorMiddle is in the main info
+		u8 trans1Start;
+		u8 trans2Start;
+		u8 trans2End;
+		u8 unk07;
+		u8 interpFlags;
+		u8 unk09;
+		u16 unk0a;
 	};
 	
 	struct AlphaTransition
 	{
-		uint16_t alpha; //3 alphas 5 bits each
-		uint8_t flicker;
+		u16 alpha; //3 alphas 5 bits each
+		u8 flicker;
 		bool useAltLength; //???
-		uint8_t alphaTrans1End;
-		uint8_t alphaTrans2Start;
-		uint16_t unk06;
+		u8 alphaTrans1End;
+		u8 alphaTrans2Start;
+		u16 unk06;
 	};
 	
 	struct TexSeq
 	{
-		uint8_t spriteID_0;
-		uint8_t spriteID_1;
-		uint8_t spriteID_2;
-		uint8_t spriteID_3;
-		uint8_t spriteID_4;
-		uint8_t spriteID_5;
-		uint8_t spriteID_6;
-		uint8_t spriteID_7;
-		uint8_t numSprites;
-		uint8_t interval;
-		uint8_t interpFlags;
-		uint8_t unk0c;
+		u8 spriteID_0;
+		u8 spriteID_1;
+		u8 spriteID_2;
+		u8 spriteID_3;
+		u8 spriteID_4;
+		u8 spriteID_5;
+		u8 spriteID_6;
+		u8 spriteID_7;
+		u8 numSprites;
+		u8 interval;
+		u8 interpFlags;
+		u8 unk0c;
 	};
 	
 	struct Glitter
 	{
-		uint16_t flags;
-		uint16_t speedRand;
+		u16 flags;
+		u16 speedRand;
 		Fix12s scale;
-		uint16_t lifetime;
-		uint8_t speedMult;
-		uint8_t scaleMult;
-		uint16_t color;
-		uint8_t rate;
-		uint8_t wait;
-		uint8_t period;
-		uint8_t spriteID;
-		unsigned texRepeatFlags;
+		u16 lifetime;
+		u8 speedMult;
+		u8 scaleMult;
+		u16 color;
+		u8 rate;
+		u8 wait;
+		u8 period;
+		u8 spriteID;
+		u32 texRepeatFlags;
 	};
 	
 	struct EffectData {};
@@ -521,14 +521,15 @@ namespace Particle
 		Vector3_16f acceleration;
 		
 		static void Func(EffectData& data, char*, Vector3& velAsr4);
-		constexpr Acceleration(const Vector3_16f& velAsr4) : acceleration(velAsr4) {}
+		constexpr Acceleration(const Vector3_16f& acceleration) : acceleration(acceleration) {}
 	};
 	struct Jitter : public EffectData
 	{
 		Vector3_16f magnitude;
-		uint16_t period; //number of frames between velocity changes (WARNING: DENOMINATOR)
+		u16 period; //number of frames between velocity changes (WARNING: DENOMINATOR)
 		
 		static void Func(EffectData& data, char*, Vector3& velAsr4);
+		constexpr Jitter(const Vector3_16f& magnitude, const u16 period) : magnitude(magnitude), period(period) {}
 	};
 	struct Converge : public EffectData
 	{
@@ -536,21 +537,24 @@ namespace Particle
 		Fix12s magnitude;
 		
 		static void Func(EffectData& data, char*, Vector3& velAsr4);
+		constexpr Converge(const Vector3& offset, const Fix12s magnitude) : offset(offset), magnitude(magnitude) {}
 	};
 	struct Turn : public EffectData
 	{
-		short angleSpeed;
-		short axis;
+		s16 angleSpeed;
+		s16 axis;
 		
 		static void Func(EffectData& data, char*, Vector3& velAsr4);
+		constexpr Turn(const s16 angleSpeed, const s16 axis) : angleSpeed(angleSpeed), axis(axis) {}
 	};
 	struct LimitPlane : public EffectData
 	{
 		Fix12i posY;
 		Fix12s reverseSpeedMult;
-		uint8_t behavior;
+		u8 behavior;
 		
 		static void Func(EffectData& data, char*, Vector3& velAsr4);
+		constexpr LimitPlane(const Fix12i posY, const Fix12s reverseSpeedMult, const u8 behavior) : posY(posY), reverseSpeedMult(reverseSpeedMult), behavior(behavior) {}
 	};
 	struct RadiusConverge : public EffectData
 	{
@@ -558,6 +562,7 @@ namespace Particle
 		Fix12s magnitude;
 		
 		static void Func(EffectData& data, char*, Vector3& velAsr4);
+		constexpr RadiusConverge(const Vector3& offset, const Fix12s magnitude) : offset(offset), magnitude(magnitude) {}
 	};
 	
 	struct Effect
@@ -575,7 +580,7 @@ namespace Particle
 		TexSeq* texSeq;
 		Glitter* glitter;
 		Effect* effects;
-		uint16_t numEffects;
+		u16 numEffects;
 	};
 	
 	enum TexFlags
@@ -599,34 +604,34 @@ namespace Particle
 	
 	struct Texture
 	{
-		unsigned magic;
+		u32 magic;
 		TexFlags flags;
-		unsigned texelArrSize;
-		unsigned palleteOffset;
-		unsigned palleteSize;
-		unsigned unk14;
-		unsigned unk18;
-		unsigned totalSize;
+		u32 texelArrSize;
+		u32 palleteOffset;
+		u32 palleteSize;
+		u32 unk14;
+		u32 unk18;
+		u32 totalSize;
 		
-		uint8_t* TexelArr()       { return (uint8_t*)((char*)this + 0x20); }
-		uint16_t* PalleteColArr() { return (uint16_t*)((char*)this + palleteOffset); }
+		u8* TexelArr()       { return  (u8*)((char*)this + 0x20); }
+		u16* PalleteColArr() { return (u16*)((char*)this + palleteOffset); }
 		
-		unsigned Format() { return flags & FORMAT; }
-		uint16_t Width()  { return 1 << (((flags & LOG_2_WIDTH_MINUS_3) >> 4) + 3); }
-		uint16_t Height() { return 1 << (((flags & LOG_2_HEIGHT_MINUS_3) >> 8) + 3); }
+		u32 Format() { return flags & FORMAT; }
+		u16 Width()  { return 1 << (((flags & LOG_2_WIDTH_MINUS_3) >> 4) + 3); }
+		u16 Height() { return 1 << (((flags & LOG_2_HEIGHT_MINUS_3) >> 8) + 3); }
 		
-		static unsigned AllocTexVram(unsigned size, bool isTexel4x4);
-		static unsigned AllocPalVram(unsigned size, bool is4Color);
+		static u32 AllocTexVram(u32 size, bool isTexel4x4);
+		static u32 AllocPalVram(u32 size, bool is4Color);
 	};
 	
 	struct TexDef
 	{
 		Texture* texture;
-		unsigned texVramOffset;
-		unsigned palVramOffset;
+		u32 texVramOffset;
+		u32 palVramOffset;
 		TexFlags flags;
-		uint16_t width;
-		uint16_t height;
+		u16 width;
+		u16 height;
 	};
 	
 	struct Particle
@@ -645,21 +650,21 @@ namespace Particle
 		Vector3 posAsr3;
 		Vector3 offsetAsr3;
 		Vector3 speedAsr3;
-		uint16_t lifetime;
-		uint16_t age;
+		u16 lifetime;
+		u16 age;
 		Fix12i scale;
 		Fix12s unk34; //starts at 0x1000
-		short ang;
-		short angSpeed;
-		uint16_t color;
-		uint16_t unk3c;
-		uint16_t lifetimeInv;
-		unsigned flags;
+		s16 ang;
+		s16 angSpeed;
+		u16 color;
+		u16 unk3c;
+		u16 lifetimeInv;
+		u32 flags;
 	};
 	struct List
 	{
 		Particle* first;
-		unsigned num;
+		u32 num;
 
 		struct Iterator
 		{
@@ -678,8 +683,8 @@ namespace Particle
 	struct System;
 	struct Callback
 	{
-		unsigned unk04;
-		unsigned id;
+		u32 unk04;
+		u32 id;
 		
 		virtual void SpawnParticles(System&);
 		virtual bool OnUpdate(System&, bool active);
@@ -706,46 +711,51 @@ namespace Particle
 		List particleList;
 		List particleList2;
 		SysDef* sysDefPtr;
-		unsigned unk1c;
+		u32 unk1c;
 		Vector3 posAsr3;
-		unsigned unk2c;
-		uint16_t unk30;
-		uint8_t unk32;
-		uint8_t unk33;
-		unsigned unk34;
-		uint16_t unk38;
-		int16_t rateTracker;
+		u32 unk2c;
+		u16 unk30;
+		u8 unk32;
+		u8 unk33;
+		u32 unk34;
+		u16 unk38;
+		s16 rateTracker;
 		Vector3_16f dir;
-		uint16_t unk42;
+		u16 unk42;
 		Fix12i startHorzDist;
 		Fix12i horzSpeed;
 		Fix12i vertSpeed;
 		Fix12i scale;
-		uint16_t lifetime;
-		uint16_t unk56;
-		uint8_t spawnPeriod;
-		uint8_t alpha;
-		uint16_t unk5a;
-		unsigned unk5c;
-		unsigned unk60;
-		unsigned unk64;
-		unsigned unk68;
-		unsigned unk6c;
-		unsigned unk70;
-		unsigned unk74;
+		u16 lifetime;
+		u16 unk56;
+		u8 spawnPeriod;
+		u8 alpha;
+		u16 unk5a;
+		u32 unk5c;
+		u32 unk60;
+		u32 unk64;
+		u32 unk68;
+		u32 unk6c;
+		u32 unk70;
+		u32 unk74;
 		
-		static unsigned NewWeather(unsigned uniqueID, unsigned effectID, Fix12i x, Fix12i y, Fix12i z, const Vector3_16f* dir, unsigned numWeatherEffectsNow);
-		static unsigned NewRipple(Fix12i x, Fix12i y, Fix12i z);
-		static unsigned New(unsigned uniqueID, unsigned effectID, Fix12i x, Fix12i y, Fix12i z, const Vector3_16f* dir, Callback* callback);
-		static void NewSimple(unsigned particleID, Fix12i x, Fix12i y, Fix12i z);
+		static u32 NewWeather(u32 uniqueID, u32 effectID, Fix12i x, Fix12i y, Fix12i z, const Vector3_16f* dir, u32 numWeatherEffectsNow);
+		static u32 NewRipple(Fix12i x, Fix12i y, Fix12i z);
+		static u32 New(u32 uniqueID, u32 effectID, Fix12i x, Fix12i y, Fix12i z, const Vector3_16f* dir, Callback* callback);
+		static void NewSimple(u32 particleID, Fix12i x, Fix12i y, Fix12i z);
 	};
 	
 	struct ROMEmbeddedFile
 	{
-		uint64_t magic;
-		uint16_t numSysDefs;
-		uint8_t numTexs;
-		uint8_t numBuiltInTexs;
+		u64 magic;
+		u16 numSysDefs;
+		u8 numTexs;
+		u8 numBuiltInTexs;
+		u32 unk0c;
+		u32 sysDefSectionSize;
+		u32 textureSectionSize;
+		u32 textureSectionOffset;
+		u32 unk1c;
 		MainInfo firstSysDef;
 		
 		static MainInfo& NextSysDef(MainInfo& sysDef)
@@ -770,28 +780,28 @@ namespace Particle
 	
 	struct Manager
 	{
-		using AdvancePtrFunc = void*(*)(unsigned amount); //returns the pointer before the advancing, advances 0x0209ee78
+		using AdvancePtrFunc = void*(*)(u32 amount); //returns the pointer before the advancing, advances 0x0209ee78
 		
 		struct SysList
 		{
 			System* last;
-			unsigned num;
+			u32 num;
 		};		
 		
-		void*(*advancePtr)(unsigned amount);
+		void*(*advancePtr)(u32 amount);
 		SysList usedSysList;
 		SysList freeSysList;
 		List freeParticleList; //???
 		SysDef* sysDefArr;
 		TexDef* texDefArr;
-		uint16_t numSysDefs;
-		uint8_t numTextures;
-		uint8_t numBuiltInTexs;
-		uint16_t unk2c;
-		uint16_t unk2e;
+		u16 numSysDefs;
+		u8 numTextures;
+		u8 numBuiltInTexs;
+		u16 unk2c;
+		u16 unk2e;
 		
-		System* AddSystem(int particleID, Vector3& posAsr3);
-		static bool LoadTex(unsigned fileID, unsigned newTexID);
+		System* AddSystem(s32 particleID, Vector3& posAsr3);
+		static bool LoadTex(u32 fileID, u32 newTexID);
 		static void UnloadNewTexs();
 	};
 	
@@ -799,45 +809,45 @@ namespace Particle
 	{
 		struct Data
 		{
-			unsigned uniqueID; //1-indexed, not 0-indexed
-			unsigned effectID;
-			uint16_t frames;
-			uint8_t unk0a;
+			u32 uniqueID; //1-indexed, not 0-indexed
+			u32 effectID;
+			u16 frames;
+			u8 unk0a;
 			System* system;
-			unsigned** unk10; // a vtable?
+			u32** unk10; // a vtable?
 			Data* prevInLink;
 			Data* nextInLink;
 		};
 		
 		struct UnkStr2
 		{
-			unsigned* vTable;
-			unsigned unk04;
-			unsigned* vTable2;
-			unsigned* unk0c;
+			u32* vTable;
+			u32 unk04;
+			u32* vTable2;
+			u32* unk0c;
 		};
 		
 		struct Contents
 		{
-			unsigned numComplexSysSpawned;
-			unsigned lastUsedSysSlotIndex;
+			u32 numComplexSysSpawned;
+			u32 lastUsedSysSlotIndex;
 			Data data[0x40];
 			Data* usedSystems[0x10];
-			unsigned unk750;
+			u32 unk750;
 			Callback callbacks[0x08];
 			UnkStr2 unkStr2s[0x04];
-			unsigned* unk7f4;
-			unsigned* unk7f8;
+			u32* unk7f4;
+			u32* unk7f8;
 			Fix12i unk7fc;
-			unsigned* unk800;
+			u32* unk800;
 			Fix12i unk804;
-			unsigned* unk808;
-			unsigned unk80c;
-			unsigned* unk810;
-			unsigned unk814;
-			unsigned* unk818;
+			u32* unk808;
+			u32 unk80c;
+			u32* unk810;
+			u32 unk814;
+			u32* unk818;
 
-			Data* FindData(unsigned uniqueID) const;
+			Data* FindData(u32 uniqueID) const;
 		};
 		
 		ROMEmbeddedFile* romFile;
@@ -850,7 +860,7 @@ extern "C"
 {
 	extern Particle::ROMEmbeddedFile PARTICLE_ROM_EMBEDDED_FILE;
 	extern Particle::SysTracker* PARTICLE_SYS_TRACKER;
-	extern unsigned PARTICLE_RNG_STATE; //x => x * 0x5eedf715 + 0x1b0cb173
+	extern u32 PARTICLE_RNG_STATE; //x => x * 0x5eedf715 + 0x1b0cb173
 }
 
 #endif

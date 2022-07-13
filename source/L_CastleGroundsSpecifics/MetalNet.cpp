@@ -2,16 +2,10 @@
 
 namespace
 {
-	FixedSizeCLPS_Block<1> clpsBlock =	// 0x02112bf8
-	{
-		{'C', 'L', 'P', 'S'},
-		0x0008,
-		0x0001,
-		{
-			// low: 0x00000fc0, high: 0x000000ff
-        	CLPS(0x0, 0, 0x3f, 0x0, 0x0, 0x0, 0, 0, 0, 0xff)
-        }
-	};
+	// 0x02112bf8
+	using clpsBlock = StaticCLPS_Block<
+		{  }								// low: 0x00000fc0, high: 0x000000ff
+	>;
 }
 
 SharedFilePtr MetalNet::modelFile;	// 0x02113e90
@@ -30,7 +24,7 @@ SpawnInfo MetalNet::spawnData = // 0x02113abc
 };
 
 // 0x02111f40
-int MetalNet::InitResources()
+s32 MetalNet::InitResources()
 {
 	Model::LoadFile(modelFile);
 	model.SetFile(modelFile.filePtr, 1, 0);
@@ -39,7 +33,7 @@ int MetalNet::InitResources()
 	UpdateClsnPosAndRot();
 	
 	MovingMeshCollider::LoadFile(clsnFile);
-	clsn.SetFile(clsnFile.filePtr, clsnNextMat, 0x1000_f, ang.y, (CLPS_Block&)clpsBlock);
+	clsn.SetFile(clsnFile.filePtr, clsnNextMat, 0x1000_f, ang.y, clpsBlock::instance<>);
 	
 	if ((param1 & 0xff) == 0xff)
 	{
@@ -58,7 +52,7 @@ int MetalNet::InitResources()
 }
 
 // 0x02111e60
-int MetalNet::CleanupResources()
+s32 MetalNet::CleanupResources()
 {
 	if (clsn.IsEnabled())
 		clsn.Disable();
@@ -70,7 +64,7 @@ int MetalNet::CleanupResources()
 }
 
 // 0x02111ed0
-int MetalNet::Behavior()
+s32 MetalNet::Behavior()
 {
 	UpdateModelPosAndRotY();
 	UpdateClsnPosAndRot();
@@ -89,7 +83,7 @@ int MetalNet::Behavior()
 }
 
 // 0x02111ea8
-int MetalNet::Render()
+s32 MetalNet::Render()
 {
 	model.Render();
 	return 1;

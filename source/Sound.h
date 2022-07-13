@@ -22,17 +22,17 @@ namespace Sound
 	{
 		struct Block
 		{
-			unsigned offset;
-			unsigned size;
+			u32 offset;
+			u32 size;
 		};
 		char magic[4]; //"SDAT"
-		unsigned x0100feff;
-		unsigned fileSize;
-		uint16_t headerSize;
-		uint16_t numBlocks;
+		u32 x0100feff;
+		u32 fileSize;
+		u16 headerSize;
+		u16 numBlocks;
 		Block symbolBlock;
 		Block infoBlock;
-		Block FAT;
+		Block fat;
 		Block fileBlock;		
 	};
 		
@@ -43,36 +43,36 @@ namespace Sound
 	
 	struct InfoSequenceEntry
 	{
-		unsigned fileID;
-		uint16_t bank;
-		uint8_t volume;
-		uint8_t channelPressure; //???
-		uint8_t polyphonicPressure; //???
-		uint8_t play; //???
-		uint16_t padding;
+		u32 fileID;
+		u16 bank;
+		u8 volume;
+		u8 channelPressure; //???
+		u8 polyphonicPressure; //???
+		u8 play; //???
+		u16 padding;
 		
-		static InfoSequenceEntry* GetWithID(unsigned seqID);
+		static InfoSequenceEntry* GetWithID(u32 seqID);
 	};
 	
 	struct InfoInstrumentBankEntry
 	{
-		unsigned fileID;
-		uint16_t waveArchiveIDs[4];
+		u32 fileID;
+		u16 waveArchiveIDs[4];
 		
-		static InfoInstrumentBankEntry* GetWithID(unsigned bankID);
+		static InfoInstrumentBankEntry* GetWithID(u32 bankID);
 	};
 	
 	struct InfoBlockRecord
 	{
-		unsigned count;
-		unsigned entryOffsets[]; //size = count
+		u32 count;
+		u32 entryOffsets[]; //size = count
 	};
 	
 	struct InfoBlock
 	{
 		char magic[4]; //"INFO"
-		unsigned size;
-		unsigned recordOffsets[8];
+		u32 size;
+		u32 recordOffsets[8];
 		char padding[0x18];
 	};
 	
@@ -99,36 +99,36 @@ namespace Sound
 	struct WaveArchive
 	{
 		char magic[4]; //"SWAR"
-		unsigned x0100feff;
-		unsigned fileSize;
-		uint16_t headerSize;
-		uint16_t one;
+		u32 x0100feff;
+		u32 fileSize;
+		u16 headerSize;
+		u16 one;
 	};
 	
 	struct SDAT_RAM
 	{
 		SDAT_Header header;
-		unsigned unk30;
-		unsigned unk34;
+		u32 unk30;
+		u32 unk34;
 		ROM_Info* rom;
-		unsigned unk3c;
-		unsigned unk40;
-		unsigned unk44;
-		unsigned unk48;
-		unsigned unk4c;
-		unsigned unk50;
-		unsigned unk54;
-		unsigned unk58;
+		u32 unk3c;
+		u32 unk40;
+		u32 unk44;
+		u32 unk48;
+		u32 unk4c;
+		u32 unk50;
+		u32 unk54;
+		u32 unk58;
 		WaveArchive* waveArchive;
-		unsigned waveArchiveSize;
-		unsigned unk64; //waveArchiveSize copy?
-		unsigned unk68;
-		unsigned unk6c;
-		unsigned unk70;
-		unsigned unk74; //ROM?
-		unsigned unk78;
+		u32 waveArchiveSize;
+		u32 unk64; //waveArchiveSize copy?
+		u32 unk68;
+		u32 unk6c;
+		u32 unk70;
+		u32 unk74; //ROM?
+		u32 unk78;
 		FAT* fileAllocTable;
-		unsigned unk80;
+		u32 unk80;
 		InfoBlock* infoBlock;
 		
 		static SDAT_RAM* PTR;
@@ -139,29 +139,29 @@ namespace Sound
 	struct SequenceArchive
 	{
 		char magic[4]; //"SSAR"
-		uint16_t endianCode; //0xfeff
-		uint16_t unk6;
-		unsigned size; //includes header
-		unsigned dataOffset; //0x10
-		unsigned unke;
+		u16 endianCode; //0xfeff
+		u16 unk6;
+		u32 size; //includes header
+		u32 dataOffset; //0x10
+		u32 unke;
 		
 		struct Data
 		{
 			char magic[4]; //"DATA"
-			unsigned size;
-			unsigned sampleDefSize;
-			unsigned numSamples;
+			u32 size;
+			u32 sampleDefSize;
+			u32 numSamples;
 			
 			struct SampleDef
 			{
-				unsigned unk0;
-				uint16_t bankID;
-				uint8_t volume;
-				uint8_t unk7;
-				uint8_t unk8;
-				uint8_t unk9;
-				uint8_t unka;
-				uint8_t unkb;
+				u32 unk0;
+				u16 bankID;
+				u8 volume;
+				u8 unk7;
+				u8 unk8;
+				u8 unk9;
+				u8 unka;
+				u8 unkb;
 			} sampleDefs[];
 			
 		} data;
@@ -172,22 +172,22 @@ namespace Sound
 		FileRef** unk0;
 		Player* soundPlayer;
 		char* file;
-		unsigned unk0c;
-		unsigned unk10;
-		unsigned unk14;
-		unsigned unk18;
-		unsigned unk1c;
-		unsigned unk20;
-		unsigned unk24;
-		unsigned unk28;
-		unsigned unk2c;
-		unsigned unk30;
-		unsigned unk34;
-		unsigned unk38;
-		uint8_t unk3c;
-		uint8_t unk3d;
-		uint8_t unk3e;
-		uint8_t unk3f;
+		u32 unk0c;
+		u32 unk10;
+		u32 unk14;
+		u32 unk18;
+		u32 unk1c;
+		u32 unk20;
+		u32 unk24;
+		u32 unk28;
+		u32 unk2c;
+		u32 unk30;
+		u32 unk34;
+		u32 unk38;
+		u8 unk3c;
+		u8 unk3d;
+		u8 unk3e;
+		u8 unk3f;
 		
 		static FileRef* PTR_0; //there's one after it, but it's, as far as I know, not referred to exactly.
 	};
@@ -196,12 +196,12 @@ namespace Sound
 	{
 		FileRef* fileRef;
 		FileRef* fileRefCopy;
-		uint16_t unk08;
-		uint16_t unk0a;
+		u16 unk08;
+		u16 unk0a;
 		char* unk0c;
 		char* unk10;
-		unsigned unk14;
-		unsigned unk18;
+		u32 unk14;
+		u32 unk18;
 	};
 	
 	enum MusicID
@@ -231,28 +231,32 @@ namespace Sound
 	
 	extern Player PLAYERS[]; //size not known, but greater than 9.
 	
-	unsigned PlayLong(unsigned uniqueID, unsigned soundArchiveID, unsigned soundID, const Vector3& camSpacePos, unsigned arg4); //first arg = guess
+	u32 PlayLong(u32 uniqueID, u32 soundArchiveID, u32 soundID, const Vector3& camSpacePos, u32 arg4); //first arg = guess
 	
-	void PlayCharVoice(unsigned charID, unsigned soundID, const Vector3& camSpacePos);
+	void PlayCharVoice(u32 charID, u32 soundID, const Vector3& camSpacePos);
 	
-	void Play(unsigned archiveID, unsigned soundID, const Vector3& camSpacePos);
-	void PlayBank0(unsigned soundID, const Vector3& camSpacePos);
-	void PlayBank3(unsigned soundID, const Vector3& camSpacePos);
-	void PlayBank2_2D(unsigned soundID);
-	void PlayBank3_2D(unsigned soundID);
+	void Play(u32 archiveID, u32 soundID, const Vector3& camSpacePos);
+	void PlayBank0(u32 soundID, const Vector3& camSpacePos);
+	void PlayBank3(u32 soundID, const Vector3& camSpacePos);
+	void PlayBank2_2D(u32 soundID);
+	void PlayBank3_2D(u32 soundID);
 	
 	//volume goes up to 0x7f
-	bool PlayMsgSound(unsigned soundID, unsigned arg1, unsigned volume, Fix12i timeInv, bool starting); //return value: did it finish?
+	bool PlayMsgSound(u32 soundID, u32 arg1, u32 volume, Fix12i timeInv, bool starting); //return value: did it finish?
 	
-	void LoadAndSetMusic_Layer2(unsigned musicID);
+	void LoadAndSetMusic_Layer2(u32 musicID);
 	void StopLoadedMusic_Layer2();
-	void LoadAndSetMusic_Layer3(unsigned musicID);
+	void LoadAndSetMusic_Layer3(u32 musicID);
 	void StopLoadedMusic_Layer3();
-	void SetMusic(unsigned arg0, unsigned musicID);
-	void EndMusic(unsigned arg0, unsigned musicID);
-	void UnkPlaySoundFunc(unsigned soundID);
+	void SetMusic(u32 arg0, u32 musicID);
+	void EndMusic(u32 arg0, u32 musicID);
+	void UnkPlaySoundFunc(u32 soundID);
 	
-	void ChangeMusicVolume(unsigned newVolume, Fix12i changeSpeed);
+	void ChangeMusicVolume(u32 newVolume, Fix12i changeSpeed);
+	
+	void Func_02048ee4();
+	void Func_02048eb4();
+	void Func_0201277c(u32 arg1);
 }
 
 #endif

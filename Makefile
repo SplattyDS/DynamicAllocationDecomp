@@ -48,7 +48,12 @@ export LD      := $(PREFIX)ld
 #---------------------------------------------------------------------------------
 TARGET   := newcode
 BUILD    := build
-SOURCES  := source/P_TreasureChest libfat_source
+# SOURCES  := source/E_Goomba libfat_source
+SOURCES  := source/E_Goomboss libfat_source
+# SOURCES  := source/L_CastleGroundsSpecifics libfat_source
+# SOURCES  := source/P_TreasureChest libfat_source
+# SOURCES  := symbol_tester libfat_source
+# SOURCES  := mangler libfat_source
 INCLUDES := include
 DATA     := data  
 GRAPHICS := gfx  
@@ -156,7 +161,7 @@ $(OUTPUT).sym : $(OUTPUT).elf
 #---------------------------------------------------------------------------------
 %.o: %.cpp
 	@echo $(notdir $<)
-	$(CXX) -MMD -MP -MF $(DEPSDIR)/$*.d $(CXXFLAGS) -c $< -o $@ $(ERROR_FILTER)
+	$(CXX) -MMD -MP -MF $(DEPSDIR)/$*.d $(CXXFLAGS) -Wa,-adl=$(addsuffix .lst, $(basename $@)) -c $< -o $@ $(ERROR_FILTER)
 
 #---------------------------------------------------------------------------------
 %.o: %.c

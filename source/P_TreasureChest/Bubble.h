@@ -8,9 +8,9 @@ struct Bubble : public Actor
 {
 	MovingCylinderClsn cylClsn;	// 0xd4
 	Fix12i speedMultiplier;		// 0x108
-	short horzSpeedArcSin;		// 0x10c
-	uint16_t despawnTimer;		// 0x10e
-	unsigned particleUniqueID;	// 0x110
+	s16 horzSpeedArcSin;		// 0x10c
+	u16 despawnTimer;			// 0x10e
+	u32 particleUniqueID;		// 0x110
 	
 	void Despawn();								// 0x020b330c
 	bool IsCloseToWaterSurface();				// 0x020b3344

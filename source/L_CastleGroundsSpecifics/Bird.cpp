@@ -36,7 +36,7 @@ SpawnInfo Bird::spawnData = // 0x02113934
 };
 
 // 0x0211197c
-int Bird::InitResources()
+s32 Bird::InitResources()
 {
 	Model::LoadFile(modelFile);
 	modelAnim.SetFile(modelFile.filePtr, 1, 1);
@@ -59,7 +59,7 @@ int Bird::InitResources()
 }
 
 // 0x0211183c
-int Bird::CleanupResources()
+s32 Bird::CleanupResources()
 {
 	modelFile.Release();
 	animFile.Release();
@@ -67,7 +67,7 @@ int Bird::CleanupResources()
 }
 
 // 0x02111898
-int Bird::Behavior()
+s32 Bird::Behavior()
 {
 	(this->*states[state].main)();
 	
@@ -85,7 +85,7 @@ int Bird::Behavior()
 }
 
 // 0x02111870
-int Bird::Render()
+s32 Bird::Render()
 {
 	modelAnim.Render();
 	return 1;
@@ -105,8 +105,8 @@ void Bird::State0_Main()
 		if (1 < param1 & 0xf)
 		{
 			Vector3_16 birdAng = motionAng;
-			int numBirdsToSpawn = (param1 & 0xf) - 1;
-			int numBirdsSpawned = 0;
+			s32 numBirdsToSpawn = (param1 & 0xf) - 1;
+			s32 numBirdsSpawned = 0;
 			
 			if (0 < numBirdsToSpawn)
 			{
@@ -143,7 +143,7 @@ void Bird::State1_Main()
 		Bird* leaderBird = (Bird*)Actor::FindWithID(leaderID);
 		if (leaderBird == nullptr)
 		{
-			Destroy();
+			MarkForDestruction();
 			return;
 		}
 		if (leaderBird->state != 3)
@@ -161,8 +161,8 @@ void Bird::State1_Main()
 		Sound::Play(3, 0x6a, camSpacePos);
 	}
 	
-	unsigned random = RandomIntInternal(&RNG_STATE);
-	motionAng.x = 5000 - ((short)random + (short)((uint64_t)random * 0x10624dd3 >> 0x28) * -4000);
+	u32 random = RandomIntInternal(&RNG_STATE);
+	motionAng.x = 5000 - ((s16)random + (s16)((u64)random * 0x10624dd3 >> 0x28) * -4000);
 	
 	speedMult = INITIAL_SPEED_MULTIPLIER;
 	state = 3;
@@ -184,8 +184,8 @@ void Bird::State2_Main()
 		
 		if (1 < (param1 & 0xf))
 		{
-			int numBirdsToSpawn = (param1 & 0xf) - 1;
-			int numBirdsSpawned = 0;
+			s32 numBirdsToSpawn = (param1 & 0xf) - 1;
+			s32 numBirdsSpawned = 0;
 			
 			if (0 < numBirdsToSpawn)
 			{
@@ -205,8 +205,8 @@ void Bird::State2_Main()
 		Sound::Play(3, 0x6a, camSpacePos);
 	}
 	
-	unsigned random = RandomIntInternal(&RNG_STATE);
-	motionAng.x = 5000 - ((short)random + (short)(random / 4000) * -4000);
+	u32 random = RandomIntInternal(&RNG_STATE);
+	motionAng.x = 5000 - ((s16)random + (s16)(random / 4000) * -4000);
 	motionAng.y = RandomIntInternal(&RNG_STATE);
 	
 	speedMult = INITIAL_SPEED_MULTIPLIER;
@@ -243,7 +243,7 @@ void Bird::State3_Main()
 		ApproachLinear(motionAng.x, targetAng.x, 0x8c);
 		ApproachLinear(motionAng.y, targetAng.y, 800);
 		
-		short newTargetAngZ = (short)((((int)motionAng.y - (int)targetAng.y) * 0x10000) >> 0x10);
+		s16 newTargetAngZ = (s16)((((s32)motionAng.y - (s32)targetAng.y) * 0x10000) >> 0x10);
 		if (newTargetAngZ < -0x3000)
 			newTargetAngZ = -0x3000;
 		else if (0x3000 < newTargetAngZ)
@@ -258,11 +258,11 @@ void Bird::State3_Main()
 		return;
 	}
 	
-	Destroy();
+	MarkForDestruction();
 }
 
 // 0x02111224
-void Bird::SetLeader(unsigned newLeaderID)
+void Bird::SetLeader(u32 newLeaderID)
 {
 	isLeader = false;
 	leaderID = newLeaderID;

@@ -2,21 +2,22 @@
 #define TREASURE_CHEST_INCLUDED
 
 #include "../SM64DS_2.h"
+#include "Bubble.h"
 
 // vtable at 0x0211c50c, size is 0x178, actor id is 0xd
 struct TreasureChest : public Actor
 {
 	ModelAnim modelAnim;		// 0xd4
 	MovingCylinderClsn cylClsn;	// 0x138
-	unsigned state;				// 0x16c
-	uint16_t cooldown;			// 0x170
-	uint8_t order;				// 0x172
+	u32 state;					// 0x16c
+	u16 cooldown;				// 0x170
+	u8 order;					// 0x172
 	bool spawnStar;				// 0x173
-	uint8_t starID;				// 0x174
-	uint8_t trackedStarID;		// 0x175
+	u8 starID;					// 0x174
+	u8 trackedStarID;			// 0x175
 	
 	void UpdateModelTransform();				// 0x0211a284
-	void ChangeState(unsigned state);			// 0x0211a6ec
+	void ChangeState(u32 state);				// 0x0211a6ec
 	void CallState();							// 0x0211a734
 	void State0_Init();							// 0x0211a6e0
 	void State0_Main();							// 0x0211a4c4
@@ -26,10 +27,10 @@ struct TreasureChest : public Actor
 	void State2_Main();							// 0x0211a2c4
 	
 	//TreasureChest();							// 0x0211a8f0
-	virtual int InitResources() override;		// 0x0211a814
-	virtual int CleanupResources() override;	// 0x0211a77c
-	virtual int Behavior() override;			// 0x0211a7ec
-	virtual int Render() override;				// 0x0211a7c4
+	virtual s32 InitResources() override;		// 0x0211a814
+	virtual s32 CleanupResources() override;	// 0x0211a77c
+	virtual s32 Behavior() override;			// 0x0211a7ec
+	virtual s32 Render() override;				// 0x0211a7c4
 	//virtual ~TreasureChest() override;		// 0x0211a200
 	//virtual ~TreasureChest() override;		// 0x0211a238
 	

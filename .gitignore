@@ -5,6 +5,7 @@
 *.bak
 *.dylib
 *mangler/*.*
+*symbol_tester/*.*
 *build/*.*
 *newcode.bin
 *newcode.elf

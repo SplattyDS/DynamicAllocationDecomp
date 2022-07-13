@@ -11,44 +11,49 @@
 // Note: vector and matrix structures defined in this file use
 // attributes on lambda expressions as in proposal P2173R0
 
-class Actor;
-class Player;
+using s8  = int8_t;  using u8  = uint8_t;
+using s16 = short;   using u16 = uint16_t;
+using s32 = int;     using u32 = unsigned;
+using s64 = int64_t; using u64 = uint64_t;
+
+struct Actor;
+struct Player;
 
 namespace cstd
 {
-	int div(int numerator, int denominator);
-	int mod(int numerator, int denominator);
-	int fdiv(int numerator, int denominator);     // returns a Q12 number
-	int64_t ldiv(int numerator, int denominator); // returns a Q32 number
+	s32 div(s32 numerator, s32 denominator);
+	s32 mod(s32 numerator, s32 denominator);
+	s32 fdiv(s32 numerator, s32 denominator); // returns a Q12 number
+	s64 ldiv(s32 numerator, s32 denominator); // returns a Q32 number
 }
 
 extern "C"
 {
-	uint16_t DecIfAbove0_Short(uint16_t& counter); // returns the counter's new value
-	uint8_t DecIfAbove0_Byte(uint8_t& counter);    // returns the counter's new value
+	u16 DecIfAbove0_Short(u16& counter); // returns the counter's new value
+	u8 DecIfAbove0_Byte(u8& counter);    // returns the counter's new value
 }
 
-bool ApproachLinear(short& counter, short dest, short step); // returns whether the counter reached its destination
-bool ApproachLinear(int& counter,   int dest,   int step);   // returns whether the counter reached its destination
+bool ApproachLinear(s16& counter, s16 dest, s16 step); // returns whether the counter reached its destination
+bool ApproachLinear(s32& counter, s32 dest, s32 step); // returns whether the counter reached its destination
 
 struct AsRaw {} constexpr as_raw;
 
 template<class T> // a valid underlying representation of a fixed-point number
-concept FixUR = std::is_integral_v<T> && std::is_signed_v<T> && sizeof(T) <= sizeof(int);
+concept FixUR = std::is_integral_v<T> && std::is_signed_v<T> && sizeof(T) <= sizeof(s32);
 
-template<FixUR T, int q, template<FixUR> class CRTP>
+template<FixUR T, s32 q, template<FixUR> class CRTP>
 struct Fix
 {
 	T val;
 
-	using Promoted = CRTP<int>;
+	using Promoted = CRTP<s32>;
 
 	constexpr Fix() = default;
 	constexpr Fix(T val) : val(val << q) {}
 	constexpr Fix(T val, AsRaw) : val(val) {}
 	constexpr explicit Fix(long double val) : val(val * (1ll << q) + 0.5l) {}
 
-	template<FixUR U, int r, template<class> class CRTP2>
+	template<FixUR U, s32 r, template<class> class CRTP2>
 	constexpr Fix(Fix<U, r, CRTP2> f, AsRaw) : val(f.val) {}
 
 	template<FixUR U>
@@ -72,40 +77,40 @@ struct Fix
 	template<FixUR U> friend constexpr
 	CRTP<T>& operator-=(CRTP<T>& f0, CRTP<U> f1) { f0.val -= f1.val; return f0; }
 
-	friend constexpr Promoted operator+ (int i,  CRTP<T> f) { return Promoted(i) + f; }
-	friend constexpr Promoted operator- (int i,  CRTP<T> f) { return Promoted(i) - f; }
-	friend constexpr Promoted operator+ (CRTP<T>  f, int i) { return f + Promoted(i); }
-	friend constexpr Promoted operator- (CRTP<T>  f, int i) { return f - Promoted(i); }
-	friend constexpr CRTP<T>& operator+=(CRTP<T>& f, int i) { return f += Promoted(i); }
-	friend constexpr CRTP<T>& operator-=(CRTP<T>& f, int i) { return f -= Promoted(i); }
+	friend constexpr Promoted operator+ (s32 i,  CRTP<T> f) { return Promoted(i) + f; }
+	friend constexpr Promoted operator- (s32 i,  CRTP<T> f) { return Promoted(i) - f; }
+	friend constexpr Promoted operator+ (CRTP<T>  f, s32 i) { return f + Promoted(i); }
+	friend constexpr Promoted operator- (CRTP<T>  f, s32 i) { return f - Promoted(i); }
+	friend constexpr CRTP<T>& operator+=(CRTP<T>& f, s32 i) { return f += Promoted(i); }
+	friend constexpr CRTP<T>& operator-=(CRTP<T>& f, s32 i) { return f -= Promoted(i); }
 
-	friend constexpr Promoted operator* (int i,  CRTP<T> f) { return {i * f.val, as_raw}; }
-	friend constexpr Promoted operator* (CRTP<T>  f, int i) { return {f.val * i, as_raw}; }
-	friend constexpr Promoted operator/ (CRTP<T>  f, int i) { return {f.val / i, as_raw}; }
-	friend constexpr CRTP<T>& operator*=(CRTP<T>& f, int i) { f.val *= i; return f; }
-	friend constexpr CRTP<T>& operator/=(CRTP<T>& f, int i) { f.val /= i; return f; }
+	friend constexpr Promoted operator* (s32 i,  CRTP<T> f) { return {i * f.val, as_raw}; }
+	friend constexpr Promoted operator* (CRTP<T>  f, s32 i) { return {f.val * i, as_raw}; }
+	friend constexpr Promoted operator/ (CRTP<T>  f, s32 i) { return {f.val / i, as_raw}; }
+	friend constexpr CRTP<T>& operator*=(CRTP<T>& f, s32 i) { f.val *= i; return f; }
+	friend constexpr CRTP<T>& operator/=(CRTP<T>& f, s32 i) { f.val /= i; return f; }
 
-	friend constexpr Promoted operator<< (CRTP<T>  f, int i) { return {f.val << i, as_raw}; }
-	friend constexpr Promoted operator>> (CRTP<T>  f, int i) { return {f.val >> i, as_raw}; }
-	friend constexpr CRTP<T>& operator<<=(CRTP<T>& f, int i) { f.val <<= i; return f; }
-	friend constexpr CRTP<T>& operator>>=(CRTP<T>& f, int i) { f.val >>= i; return f; }
+	friend constexpr Promoted operator<< (CRTP<T>  f, s32 i) { return {f.val << i, as_raw}; }
+	friend constexpr Promoted operator>> (CRTP<T>  f, s32 i) { return {f.val >> i, as_raw}; }
+	friend constexpr CRTP<T>& operator<<=(CRTP<T>& f, s32 i) { f.val <<= i; return f; }
+	friend constexpr CRTP<T>& operator>>=(CRTP<T>& f, s32 i) { f.val >>= i; return f; }
 
 	template<FixUR U> [[gnu::always_inline, nodiscard]] friend
 	Promoted operator*(CRTP<T> f0, CRTP<U> f1)
 	{
-		const uint64_t product = static_cast<int64_t>(f0.val) * f1.val;
+		const u64 product = static_cast<s64>(f0.val) * f1.val;
 		Promoted result;
-
+		
 		asm(R"(
-			movs %[lo], %[lo], lsr %[s0]
-			adc  %[rs], %[lo], %[hi], lsl %[s1]
+			movs %[rs], %[lo], lsr %[s0]
+			adc  %[rs], %[rs], %[hi], lsl %[s1]
 		)":
-		[rs] "=r" (result) :
-		[lo] "r" (static_cast<uint32_t>(product)),
-		[hi] "r" (static_cast<uint32_t>(product >> 32)),
+		[rs] "=&r" (result) :
+		[lo] "r" (static_cast<u32>(product)),
+		[hi] "r" (static_cast<u32>(product >> 32)),
 		[s0] "I" (q),
 		[s1] "I" (32 - q) : "cc");
-
+		
 		return result;
 	}
 
@@ -143,53 +148,53 @@ struct Fix12 : Fix<T, 12, Fix12>
 {
 	using Fix<T, 12, Fix12>::Fix;
 
-	Fix12<int> operator/ (Fix12 f) const { return {cstd::fdiv(this->val, f.val), as_raw}; }
+	Fix12<s32> operator/ (Fix12 f) const { return {cstd::fdiv(this->val, f.val), as_raw}; }
 	Fix12&     operator/=(Fix12 f) & { this->val = cstd::fdiv(this->val, f.val); return *this; }
 };
 
-using Fix12i = Fix12<int>;
-using Fix12s = Fix12<short>;
+using Fix12i = Fix12<s32>;
+using Fix12s = Fix12<s16>;
 
-consteval Fix12i operator""_f (unsigned long long val) { return Fix12i(val, as_raw); }
-consteval Fix12s operator""_fs(unsigned long long val) { return Fix12s(val, as_raw); }
+consteval Fix12i operator""_f (u64 val) { return Fix12i(val, as_raw); }
+consteval Fix12s operator""_fs(u64 val) { return Fix12s(val, as_raw); }
 
 consteval Fix12i operator""_f (long double val) { return Fix12i(val); }
 consteval Fix12s operator""_fs(long double val) { return Fix12s(val); }
 
-consteval int operator""_deg(long double val) { return val * 32768.L / 180.L; }
-consteval int operator""_deg(unsigned long long val) { return operator""_deg(static_cast<long double>(val)); }
+consteval s32 operator""_deg(long double val) { return val * 32768.L / 180.L; }
+consteval s32 operator""_deg(u64 val) { return operator""_deg(static_cast<long double>(val)); }
 
-consteval int operator""_rad(long double val) { return val * 32768.L / 3.141592653589793238462643383279502884L; }
-consteval int operator""_rad(unsigned long long val) { return operator""_rad(static_cast<long double>(val)); }
+consteval s32 operator""_rad(long double val) { return val * 32768.L / 3.141592653589793238462643383279502884L; }
+consteval s32 operator""_rad(u64 val) { return operator""_rad(static_cast<long double>(val)); }
 
 namespace cstd
 {
 	Fix12i fdiv(Fix12i numerator, Fix12i denominator);
-	unsigned sqrt(uint64_t x); // 64 bit unsigned sqrt
-	inline Fix12i sqrt(Fix12i x) { return Fix12i(sqrt(static_cast<uint64_t>(x.val) << 12), as_raw); }
+	u32 sqrt(u64 x); // 64 bit unsigned sqrt
+	inline Fix12i sqrt(Fix12i x) { return Fix12i(sqrt(static_cast<u64>(x.val) << 12), as_raw); }
 
-	short atan2(Fix12i y, Fix12i x); //atan2 function, what about 0x020538b8?
-	int abs(int x);
+	s16 atan2(Fix12i y, Fix12i x); //atan2 function, what about 0x020538b8?
+	s32 abs(s32 x);
 
-	int strcmp(const char* str1, const char* str2); //returns 0 if equal, a positive number if str1 comes after str2, and a negative number otherwise
-	char* strncpy(char* dest, const char* src, unsigned count);	//Copies n bytes from src to dest and returns a pointer to dest
+	s32 strcmp(const char* str1, const char* str2); //returns 0 if equal, a positive number if str1 comes after str2, and a negative number otherwise
+	char* strncpy(char* dest, const char* src, u32 count);	//Copies n bytes from src to dest and returns a pointer to dest
 	char* strchr(const char* str, char c); //Searches for c in str and returns a pointer to the first occurence, or 0 if c could not be found
-	unsigned strlen(const char* str); //Returns the length of the string or -1 if no null-terminator has been found
+	u32 strlen(const char* str); //Returns the length of the string or -1 if no null-terminator has been found
 }
 
 struct UnknownStruct
 {
-	unsigned unk00;
-	unsigned unk04;
-	uint16_t unk08;
-	uint16_t buttonsHeld;
-	uint16_t cameraAngleY;
-	uint16_t unk0e;
-	unsigned unk10;
-	unsigned unk14;
-	unsigned unk18;
-	unsigned unk1c;
-	unsigned unk20;
+	u32 unk00;
+	u32 unk04;
+	u16 unk08;
+	u16 buttonsHeld;
+	u16 cameraAngleY;
+	u16 unk0e;
+	u32 unk10;
+	u32 unk14;
+	u32 unk18;
+	u32 unk1c;
+	u32 unk20;
 };
 
 struct Vector3;
@@ -200,55 +205,55 @@ struct SharedFilePtr;
 
 extern "C"
 {	
-	extern uint16_t POWERS_OF_TEN[3]; //100, 10, 1
+	extern u16 POWERS_OF_TEN[3]; //100, 10, 1
 	extern char DIGIT_ENC_ARR[10];
 
-	extern uint16_t HEALTH_ARR[4];
-	extern int UNUSED_RAM[0xec00];
+	extern u16 HEALTH_ARR[4];
+	extern s32 UNUSED_RAM[0xec00];
 	extern UnknownStruct UNKNOWN_ARR[4];
 	
-	extern int RNG_STATE; //x => x * 0x0019660d + 0x3c6ef35f
+	extern s32 RNG_STATE; //x => x * 0x0019660d + 0x3c6ef35f
 	
 	extern Matrix4x3 MATRIX_SCRATCH_PAPER;
-	extern unsigned* HEAP_PTR;
-	extern unsigned FRAME_COUNTER;
+	extern u32* HEAP_PTR;
+	extern u32 FRAME_COUNTER;
 
 	extern const Fix12s SINE_TABLE[0x2000];
 	extern const Fix12s ATAN_TABLE[0x400];
 	
-	void UnloadObjBankOverlay(int ovID);
-	bool LoadObjBankOverlay(int ovID);
-	char* LoadFile	(int ov0FileID);
+	void UnloadOverlay(s32 ovID);
+	bool LoadOverlay(s32 ovID);
+	char* LoadFile(s32 ov0FileID);
 	
 	[[noreturn]] void Crash();
-
-	void FreeFileAllocation(void* ptr);
-	void FreeHeapAllocation(void* ptr, unsigned* heapPtr);
-	void* AllocateFileSpace(unsigned amount);
 	
-	short AngleDiff(short ang0, short ang1) __attribute__((const));
-	void Vec3_RotateYAndTranslate(Vector3& res, const Vector3& translation, short angY, const Vector3& v); //res and v cannot alias.
-	short Vec3_VertAngle(const Vector3& v1, const Vector3& v0) __attribute__((pure));
-	short Vec3_HorzAngle(const Vector3& v0, const Vector3& v1) __attribute__((pure));
-	int RandomIntInternal(int* randomIntStatePtr);
+	s16 ApproachAngle(s16& angle, s32 targetAngle, s32 invFactor, s32 maxDelta, s32 minDelta); // the old LeanPlayerForwardWhileRunning
+	s16 AngleDiff(s16 ang0, s16 ang1) __attribute__((const));
+	void Vec3_RotateYAndTranslate(Vector3& res, const Vector3& translation, s16 angY, const Vector3& v); //res and v cannot alias.
+	s16 Vec3_VertAngle(const Vector3& v1, const Vector3& v0) __attribute__((pure));
+	s16 Vec3_HorzAngle(const Vector3& v0, const Vector3& v1) __attribute__((pure));
+	s32 RandomIntInternal(s32* randomIntStatePtr);
 	void Matrix4x3_FromTranslation(Matrix4x3& mF, Fix12i x, Fix12i y, Fix12i z);
-	void Matrix4x3_FromRotationZ(Matrix4x3& mF, short angZ);
-	void Matrix4x3_FromRotationY(Matrix4x3& mF, short angY);
-	void Matrix4x3_FromRotationX(Matrix4x3& mF, short angX);
-	void Matrix4x3_FromRotationZXYExt(Matrix4x3& mF, short angX, short angY, short angZ); //yxz intrinsic = zxy extrinsic
-	void Matrix4x3_FromRotationXYZExt(Matrix4x3& mF, short angX, short angY, short angZ); //zyx intrinsic = xyz extrinsic
-	void Matrix4x3_ApplyInPlaceToRotationZ(Matrix4x3& mF, short angZ); //transforms a rotation matrix using matrix mF.
-	void Matrix4x3_ApplyInPlaceToRotationY(Matrix4x3& mF, short angY); //does not apply a rotation matrix.
-	void Matrix4x3_ApplyInPlaceToRotationX(Matrix4x3& mF, short angX); //don't get the two confused.
+	void Matrix4x3_FromRotationZ(Matrix4x3& mF, s16 angZ);
+	void Matrix4x3_FromRotationY(Matrix4x3& mF, s16 angY);
+	void Matrix4x3_FromRotationX(Matrix4x3& mF, s16 angX);
+	void Matrix4x3_FromRotationZXYExt(Matrix4x3& mF, s16 angX, s16 angY, s16 angZ); //yxz intrinsic = zxy extrinsic
+	void Matrix4x3_FromRotationXYZExt(Matrix4x3& mF, s16 angX, s16 angY, s16 angZ); //zyx intrinsic = xyz extrinsic
+	void Matrix4x3_ApplyInPlaceToRotationZ(Matrix4x3& mF, s16 angZ); //transforms a rotation matrix using matrix mF.
+	void Matrix4x3_ApplyInPlaceToRotationY(Matrix4x3& mF, s16 angY); //does not apply a rotation matrix.
+	void Matrix4x3_ApplyInPlaceToRotationX(Matrix4x3& mF, s16 angX); //don't get the two confused.
+	void Matrix4x3_ConcatAng(Matrix4x3& mF, s16 angX, s16 angY, s16 angZ); // rotates a new matrix4x3 with xyz and concats it with mf
+	void Matrix4x3_ConcatPos(Matrix4x3& mF, Fix12i x, Fix12i y, Fix12i z); // translates xyz into a new matrix4x3 and concats it with mf
+	void Matrix4x3_ConcatScale(Matrix4x3& mF, Fix12i x, Fix12i y, Fix12i z); // scales a new matrix4x3 with xyz and concats it with mf
 	
 	Fix12i Vec3_HorzDist(const Vector3& v0, const Vector3& v1) __attribute__((pure));
 	Fix12i Vec3_HorzLen(const Vector3& v0) __attribute__((pure));
 	Fix12i Vec3_Dist(const Vector3& v0, const Vector3& v1) __attribute__((pure));
 	bool Vec3_Equal(const Vector3& v0, const Vector3& v1) __attribute__((pure));
-	void Vec3_LslInPlace(Vector3& v, int shift);
-	void Vec3_Lsl(Vector3& res, const Vector3& v, int shift);
-	void Vec3_AsrInPlace(Vector3& v, int shift);
-	void Vec3_Asr(Vector3& res, const Vector3& v, int shift);
+	void Vec3_LslInPlace(Vector3& v, s32 shift);
+	void Vec3_Lsl(Vector3& res, const Vector3& v, s32 shift);
+	void Vec3_AsrInPlace(Vector3& v, s32 shift);
+	void Vec3_Asr(Vector3& res, const Vector3& v, s32 shift);
 	void Vec3_DivScalarInPlace(Vector3& v, Fix12i scalar);
 	void Vec3_MulScalarInPlace(Vector3& v, Fix12i scalar);
 	void Vec3_MulScalar(Vector3& res, const Vector3& v, Fix12i scalar);
@@ -275,17 +280,19 @@ extern "C"
 	void Matrix3x3_SetRotationY(Matrix3x3& m, Fix12i sinTheta, Fix12i cosTheta) __attribute__((long_call, target("thumb"))); //Resets m to a Y rotation matrix
 	void Matrix3x3_SetRotationZ(Matrix3x3& m, Fix12i sinTheta, Fix12i cosTheta) __attribute__((long_call, target("thumb"))); //Resets m to a Z rotation matrix
 	
-	void MultiStore_Int(int val, void* dest, int byteSize);
-	void MultiCopy_Int(void* source, void* dest, int byteSize);
+	void MultiStore_Int(s32 val, void* dest, s32 byteSize);
+	void MultiCopy_Int(void* source, void* dest, s32 byteSize);
 	
-	uint16_t Color_Interp(uint16_t* dummyArg, uint16_t startColor, uint16_t endColor, Fix12i time) __attribute__((const));
+	u16 Color_Interp(u16* dummyArg, u16 startColor, u16 endColor, Fix12i time) __attribute__((const));
+	
+	Fix12i Math_Function_0203b14c(Fix12i& arg1, Fix12i arg2, Fix12i arg3, Fix12i arg4, Fix12i arg5);
 }
 
-inline int RandomInt() { return RandomIntInternal(&RNG_STATE); }
+inline s32 RandomInt() { return RandomIntInternal(&RNG_STATE); }
 
 struct Vector2     { Fix12i x, y; };
-struct Vector2_16  { short  x, y; };
-struct Vector3_16  { short  x, y, z; };
+struct Vector2_16  { s16  x, y; };
+struct Vector3_16  { s16  x, y, z; };
 struct Vector3_16f { Fix12s x, y, z; };
 
 template<class T>
@@ -322,9 +329,9 @@ template<class T> [[gnu::always_inline, nodiscard]]
 constexpr T& AssureUnaliased(T& t) { return t; }
 
 [[nodiscard]]
-constexpr int Lerp(int a, int b, Fix12i t)
+constexpr s32 Lerp(s32 a, s32 b, Fix12i t)
 {
-	return static_cast<int>(t * (b - a)) + a;
+	return static_cast<s32>(t * (b - a)) + a;
 }
 
 struct Vector3
@@ -360,10 +367,10 @@ struct Vector3
 		Fix12i Dot (const Vector3& v) && { return static_cast<Vector3>(std::move(*this)).Dot(v); }
 
 		[[gnu::always_inline, nodiscard]]
-		short  HorzAngle(const Vector3& v) && { return static_cast<Vector3>(std::move(*this)).HorzAngle(v); }
+		s16  HorzAngle(const Vector3& v) && { return static_cast<Vector3>(std::move(*this)).HorzAngle(v); }
 
 		[[gnu::always_inline, nodiscard]]
-		short  VertAngle(const Vector3& v) && { return static_cast<Vector3>(std::move(*this)).VertAngle(v); }
+		s16  VertAngle(const Vector3& v) && { return static_cast<Vector3>(std::move(*this)).VertAngle(v); }
 
 		[[gnu::always_inline, nodiscard]]
 		auto Cross(const Vector3& v) &&
@@ -496,7 +503,7 @@ struct Vector3
 		}
 
 		[[gnu::always_inline, nodiscard]]
-		auto operator<<(const int& shift) &&
+		auto operator<<(const s32& shift) &&
 		{
 			return NewProxy([this, &shift]<bool resMayAlias> [[gnu::always_inline]] (Vector3& res)
 			{
@@ -506,7 +513,7 @@ struct Vector3
 		}
 
 		[[gnu::always_inline, nodiscard]]
-		auto operator>>(const int& shift) &&
+		auto operator>>(const s32& shift) &&
 		{
 			return NewProxy([this, &shift]<bool resMayAlias> [[gnu::always_inline]] (Vector3& res)
 			{
@@ -569,15 +576,15 @@ struct Vector3
 	Vector3& operator-= (const Vector3& v) &     { SubVec3(*this, v, *this); return *this; }
 	Vector3& operator*= (Fix12i scalar)    &     { Vec3_MulScalarInPlace(*this, scalar); return *this; }
 	Vector3& operator/= (Fix12i scalar)    &     { Vec3_DivScalarInPlace(*this, scalar); return *this; }
-	Vector3& operator<<=(int shift)        &     { Vec3_LslInPlace(*this, shift); return *this; }
-	Vector3& operator>>=(int shift)        &     { Vec3_AsrInPlace(*this, shift); return *this; }
+	Vector3& operator<<=(s32 shift)        &     { Vec3_LslInPlace(*this, shift); return *this; }
+	Vector3& operator>>=(s32 shift)        &     { Vec3_AsrInPlace(*this, shift); return *this; }
 	Fix12i   Dist       (const Vector3& v) const { return Vec3_Dist(*this, v); }
 	Fix12i   HorzDist   (const Vector3& v) const { return Vec3_HorzDist(*this, v); }
 	Fix12i   Len        ()                 const { return LenVec3(*this); }
 	Fix12i   HorzLen    ()                 const { return Vec3_HorzLen(*this); }
 	Fix12i   Dot        (const Vector3& v) const { return DotVec3(*this, v); }
-	short    HorzAngle  (const Vector3& v) const { return Vec3_HorzAngle(*this, v); }
-	short    VertAngle  (const Vector3& v) const { return Vec3_VertAngle(*this, v); }
+	s16      HorzAngle  (const Vector3& v) const { return Vec3_HorzAngle(*this, v); }
+	s16      VertAngle  (const Vector3& v) const { return Vec3_VertAngle(*this, v); }
 
 	Vector3& operator*=(const auto& m) & { return *this = m * *this; }
 
@@ -681,7 +688,7 @@ struct Vector3
 	}
 
 	[[gnu::always_inline, nodiscard]]
-	auto operator<<(const int& shift) const
+	auto operator<<(const s32& shift) const
 	{
 		return Proxy([this, &shift]<bool resMayAlias> [[gnu::always_inline]] (Vector3& res)
 		{
@@ -690,7 +697,7 @@ struct Vector3
 	}
 
 	[[gnu::always_inline, nodiscard]]
-	auto operator>>(const int& shift) const
+	auto operator>>(const s32& shift) const
 	{
 		return Proxy([this, &shift]<bool resMayAlias> [[gnu::always_inline]] (Vector3& res)
 		{
@@ -750,7 +757,7 @@ struct Vector3
 	void NormalizeTwice() & { Normalize(); Normalize(); }
 
 	[[gnu::always_inline, nodiscard]]
-	auto RotateYAndTranslate(const Vector3& translation, const short& angY) const
+	auto RotateYAndTranslate(const Vector3& translation, const s16& angY) const
 	{
 		return Proxy([this, &translation, &angY]<bool resMayAlias> [[gnu::always_inline]] (Vector3& res)
 		{
@@ -759,7 +766,7 @@ struct Vector3
 	}
 
 	template<class F> [[gnu::always_inline, nodiscard]]
-	auto RotateYAndTranslate(Proxy<F>&& proxy, const short& angY) const
+	auto RotateYAndTranslate(Proxy<F>&& proxy, const s16& angY) const
 	{
 		return Proxy([this, &proxy, &angY]<bool resMayAlias> [[gnu::always_inline]] (Vector3& res)
 		{
@@ -777,7 +784,7 @@ struct Vector3
 		});
 	}
 
-	int AngleTo(const Vector3& other) const
+	s32 AngleTo(const Vector3& other) const
 	{
 		return cstd::atan2(this->Cross(other).Len(), this->Dot(other)) & 0xffff;
 	}
@@ -1137,7 +1144,7 @@ struct Matrix4x3 : private Matrix3x3 // Matrix is column-major!
 		}
 
 		[[gnu::always_inline, nodiscard]]
-		auto RotateZ(const short& angZ) &&
+		auto RotateZ(const s16& angZ) &&
 		{
 			return NewProxy([this, &angZ]<bool resMayAlias> [[gnu::always_inline]] (Matrix4x3& res)
 			{
@@ -1147,7 +1154,7 @@ struct Matrix4x3 : private Matrix3x3 // Matrix is column-major!
 		}
 
 		[[gnu::always_inline, nodiscard]]
-		auto RotateY(const short& angY) &&
+		auto RotateY(const s16& angY) &&
 		{
 			return NewProxy([this, &angY]<bool resMayAlias> [[gnu::always_inline]] (Matrix4x3& res)
 			{
@@ -1157,7 +1164,7 @@ struct Matrix4x3 : private Matrix3x3 // Matrix is column-major!
 		}
 
 		[[gnu::always_inline, nodiscard]]
-		auto RotateX(const short& angX) &&
+		auto RotateX(const s16& angX) &&
 		{
 			return NewProxy([this, &angX]<bool resMayAlias> [[gnu::always_inline]] (Matrix4x3& res)
 			{
@@ -1268,9 +1275,9 @@ struct Matrix4x3 : private Matrix3x3 // Matrix is column-major!
 	      Matrix3x3& Linear()       { return *this; }
 	const Matrix3x3& Linear() const { return *this; }
 
-	Matrix4x3& RotateZ(short angZ) & { Matrix4x3_ApplyInPlaceToRotationZ(*this, angZ); return *this; }
-	Matrix4x3& RotateY(short angY) & { Matrix4x3_ApplyInPlaceToRotationY(*this, angY); return *this; }
-	Matrix4x3& RotateX(short angX) & { Matrix4x3_ApplyInPlaceToRotationX(*this, angX); return *this; }
+	Matrix4x3& RotateZ(s16 angZ) & { Matrix4x3_ApplyInPlaceToRotationZ(*this, angZ); return *this; }
+	Matrix4x3& RotateY(s16 angY) & { Matrix4x3_ApplyInPlaceToRotationY(*this, angY); return *this; }
+	Matrix4x3& RotateX(s16 angX) & { Matrix4x3_ApplyInPlaceToRotationX(*this, angX); return *this; }
 	
 	[[gnu::always_inline, nodiscard]]
 	auto Inverse() const
@@ -1388,7 +1395,7 @@ struct Matrix4x3 : private Matrix3x3 // Matrix is column-major!
 	}
 
 	[[gnu::always_inline, nodiscard]]
-	static auto RotationX(const short& angX)
+	static auto RotationX(const s16& angX)
 	{
 		return Proxy([&angX]<bool resMayAlias> [[gnu::always_inline]] (Matrix4x3& res)
 		{
@@ -1397,7 +1404,7 @@ struct Matrix4x3 : private Matrix3x3 // Matrix is column-major!
 	}
 
 	[[gnu::always_inline, nodiscard]]
-	static auto RotationY(const short& angY)
+	static auto RotationY(const s16& angY)
 	{
 		return Proxy([&angY]<bool resMayAlias> [[gnu::always_inline]] (Matrix4x3& res)
 		{
@@ -1406,7 +1413,7 @@ struct Matrix4x3 : private Matrix3x3 // Matrix is column-major!
 	}
 
 	[[gnu::always_inline, nodiscard]]
-	static auto RotationZ(const short& angZ)
+	static auto RotationZ(const s16& angZ)
 	{
 		return Proxy([&angZ]<bool resMayAlias> [[gnu::always_inline]] (Matrix4x3& res)
 		{
@@ -1415,7 +1422,7 @@ struct Matrix4x3 : private Matrix3x3 // Matrix is column-major!
 	}
 
 	[[gnu::always_inline, nodiscard]]
-	static auto RotationZXY(const short& angX, const short& angY, const short& angZ)
+	static auto RotationZXY(const s16& angX, const s16& angY, const s16& angZ)
 	{
 		return Proxy([&angX, &angY, &angZ]<bool resMayAlias> [[gnu::always_inline]] (Matrix4x3& res)
 		{
@@ -1424,7 +1431,7 @@ struct Matrix4x3 : private Matrix3x3 // Matrix is column-major!
 	}
 
 	[[gnu::always_inline, nodiscard]]
-	static auto RotationXYZ(const short& angX, const short& angY, const short& angZ)
+	static auto RotationXYZ(const s16& angX, const s16& angY, const s16& angZ)
 	{
 		return Proxy([&angX, &angY, &angZ]<bool resMayAlias> [[gnu::always_inline]] (Matrix4x3& res)
 		{
@@ -1457,44 +1464,44 @@ struct Matrix4x3 : private Matrix3x3 // Matrix is column-major!
 
 struct SharedFilePtr
 {
-	uint16_t fileID;
-	uint8_t numRefs;
+	u16 fileID;
+	u8 numRefs;
 	char* filePtr;
 	
-	SharedFilePtr& Construct(unsigned ov0FileID);
+	SharedFilePtr& Construct(u32 ov0FileID);
 	char* Load();
 	void Release();
 };
 
 template<class T, T zero = static_cast<T>(0)>
-constexpr int Sgn(T val)
+constexpr s32 Sgn(T val)
 {
     return (val > zero) - (val < zero);
 }
 
 
-inline const Fix12s& Sin(short angle)
+inline const Fix12s& Sin(s16 angle)
 {
-	return SINE_TABLE[static_cast<uint16_t>(angle + 8) >> 4 << 1];
+	return SINE_TABLE[static_cast<u16>(angle + 8) >> 4 << 1];
 }
 
-inline const Fix12s& Cos(short angle)
+inline const Fix12s& Cos(s16 angle)
 {
-	return SINE_TABLE[1 + (static_cast<uint16_t>(angle + 8) >> 4 << 1)];
+	return SINE_TABLE[1 + (static_cast<u16>(angle + 8) >> 4 << 1)];
 }
 
-constexpr uint16_t Color5Bit(uint8_t r, uint8_t g, uint8_t b) //0x00 to 0xff each
+constexpr u16 Color5Bit(u8 r, u8 g, u8 b) //0x00 to 0xff each
 {
-	return (uint16_t)r >> 3 << 0 |
-		   (uint16_t)g >> 3 << 5 |
-		   (uint16_t)b >> 3 << 10;
+	return (u16)r >> 3 << 0 |
+		   (u16)g >> 3 << 5 |
+		   (u16)b >> 3 << 10;
 }
 
-constexpr uint16_t Arr3_5Bit(uint8_t val0, uint8_t val1, uint8_t val2)
+constexpr u16 Arr3_5Bit(u8 val0, u8 val1, u8 val2)
 {
-	return (uint16_t)val0 << 0 |
-		   (uint16_t)val1 << 5 |
-		   (uint16_t)val2 << 10;
+	return (u16)val0 << 0 |
+		   (u16)val1 << 5 |
+		   (u16)val2 << 10;
 }
 
 template<FixUR T>
@@ -1517,6 +1524,14 @@ inline const ostream& operator<<(const ostream& os, Fix12<T> fix)
 inline const ostream& operator<<(const ostream& os, const Vector3& vec)
 {
 	os.set_buffer("{0x%r0%_f, 0x%r1%_f, 0x%r2%_f}");
+	os.flush(vec.x.val, vec.y.val, vec.z.val);
+
+	return os;
+}
+
+inline const ostream& operator<<(const ostream& os, const Vector3_16f& vec)
+{
+	os.set_buffer("{0x%r0%_fs, 0x%r1%_fs, 0x%r2%_fs}");
 	os.flush(vec.x.val, vec.y.val, vec.z.val);
 
 	return os;

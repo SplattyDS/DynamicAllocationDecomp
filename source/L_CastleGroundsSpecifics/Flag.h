@@ -14,10 +14,10 @@ struct Flag : Actor
 	
 	//Flag();										// 0x021121f0
 	
-	virtual int InitResources() override;		// 0x02112190
-	virtual int CleanupResources() override;	// 0x021120ec
-	virtual int Behavior() override;			// 0x02112144
-	virtual int Render() override;				// 0x0211211c
+	virtual s32 InitResources() override;		// 0x02112190
+	virtual s32 CleanupResources() override;	// 0x021120ec
+	virtual s32 Behavior() override;			// 0x02112144
+	virtual s32 Render() override;				// 0x0211211c
 	//virtual void ~Flag() override;				// 0x02112078
 	//virtual void ~Flag() override;				// 0x021120a8
 };

@@ -17,7 +17,7 @@
 	Fog
 	Doors
 	Minimap Scale
-	(Unknown)
+	Star Cameras
 	Level Exits
 */
 //Not putting these in order in the file can result in drastic consequences
@@ -38,10 +38,10 @@ extern "C"
 	extern LevelFile::Entrance (*ENTRANCE_ARR_PTR)[];
 	extern LevelFile::Path (*PATH_ARR_PTR)[];
 
-	extern uint8_t LAST_ENTRANCE_ID;
-	extern uint8_t NUM_ENTRANCES;
-	extern uint8_t NUM_VIEWS;
-	extern unsigned NUM_PATHS;
+	extern u8 LAST_ENTRANCE_ID;
+	extern u8 NUM_ENTRANCES;
+	extern u8 NUM_VIEWS;
+	extern u32 NUM_PATHS;
 }
 
 struct PathPtr
@@ -51,33 +51,37 @@ struct PathPtr
 	// originally contains this second member, but none of the documented
 	// functions use it so it's commented out for better performance
 
-	// unsigned unk04 = 0;
+	// u32 unk04 = 0;
 	
 	PathPtr() : ptr(nullptr) {}
 	PathPtr(const LevelFile::Path* path) : ptr(path) {}
 	PathPtr(const LevelFile::Path& path) : ptr(&path) {}
-	explicit PathPtr(unsigned pathID) { FromID(pathID); }
+	explicit PathPtr(u32 pathID) { FromID(pathID); }
+	explicit PathPtr(s32 pathID) : PathPtr(static_cast<u32>(pathID)) {}
 	
-	void FromID(unsigned pathID);
-	void GetNode(Vector3& vF, unsigned index) const;
-	unsigned NumNodes() const;
+	void FromID(u32 pathID);
+	void GetNode(Vector3& vF, u32 index) const;
+	u32 NumNodes() const;
 
-	[[gnu::always_inline]]
-	auto GetNode(const unsigned& index) const
+	[[gnu::always_inline, nodiscard]]
+	auto GetNode(const u32& index) const
 	{
 		return Vector3::Proxy([this, &index]<bool resMayAlias> [[gnu::always_inline]] (Vector3& res)
 		{
 			GetNode(res, index);
 		});
 	}
-
+	
+	[[gnu::always_inline, nodiscard]]
+	auto operator[](const std::integral auto& index) const { return GetNode(index); }
+	
 	inline const LevelFile::Path& operator* () const { return *ptr; }
 	inline const LevelFile::Path* operator->() const { return ptr; }
-
+	
 	inline explicit operator bool() const { return ptr != nullptr; }
-
+	
 	inline bool operator==(const PathPtr& other) const { return this->ptr == other.ptr; }
-
+	
 	inline operator const LevelFile::Path*      &()       { return ptr; }
 	inline operator const LevelFile::Path* const&() const { return ptr; }
 };
@@ -91,16 +95,16 @@ namespace LevelFile
 	
 	struct Path
 	{
-		uint16_t firstNodeID;
-		uint8_t numNodes;
-		uint8_t unk3; // always 0xff?
-		uint8_t unk4; // inheritance?
-		uint8_t unk5; // 0xff = loop, 0x7f = no loop?
+		u16 firstNodeID;
+		u8 numNodes;
+		u8 unk3; // always 0xff?
+		u8 unk4; // inheritance?
+		u8 unk5; // 0xff = loop, 0x7f = no loop?
 	};
 	
 	struct View
 	{
-		enum Modes : uint8_t
+		enum Modes : u8
 		{
 			OUTSIDE_CYLINDER,
 			INSIDE_CYLINDER,
@@ -112,25 +116,25 @@ namespace LevelFile
 			PAUSE_CAMERA_CENTER_POINT
 		};
 
-		uint8_t mode;
-		uint8_t param2; // ff: normal
+		u8 mode;
+		u8 param2; // ff: normal
 		Vector3_16 pos;
 		Vector3_16 rot;
 		
-		static LevelFile::View& Get(unsigned viewID);
+		static LevelFile::View& Get(u32 viewID);
 	};
 
 	struct Entrance
 	{
-		uint16_t unk00; // just zero?
+		u16 unk00; // just zero?
 		Vector3_16 pos;
 		Vector3_16 rot;
-		uint16_t unk0e; // ???
+		u16 unk0e; // ???
 	};
 	
 	struct MapTile
 	{
-		short ov0FileID;
+		s16 ov0FileID;
 	};
 }
 
