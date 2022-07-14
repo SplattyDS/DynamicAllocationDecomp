@@ -8,6 +8,19 @@
 // vtable at 0x02122eb8, size is 0x610, actor ids are 0xc6 and 0xc7
 struct Goomboss : public Enemy
 {
+	enum States
+	{
+		ST_TALK,
+		ST_STOP_TALK,
+		ST_SPAWN,
+		ST_WALK,
+		ST_WAIT,
+		ST_HURT,
+		ST_GROW,
+		ST_DEFEAT,
+		ST_HIT_BY_MEGA
+	};
+	
 	enum Animations
 	{
 		ANGER,
@@ -19,8 +32,8 @@ struct Goomboss : public Enemy
 		TURN,
 		WAIT,
 		WALK,
-		WALK_END,	// 02122fe0, 39b
-		WALK_START,	// 02122fe8, 39c
+		WALK_END,
+		WALK_START,
 		SPAWN,
 		WAIT_NO_LOOP,
 		
@@ -52,7 +65,7 @@ struct Goomboss : public Enemy
 	s16 walkSpeed;						// 0x5f6
 	s16 maxWalkSpeed;					// 0x5f8
 	
-	s16 scaleArcSinCos;					// 0x5fa
+	s16 scaleAng;						// 0x5fa
 	u16 stateTimer;						// 0x5fc
 	bool leftFootSteppedOnGround;		// 0x5fe
 	bool rightFootSteppedOnGround;		// 0x5ff
@@ -96,24 +109,24 @@ struct Goomboss : public Enemy
 	bool SpawnExplosionGoomba();				// 0x0211f38c
 	void GetCylClsnPos(Vector3& cylClsnPos, s32 transformIndex); // 0x02121270
 	
-	void State0_Init();							// 0x021203e0 (empty)
-	void State0_Main();							// 0x021201f0
-	void State1_Init();							// 0x021201ec (empty)
-	void State1_Main();							// 0x0212018c
-	void State2_Init();							// 0x0211ffac
-	void State2_Main();							// 0x0211fd74
-	void State3_Init();							// 0x0212016c
-	void State3_Main();							// 0x02120080
-	void State4_Init();							// 0x0212007c (empty)
-	void State4_Main();							// 0x0211ffcc
-	void State5_Init();							// 0x0211fd48
-	void State5_Main();							// 0x0211fc38
-	void State6_Init();							// 0x0211fb84
-	void State6_Main();							// 0x0211fa74
-	void State7_Init();							// 0x0211fa08
-	void State7_Main();							// 0x0211f5b8
-	void State8_Init();							// 0x0211fc34 (empty)
-	void State8_Main();							// 0x0211fbd0
+	void State0_Talk_Init();					// 0x021203e0 (empty)
+	void State0_Talk_Main();					// 0x021201f0
+	void State1_StopTalk_Init();				// 0x021201ec (empty)
+	void State1_StopTalk_Main();				// 0x0212018c
+	void State2_Spawn_Init();					// 0x0211ffac
+	void State2_Spawn_Main();					// 0x0211fd74
+	void State3_Walk_Init();					// 0x0212016c
+	void State3_Walk_Main();					// 0x02120080
+	void State4_Wait_Init();					// 0x0212007c (empty)
+	void State4_Wait_Main();					// 0x0211ffcc
+	void State5_Hurt_Init();					// 0x0211fd48
+	void State5_Hurt_Main();					// 0x0211fc38
+	void State6_Grow_Init();					// 0x0211fb84
+	void State6_Grow_Main();					// 0x0211fa74
+	void State7_Defeat_Init();					// 0x0211fa08
+	void State7_Defeat_Main();					// 0x0211f5b8
+	void State8_HitByMega_Init();				// 0x0211fc34 (empty)
+	void State8_HitByMega_Main();				// 0x0211fbd0
 	
 	//Goomboss();								// 0x02122838
 	//Goomboss();								// 0x02122764 (for the Explosion Goombas)

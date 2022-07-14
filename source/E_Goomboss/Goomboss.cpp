@@ -677,15 +677,15 @@ namespace
 	
 	const State states[]
 	{
-		State{ &Goomboss::State0_Init, &Goomboss::State0_Main },
-		State{ &Goomboss::State1_Init, &Goomboss::State1_Main },
-		State{ &Goomboss::State2_Init, &Goomboss::State2_Main },
-		State{ &Goomboss::State3_Init, &Goomboss::State3_Main },
-		State{ &Goomboss::State4_Init, &Goomboss::State4_Main },
-		State{ &Goomboss::State5_Init, &Goomboss::State5_Main },
-		State{ &Goomboss::State6_Init, &Goomboss::State6_Main },
-		State{ &Goomboss::State7_Init, &Goomboss::State7_Main },
-		State{ &Goomboss::State8_Init, &Goomboss::State8_Main }
+		State{ &Goomboss::State0_Talk_Init,	     &Goomboss::State0_Talk_Main },
+		State{ &Goomboss::State1_StopTalk_Init,  &Goomboss::State1_StopTalk_Main },
+		State{ &Goomboss::State2_Spawn_Init,     &Goomboss::State2_Spawn_Main },
+		State{ &Goomboss::State3_Walk_Init,      &Goomboss::State3_Walk_Main },
+		State{ &Goomboss::State4_Wait_Init,      &Goomboss::State4_Wait_Main },
+		State{ &Goomboss::State5_Hurt_Init,      &Goomboss::State5_Hurt_Main },
+		State{ &Goomboss::State6_Grow_Init,      &Goomboss::State6_Grow_Main },
+		State{ &Goomboss::State7_Defeat_Init,    &Goomboss::State7_Defeat_Main },
+		State{ &Goomboss::State8_HitByMega_Init, &Goomboss::State8_HitByMega_Main }
 	};
 	
 	//const float GOOMBOSS_SCALES[] = { 12288.0f, 9557.0f, 6826.0f, 4096.0f };				// 0x02122e4c (why use floats Nintendo...)
@@ -996,9 +996,9 @@ void Goomboss::GetHurtOrHurtPlayer()
 					if (cylClsn == &cylClsns[1] && (cylClsn->hitFlags & CylinderClsn::HIT_BY_KICK) != 0)
 					{
 						if (state == 4)
-							ChangeState(2);
+							ChangeState(ST_SPAWN);
 						else
-							ChangeState(4);
+							ChangeState(ST_WAIT);
 						
 						if (player->param1 == 0)
 						{
@@ -1006,12 +1006,11 @@ void Goomboss::GetHurtOrHurtPlayer()
 							
 							if (megaMushroomID == 0 && Actor::FindWithID(0) == nullptr)
 							{
-								// iVar1 = (s32)((direction * (((((s32)(scale.x + ((u32)(scale.x >> 0xb) >> 0x14)) >> 0xc) * 0x350 + 0x500) * 0x10000 >> 0x10) + 0x600) + (s32)walkAngle + (s32)maxWalkSpeed) * 0x10000 >> 0x10 & 0xffffU) >> 4;
-								u16 arcSin = (u16)((direction * scale.x) + walkAngle + maxWalkSpeed).val;
+								u16 angle = (u16)((direction * scale.x) + walkAngle + maxWalkSpeed).val;
 								
 								mushroomPos.y += 0x32000_f;
-								mushroomPos.x = Sin(arcSin) * 0x546000_f;
-								mushroomPos.z = Cos(arcSin) * 0x546000_f;
+								mushroomPos.x = Sin(angle) * 0x546000_f;
+								mushroomPos.z = Cos(angle) * 0x546000_f;
 								
 								Actor* megaMushroom = Actor::Spawn(MEGA_MUSHROOM_ACTOR_ID, 0x0000, mushroomPos, nullptr, areaID, -1);
 								megaMushroomID = megaMushroom->uniqueID;
@@ -1029,7 +1028,7 @@ void Goomboss::GetHurtOrHurtPlayer()
 							multiplier = -1;
 						
 						SetAnim(WAIT);
-						ChangeState(8);
+						ChangeState(ST_HIT_BY_MEGA);
 						SpawnParticles(*player, *cylClsn, 0);
 						Sound::Play(3, 0x15a, camSpacePos);
 						walkSpeed = multiplier * (s16)direction * -200;
@@ -1065,7 +1064,7 @@ void Goomboss::GetHurtOrHurtPlayer()
 	}
 	
 	walkSpeed = multiplier * (s16)direction * -400;
-	ChangeState(5);
+	ChangeState(ST_HURT);
 	SpawnParticles((Player&)*otherActor, *cylClsn, 1);
 }
 
@@ -1371,7 +1370,7 @@ bool Goomboss::GrowBigger()
 	
 	if (Math_Function_0203b14c(currentScale, nextScale, 0x78_f, 0x100_f, 0x20_f) == 0x0_f)
 	{
-		if (scaleArcSinCos == 0)
+		if (scaleAng == 0)
 			scale.x = scale.y = scale.z = currentScale;
 		
 		if (timesToGrow < 2)
@@ -1385,10 +1384,10 @@ bool Goomboss::GrowBigger()
 	
 	Fix12i multiplier = (nextScale - currentScale) + 0x11e_f;
 	
-	scale.y = currentScale + (multiplier * Sin(scaleArcSinCos));
-	scale.x = scale.z = currentScale + (multiplier * Cos(scaleArcSinCos));
+	scale.y = currentScale + (multiplier * Sin(scaleAng));
+	scale.x = scale.z = currentScale + (multiplier * Cos(scaleAng));
 	
-	scaleArcSinCos += 0x1230;
+	scaleAng += 0x1230;
 	
 	return false;
 }
@@ -1518,12 +1517,12 @@ void Goomboss::GetCylClsnPos(Vector3& cylClsnPos, s32 transformIndex)
 	cylClsnPos <<= 3;
 }
 
-void Goomboss::State0_Init()
+void Goomboss::State0_Talk_Init()
 {
 	return;
 }
 
-void Goomboss::State0_Main()
+void Goomboss::State0_Talk_Main()
 {
 	Player* player = ClosestPlayer();
 	
@@ -1550,16 +1549,16 @@ void Goomboss::State0_Main()
 	if (player->ShowMessage(*this, (s16)player->param1 + 0xd3, Vector3{pos.x, pos.y + 0x78000_f, pos.z}, 0, 2))
 	{
 		Sound::Play(3, 0x15a, camSpacePos);
-		ChangeState(1);
+		ChangeState(ST_STOP_TALK);
 	}
 }
 
-void Goomboss::State1_Init()
+void Goomboss::State1_StopTalk_Init()
 {
 	return;
 }
 
-void Goomboss::State1_Main()
+void Goomboss::State1_StopTalk_Main()
 {
 	if (listener->GetTalkState() != Player::TK_NOT)
 		return;
@@ -1568,16 +1567,16 @@ void Goomboss::State1_Main()
 	Sound::LoadAndSetMusic_Layer3(0x2d);
 	Sound::Func_02048ee4();
 	Message::EndTalk();
-	ChangeState(2);
+	ChangeState(ST_SPAWN);
 }
 
-void Goomboss::State2_Init()
+void Goomboss::State2_Spawn_Init()
 {
 	TurnIfNotFacingPlayer();
 	stateTimer = 0;
 }
 
-void Goomboss::State2_Main()
+void Goomboss::State2_Spawn_Main()
 {
 	if (IsCurrentAnim(TURN))
 	{
@@ -1628,20 +1627,20 @@ void Goomboss::State2_Main()
 		modelAnim.currFrame = 0x0_f;
 	
 	if (numGoombasToSpawn <= numGoombasAlive)
-		ChangeState(3);
+		ChangeState(ST_WALK);
 }
 
-void Goomboss::State3_Init()
+void Goomboss::State3_Walk_Init()
 {
 	SetAnim(WALK_START);
 	SetMaxWalkSpeed();
 }
 
-void Goomboss::State3_Main()
+void Goomboss::State3_Walk_Main()
 {
 	if (numGoombasAlive == 0)
 	{
-		ChangeState(2);
+		ChangeState(ST_SPAWN);
 		return;
 	}
 	else if (IsCurrentAnim(WALK_START))
@@ -1656,15 +1655,15 @@ void Goomboss::State3_Main()
 		return;
 	
 	if (0x4000 < AngleDiff(HorzAngleToCPlayer(), ang.y))
-		ChangeState(4);
+		ChangeState(ST_WAIT);
 }
 
-void Goomboss::State4_Init()
+void Goomboss::State4_Wait_Init()
 {
 	return;
 }
 
-void Goomboss::State4_Main()
+void Goomboss::State4_Wait_Main()
 {
 	if (!IsCurrentAnim(SERCH_WAIT))
 	{
@@ -1677,25 +1676,25 @@ void Goomboss::State4_Main()
 	{
 		if (AngleDiff(HorzAngleToCPlayer(), ang.y) < 0x3000)
 		{
-			ChangeState(3);
+			ChangeState(ST_WALK);
 			return;
 		}
 	}
 	else
-		ChangeState(3);
+		ChangeState(ST_WALK);
 	
 	if (numGoombasAlive == 0)
-		ChangeState(2);
+		ChangeState(ST_SPAWN);
 }
 
-void Goomboss::State5_Init()
+void Goomboss::State5_Hurt_Init()
 {
 	health--;
 	if (5 < health)
 		health = 5;
 }
 
-void Goomboss::State5_Main()
+void Goomboss::State5_Hurt_Main()
 {
 	if (ApproachAngle(walkSpeed, 0, 10, 0x100, 1) != 0)
 	{
@@ -1708,7 +1707,7 @@ void Goomboss::State5_Main()
 	
 	if (health != 0)
 	{
-		ChangeState(6);
+		ChangeState(ST_GROW);
 		return;
 	}
 	
@@ -1718,7 +1717,7 @@ void Goomboss::State5_Main()
 		Message::PrepareTalk();
 		if (!IsCurrentAnim(DAMAGE_BACK) && !IsCurrentAnim(DAMAGE_FRONT))
 		{
-			ChangeState(7);
+			ChangeState(ST_DEFEAT);
 			listener = player;
 			return;
 		}
@@ -1726,13 +1725,13 @@ void Goomboss::State5_Main()
 	}
 }
 
-void Goomboss::State6_Init()
+void Goomboss::State6_Grow_Init()
 {
 	TurnIfNotFacingPlayer();
-	scaleArcSinCos = 0;
+	scaleAng = 0;
 	stateState = 0;
 	
-	u16 texSeqFrame = 3 - health & 0xffff;
+	u16 texSeqFrame = 3 - health;
 	if (2 < texSeqFrame)
 		texSeqFrame = 2;
 	texSeq.currFrame = (Fix12i)texSeqFrame;
@@ -1740,7 +1739,7 @@ void Goomboss::State6_Init()
 	timesToGrow = 3;
 }
 
-void Goomboss::State6_Main()
+void Goomboss::State6_Grow_Main()
 {
 	if (stateState == 0)
 	{
@@ -1758,10 +1757,10 @@ void Goomboss::State6_Main()
 	
 	bool finishedMatAnim = AdvanceMaterialChanger();
 	if (GrowBigger() && finishedMatAnim)
-		ChangeState(2);
+		ChangeState(ST_SPAWN);
 }
 
-void Goomboss::State7_Init()
+void Goomboss::State7_Defeat_Init()
 {
 	health = 0;
 	scale.x = scale.y = scale.z = GOOMBOSS_SCALES[1];
@@ -1772,7 +1771,7 @@ void Goomboss::State7_Init()
 	timesToGrow = 3;
 }
 
-void Goomboss::State7_Main()
+void Goomboss::State7_Defeat_Main()
 {
 	if (modelAnim.Finished())
 		SetAnim(DOWN);
@@ -1856,15 +1855,15 @@ void Goomboss::State7_Main()
 		stateState++;
 }
 
-void Goomboss::State8_Init()
+void Goomboss::State8_HitByMega_Init()
 {
 	return;
 }
 
-void Goomboss::State8_Main()
+void Goomboss::State8_HitByMega_Main()
 {
 	if (ApproachAngle(walkSpeed, 0, 10, 0x100, 1) == 0)
-		ChangeState(3);
+		ChangeState(ST_WALK);
 	else
 		UpdatePosAndAngle();
 }
