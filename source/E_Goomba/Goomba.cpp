@@ -49,6 +49,7 @@ namespace
 	const Fix12i WALK_SPEEDS[]     = { 0x00000aaa_f,  0x00002000_f,  0x00004aaa_f,  0x00006000_f}; // 0x02130228
 	const Fix12i RUN_SPEEDS[]      = { 0x0000a800_f,  0x00015000_f,  0x00015000_f,  0x00015000_f}; // 0x02130268
 	const Fix12i JUMP_SPEEDS[]     = { 0x00008000_f,  0x00010000_f,  0x00020000_f,  0x00010000_f}; // 0x02130248
+	const u32 DAMAGES[] = { 0, 1, 2, 1 };	// 0x02130204
 	const u32 DYING_SOUND_IDS[] = {0x00000110, 0x000000d6, 0x00000111};
 	
 	const Vector3 CAP_OFFSET = {0x00000_f, 0x6c000_f, 0x00000_f};
@@ -707,13 +708,17 @@ void Goomba::GetHurtOrHurtPlayer()
 	hitFlags = cylClsn.hitFlags;
 	bool rotate = false;
 	
-	if (actorID != 0xc9 && (hitFlags & CylinderClsn::HIT_BY_MEGA_CHAR))
+	Fix12i hurtSpeed = 0xc000_f;
+	if (type == Type::GOOMBOSS_GOOMBA)
+		hurtSpeed = 0x5000_f;
+	
+	if (actorID != SMALL_GOOMBA_ACTOR_ID && (hitFlags & CylinderClsn::HIT_BY_MEGA_CHAR) != 0)
 	{
 		ReleaseCap(CAP_OFFSET);
-		KillByInvincibleChar(Vector3_16{s16(0 - (type == Type::BIG ? 0xe800 : 0xe000)), 0, 0}, *player);
+		KillByInvincibleChar(Vector3_16{(s16)(actorID == GOOMBA_ACTOR_ID ? -0x2000 : -0x1800), 0, 0}, *player);
 		return;
 	}
-	else if (hitFlags & CylinderClsn::HIT_BY_SPIN_OR_GROUND_POUND)
+	else if ((hitFlags & CylinderClsn::HIT_BY_SPIN_OR_GROUND_POUND) != 0)
 	{
 		defeatMethod = Enemy::DF_SQUASHED;
 		if (type == Type::BIG)
@@ -722,103 +727,129 @@ void Goomba::GetHurtOrHurtPlayer()
 		scale.x = scale.y = scale.z = 0x1000_f;
 		Sound::Play(3, 0xe0, camSpacePos);
 	}
-	else if (hitFlags & CylinderClsn::HIT_BY_FIRE)
+	else if ((hitFlags & CylinderClsn::HIT_BY_FIRE) != 0)
 	{
-		defeatMethod = Enemy::DF_BURNED;
-		modelAnim.SetAnim(animFiles[STRETCH].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
 		rotate = true;
+		modelAnim.SetAnim(animFiles[STRETCH].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+		defeatMethod = Enemy::DF_BURNED;
 	}
-	else
+	else if (actorID == LARGE_GOOMBA_ACTOR_ID)
 	{
-		bool killedByOtherMeans = false;
-		if (type != Type::BIG)
+		if (player->actorID == PLAYER_ACTOR_ID)
 		{
-			killedByOtherMeans = true;
-			if (hitFlags & CylinderClsn::HIT_BY_REGURG_GOOMBA)
-			{
-				defeatMethod = Enemy::DF_HIT_REGURG;
-				modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
-				cylClsn.flags1 |= CylinderClsn::DISABLED;
-			}
-			else if (hitFlags & (0x2000 | CylinderClsn::HIT_BY_DIVE))
-			{
-				defeatMethod = Enemy::DF_DIVED;
-				modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
-			}
-			else if (hitFlags & 0x4000)
-			{
-				defeatMethod = Enemy::DF_UNK_6;
-				modelAnim.SetAnim(animFiles[STRETCH].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
-			}
-			else if (hitFlags & (CylinderClsn::HIT_BY_KICK | CylinderClsn::HIT_BY_BREAKDANCE | CylinderClsn::HIT_BY_SLIDE_KICK))
-			{
-				defeatMethod = Enemy::DF_KICKED;
-				modelAnim.SetAnim(animFiles[STRETCH].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
-				rotate = true;
-			}
-			else if (hitFlags & CylinderClsn::HIT_BY_PUNCH)
-			{
-				defeatMethod = Enemy::DF_PUNCHED;
-				modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
-				rotate = true;
-			}
-			else killedByOtherMeans = false;
-		}
-		if (!(hitFlags & 0x8000) && player->actorID == 0xbf && !killedByOtherMeans)
-		{
-			//Vector3 playerPos = player->pos;
-			if (player->isMetalWario && type != Type::BIG)
-			{
-				ReleaseCap(CAP_OFFSET);
-				KillByInvincibleChar(Vector3_16{0x2000, 0, 0}, *player);
-				return;
-			}
-			else if (player->IsOnShell() && type != Type::BIG)
-			{
-				defeatMethod = Enemy::DF_DIVED;
-				modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
-				rotate = true;
-			}
-			else if (JumpedOnByPlayer(cylClsn, *player))
+			// Vector3 playerPos = player->pos;
+			if (JumpedOnByPlayer(cylClsn, *player))
 			{
 				player->Bounce(0x28000_f);
 				Sound::Play(3, 0xe0, camSpacePos);
 				defeatMethod = Enemy::DF_SQUASHED;
 				scale.x = scale.y = scale.z = 0x1000_f;
 			}
-			else if (player->isVanishLuigi)
-				return;
-			else if (state == 0)
+			else
 			{
-				if (type == Type::SMALL)
-				{
-					SmallPoofDust();
-					
-					player->Hurt(pos, 0, 0xc000_f + 0x6000_f, 1, 0, 1);
-					Kill();
-					Sound::Play(3, 0x110, camSpacePos);
-				}
-				else if (cylClsn.hitFlags & 0x400000)
-				{
-					player->Hurt(pos, type, 0xc000_f, 1, 0, 1);
-					state = 1; //a.k.a. Haha, plumber!
-				}
+				if (player->isVanishLuigi)
+					return;
 				
-				return;
+				if (state == 0)
+				{
+					state = 1;
+					if ((cylClsn.hitFlags & CylinderClsn::HIT_BY_UNK_22) != 0)
+						player->Hurt(pos, DAMAGES[type], hurtSpeed, 1, 0, 1);
+					
+					return;
+				}
 			}
+		}
+	}
+	else if ((hitFlags & CylinderClsn::HIT_BY_REGURG_GOOMBA) != 0)
+	{
+		defeatMethod = Enemy::DF_HIT_REGURG;
+		modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+		cylClsn.flags1 |= CylinderClsn::DISABLED;
+	}
+	else if ((hitFlags & (CylinderClsn::HIT_BY_DIVE | CylinderClsn::HIT_BY_EGG)) != 0)
+	{
+		defeatMethod = Enemy::DF_DIVED;
+		modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+	}
+	else if ((hitFlags & CylinderClsn::HIT_BY_UNK_14) != 0)
+	{
+		defeatMethod = Enemy::DF_UNK_6;
+		modelAnim.SetAnim(animFiles[STRETCH].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+	}
+	else if ((hitFlags & (CylinderClsn::HIT_BY_KICK | CylinderClsn::HIT_BY_BREAKDANCE | CylinderClsn::HIT_BY_SLIDE_KICK)) != 0)
+	{
+		rotate = true;
+		modelAnim.SetAnim(animFiles[STRETCH].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+		defeatMethod = Enemy::DF_KICKED;
+	}
+	else if ((hitFlags & CylinderClsn::HIT_BY_PUNCH) != 0)
+	{
+		modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+		defeatMethod = Enemy::DF_PUNCHED;
+		rotate = true;
+	}
+	else if ((hitFlags & CylinderClsn::HIT_BY_UNK_15) == 0 && player->actorID == PLAYER_ACTOR_ID)
+	{
+		if (player->isMetalWario)
+		{
+			ReleaseCap(CAP_OFFSET);
+			KillByInvincibleChar(Vector3_16{0x2000, 0, 0}, *player);
+			return;
+		}
+		
+		// Vector3 playerPos = player->pos;
+		
+		if (player->IsOnShell())
+		{
+			defeatMethod = Enemy::DF_DIVED;
+			rotate = true;
+			modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+		}
+		else if (JumpedOnByPlayer(cylClsn, *player))
+		{
+			player->Bounce(0x28000_f);
+			Sound::Play(3, 0xe0, camSpacePos);
+			defeatMethod = Enemy::DF_SQUASHED;
+			scale.x = scale.y = scale.z = 0x1000_f;
+		}
+		else if (player->isVanishLuigi)
+				return;
+		else if (state == 0)
+		{
+			if (type == Type::SMALL)
+			{
+				SmallPoofDust();
+				player->Hurt(pos, 0, hurtSpeed, 1, 0, 1);
+				Kill();
+				Sound::Play(3, 0x110, camSpacePos);
+			}
+			else if ((cylClsn.hitFlags & CylinderClsn::HIT_BY_UNK_22) != 0)
+			{
+				player->Hurt(pos, DAMAGES[type], hurtSpeed, 1, 0, 1);
+				state = 1;
+			}
+			
+			return;
 		}
 	}
 	
 	if (defeatMethod != Enemy::DF_NOT)
-	{
 		ReleaseCap(CAP_OFFSET);
-		KillByAttack(*player, wmClsn);
-		
-		if (rotate)
-			ang.y = motionAng.y + 0x8000;
-	}
 	
-	//Whew! What a long function!
+	KillByAttack(*player, wmClsn);
+	
+	if (rotate)
+		ang.y = motionAng.y + 0x8000;
+	
+	if (type == Type::GOOMBOSS_GOOMBA)
+	{
+		if ((hitFlags & 0x40) != 0 || (hitFlags & 0x380) != 0)
+			horzSpeed += horzSpeed;
+		
+		if ((hitFlags & 0x400) != 0)
+			horzSpeed += 0x20;
+	}
 }
 
 void Goomba::KillIfIntoxicated()
