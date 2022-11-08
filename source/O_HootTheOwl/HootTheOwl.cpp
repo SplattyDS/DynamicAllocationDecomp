@@ -1,4 +1,3 @@
-#include "../SM64DS_2.h"
 #include "HootTheOwl.h"
 
 extern "C"
