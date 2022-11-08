@@ -3,7 +3,7 @@
 *.sav
 *.bin
 *.bak
-*.dylib
+*.dylb
 *mangler/*.*
 *symbol_tester/*.*
 *build/*.*

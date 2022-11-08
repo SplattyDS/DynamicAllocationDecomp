@@ -48,8 +48,7 @@ export LD      := $(PREFIX)ld
 #---------------------------------------------------------------------------------
 TARGET   := newcode
 BUILD    := build
-SOURCES  := source/E_Goomba libfat_source
-# SOURCES  := source/E_Goomboss libfat_source
+SOURCES  := source/O_HootTheOwl libfat_source
 # SOURCES  := symbol_tester libfat_source
 # SOURCES  := mangler libfat_source
 INCLUDES := include

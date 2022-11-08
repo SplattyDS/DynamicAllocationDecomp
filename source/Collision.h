@@ -206,8 +206,8 @@ struct MeshColliderBase // vtable at 0x02099388
 	void (*afterClsnCallback)
 	(
 		MeshColliderBase& clsn,
-		Actor*            clsnActor,
-		Actor*            otherActor
+		Actor&            clsnActor,
+		Actor&            otherActor
 	);
 	
 	MeshColliderBase();
