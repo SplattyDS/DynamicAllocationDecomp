@@ -48,7 +48,7 @@ export LD      := $(PREFIX)ld
 #---------------------------------------------------------------------------------
 TARGET   := newcode
 BUILD    := build
-SOURCES  := source/E_Wiggler libfat_source
+SOURCES  := source/E_KingBobOmb libfat_source
 # SOURCES  := symbol_tester libfat_source
 # SOURCES  := mangler libfat_source
 INCLUDES := include

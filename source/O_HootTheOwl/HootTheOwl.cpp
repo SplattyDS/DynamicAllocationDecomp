@@ -1013,7 +1013,6 @@ FUN_0213642c:
 
 asm(R"(
 FUN_02136478:
-	mov r11, r11
 	push    { r4, r14 }
 	mov     r4, r0
 	add     r0, r4, #0x100
