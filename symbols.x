@@ -660,6 +660,7 @@ UnloadSilverStarAndNumber                                                       
 LoadSilverStarAndNumber                                                           = 0x020e71a8;
 LinkSilverStarAndStarMarker                                                       = 0x020e71d4;
 
+VTable_Platform                                                                   = 0x0210ae38;
 _ZN8PlatformD2Ev                                                                  = 0x020ee42c;
 _ZN8PlatformD0Ev                                                                  = 0x020ee464;
 _ZN8Platform14KillByMegaCharER6Player                                             = 0x020ee4b0;
