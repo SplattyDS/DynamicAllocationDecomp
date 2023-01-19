@@ -1,4 +1,5 @@
-#include "SpikeBomb.h"
+#include "SM64DS_2.h"
+#include "Actors/SpikeBomb.h"
 
 extern "C"
 {
@@ -34,11 +35,11 @@ SpawnInfo SpikeBomb::spawnData =
 	&FUN_02118cbc,
 	0x011c,
 	0x0093,
-	0x00000002,
-	0x00000000_f,
-	0x00190000_f,
-	0x05dc0000_f,
-	0x00000000_f,
+	Actor::NO_RENDER_IF_OFF_SCREEN,
+	0._f,
+	400._f,
+	24000._f,
+	0._f,
 };
 
 asm(".global FUN_02118544");
@@ -87,7 +88,7 @@ FUN_02118438:
 	ldr     r1, =VTable_SpikeBomb
 	add     r0, r4, #0x124
 	str     r1, [r4]
-	bl      _ZN19CylinderClsnWithPosD1Ev
+	bl      _ZN25MovingCylinderClsnWithPosD1Ev
 	add     r0, r4, #0x0d4
 	bl      _ZN5ModelD1Ev
 	mov     r0, r4
@@ -104,7 +105,7 @@ FUN_02118470:
 	ldr     r1, =VTable_SpikeBomb
 	add     r0, r4, #0x124
 	str     r1, [r4]
-	bl      _ZN19CylinderClsnWithPosD1Ev
+	bl      _ZN25MovingCylinderClsnWithPosD1Ev
 	add     r0, r4, #0x0d4
 	bl      _ZN5ModelD1Ev
 	mov     r0, r4
@@ -267,7 +268,7 @@ FUN_02118690:
 	mov     r2, #0x1
 	mov     r1, r1, asr #0x3
 	and     r1, r1, #0x0ff
-	bl      0x02016a9c
+	bl      _ZN9ModelBase12ApplyOpacityEj
 	pop     { r4, r14 }
 	bx      r14
 .ltorg)");
@@ -606,7 +607,7 @@ FUN_02118b2c:
 	str     r3, [r13]
 	str     r2, [r13, #0x4]
 	str     r3, [r13, #0x8]
-	bl      _ZN19CylinderClsnWithPos21SetPosRelativeToActorERK7Vector3
+	bl      _ZN25MovingCylinderClsnWithPos21SetPosRelativeToActorERK7Vector3
 	add     r0, r4, #0x124
 	bl      _ZN12CylinderClsn6UpdateEv
 	mov     r0, #0x1
@@ -626,7 +627,7 @@ FUN_02118bb4:
 	add     r0, r4, #0x0d4
 	mov     r2, #0x1
 	mvn     r3, #0x0
-	bl      _ZN9ModelBase7SetFileEPcii
+	bl      _ZN9ModelBase7SetFileEP8BMD_Fileii
 	mov     r12, #0x0
 	mov     r3, #0x96000
 	rsb     r0, r3, #0x0
@@ -641,7 +642,7 @@ FUN_02118bb4:
 	mov     r1, r4
 	add     r0, r4, #0x124
 	str     r12, [r13, #0x8]
-	bl      _ZN19CylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
+	bl      _ZN25MovingCylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
 	mov     r0, #0x1000
 	str     r0, [r4, #0x80]
 	str     r0, [r4, #0x84]
@@ -695,7 +696,7 @@ FUN_02118cbc:
 	str     r1, [r4]
 	bl      _ZN5ModelC1Ev
 	add     r0, r4, #0x124
-	bl      _ZN19CylinderClsnWithPosC1Ev
+	bl      _ZN25MovingCylinderClsnWithPosC1Ev
 LAB_02118cec:
 	mov     r0, r4
 	pop     { r4, r14 }

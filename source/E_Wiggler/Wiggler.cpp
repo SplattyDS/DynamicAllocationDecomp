@@ -1,4 +1,5 @@
-#include "Wiggler.h"
+#include "SM64DS_2.h"
+#include "Actors/Wiggler.h"
 
 extern "C"
 {
@@ -36,11 +37,16 @@ extern "C"
 	// 0x0203d73c
 	
 	u16 MESSAGE_IDS[4] = { 0xc6, 0xc7, 0xc8, 0xc9 }; // 0x02113820
+	
 	u32 PARTICLE_IDS[3] = { Particle::PTL_WET, Particle::PTL_STEAM_TRAIN_LESS, Particle::PTL_STEAM_TRAIN }; // 0x02113828
-	Fix12i UNK_021138c4[5] = { 0_f, 0x57b2b_f, 0x858c9_f, 0x7afaf_f, 0x81a98_f }; // 0x021138c4
-	Fix12i CYLINDER_CLSN_RADIUS[5] = { 0x4399a_f, 0x3e666_f, 0x4b666_f, 0x3e666_f, 0x4b666_f }; // 0x021138d8
+	
+	Fix12i UNK_021138c4[5] = { 0._f, 87.698_f, 133.5491_f, 122.9802_f, 129.6621_f }; // 0x021138c4
+	
+	Fix12i CYLINDER_CLSN_RADIUS[5] = { 67.6_f, 62.4_f, 75.4_f, 62.4_f, 75.4_f }; // 0x021138d8
+	
 	u8 UNK_0211433c[5] = { 0x5e, 0x40, 0x22, 0x2e, 0x44 }; // 0x0211433c (the last byte is merged with a string?)
-	Fix12i UNK_02114488[4] = { 0x10000_f, 0x14000_f, 0x18000_f, 0x4000_f }; // 0x02114488
+	
+	Fix12i UNK_02114488[4] = { 16._f, 20._f, 24._f, 4._f }; // 0x02114488
 	
 	// remove these in decomp and use the SharedFilePtr arrays instead
 	SharedFilePtr* MODEL_FILE_PTRS[5] = // 0x02113838
@@ -146,11 +152,11 @@ SpawnInfo Wiggler::spawnData =
 	&FUN_021136a4,
 	0x00f8,
 	0x006a,
-	0x00000006,
-	0x00100000_f,
-	0x00800000_f,
-	0x01000000_f,
-	0x01000000_f,
+	Actor::NO_RENDER_IF_OFF_SCREEN | Actor::UNK_02,
+	256._f,
+	2048._f,
+	4096._f,
+	4096._f,
 };
 
 asm(R"(
@@ -199,13 +205,13 @@ FUN_021111a0:
 	str     r2, [r4]
 	bl      _ZN12WithMeshClsnD1Ev
 	ldr     r0, =#0x5b8
-	ldr     r3, =_ZN19CylinderClsnWithPosD1Ev
+	ldr     r3, =_ZN25MovingCylinderClsnWithPosD1Ev
 	add     r0, r4, r0
 	mov     r1, #0x5
 	mov     r2, #0x40
 	bl      0x0207328c
 	ldr     r0, =#0x478
-	ldr     r3, =_ZN19CylinderClsnWithPosD1Ev
+	ldr     r3, =_ZN25MovingCylinderClsnWithPosD1Ev
 	add     r0, r4, r0
 	mov     r1, #0x5
 	mov     r2, #0x40
@@ -259,13 +265,13 @@ FUN_021112b0:
 	str     r2, [r4]
 	bl      _ZN12WithMeshClsnD1Ev
 	ldr     r0, =#0x5b8
-	ldr     r3, =_ZN19CylinderClsnWithPosD1Ev
+	ldr     r3, =_ZN25MovingCylinderClsnWithPosD1Ev
 	add     r0, r4, r0
 	mov     r1, #0x5
 	mov     r2, #0x40
 	bl      0x0207328c
 	ldr     r0, =#0x478
-	ldr     r3, =_ZN19CylinderClsnWithPosD1Ev
+	ldr     r3, =_ZN25MovingCylinderClsnWithPosD1Ev
 	add     r0, r4, r0
 	mov     r1, #0x5
 	mov     r2, #0x40
@@ -337,7 +343,7 @@ LAB_02111400:
 	ldr     r1, [r1, #0x4]
 	mov     r2, r5
 	mov     r3, r4
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 LAB_0211142c:
 	add     r9, r9, #0x1
 	cmp     r9, #0x5
@@ -361,7 +367,7 @@ LAB_02111458:
 	ldr     r1, [r1, #0x4]
 	mov     r2, r5
 	mov     r3, r9
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 LAB_02111484:
 	add     r8, r8, #0x1
 	cmp     r8, #0x5
@@ -417,7 +423,7 @@ FUN_02111520:
 	ldr     r1, [r1, #0x4]
 	mov     r2, #0x40000000
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	mov     r1, #0x0
 	ldr     r0, =WALK_START_ANIM_FILE_PTRS
 	str     r1, [r13]
@@ -426,7 +432,7 @@ FUN_02111520:
 	ldr     r1, [r1, #0x4]
 	mov     r2, #0x40000000
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	add     r13, r13, #0x8
 	pop     { r4, r14 }
 	bx      r14
@@ -484,7 +490,7 @@ LAB_02111608:
 	ldr     r1, [r1, #0x4]
 	mov     r2, r5
 	mov     r3, r4
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 LAB_02111634:
 	add     r9, r9, #0x1
 	cmp     r9, #0x5
@@ -507,7 +513,7 @@ LAB_0211166c:
 	ldr     r1, [r1, #0x4]
 	mov     r2, r6
 	mov     r3, r4
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	add     r8, r8, #0x1
 	cmp     r8, #0x5
 	add     r7, r7, #0x64
@@ -562,7 +568,7 @@ FUN_02111720:
 	ldr     r1, [r1, #0x4]
 	mov     r2, #0x40000000
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	mov     r1, #0x0
 	ldr     r0, =WALK_END_ANIM_FILE_PTRS
 	str     r1, [r13]
@@ -571,7 +577,7 @@ FUN_02111720:
 	ldr     r1, [r1, #0x4]
 	mov     r2, #0x40000000
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	add     r13, r13, #0x8
 	pop     { r4, r14 }
 	bx      r14
@@ -691,7 +697,7 @@ LAB_02111900:
 	mov     r0, r10
 	add     r1, r10, r1
 	add     r3, r10, #0x5c
-	bl      _ZN5Actor19UntrackAndSpawnStarEjjRK7Vector3j
+	bl      _ZN5Actor19UntrackAndSpawnStarERajRK7Vector3j
 	bl      _ZN5Sound22StopLoadedMusic_Layer3Ev
 	mov     r0, r10
 	mov     r1, #0x3
@@ -762,7 +768,7 @@ LAB_02111a28:
 	ldr     r1, [r1, #0x4]
 	mov     r2, r6
 	mov     r3, r4
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	add     r8, r8, #0x1
 	cmp     r8, #0x5
 	add     r7, r7, #0x64
@@ -875,7 +881,7 @@ LAB_02111bd8:
 	ldr     r1, [r1, #0x4]
 	mov     r2, r5
 	mov     r3, r4
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	add     r0, r10, r9, lsl #0x6
 	add     r1, r0, #0x490
 	ldr     r0, [r1]
@@ -1066,7 +1072,7 @@ LAB_02111e94:
 	ldr     r1, [r1, #0x4]
 	mov     r2, r5
 	mov     r3, r4
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 LAB_02111ec0:
 	add     r9, r9, #0x1
 	cmp     r9, #0x5
@@ -1090,7 +1096,7 @@ LAB_02111eec:
 	ldr     r1, [r1, #0x4]
 	mov     r2, r5
 	mov     r3, r9
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 LAB_02111f18:
 	add     r8, r8, #0x1
 	cmp     r8, #0x5
@@ -1183,7 +1189,7 @@ LAB_02112030:
 	ldr     r1, [r1, #0x4]
 	mov     r2, #0x40000000
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	mov     r1, #0x0
 	ldr     r0, =WALK_START_ANIM_FILE_PTRS
 	str     r1, [r13]
@@ -1192,7 +1198,7 @@ LAB_02112030:
 	ldr     r1, [r1, #0x4]
 	mov     r2, #0x40000000
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	add     r13, r13, #0x8
 	pop     { r4, r14 }
 	bx      r14
@@ -1218,7 +1224,7 @@ FUN_021120ac:
 	ldr     r1, [r1, #0x4]
 	mov     r2, #0x40000000
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	mov     r1, #0x0
 	ldr     r0, =WALK_END_ANIM_FILE_PTRS
 	str     r1, [r13]
@@ -1227,7 +1233,7 @@ FUN_021120ac:
 	ldr     r1, [r1, #0x4]
 	mov     r2, #0x40000000
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 LAB_0211211c:
 	add     r0, r10, #0x110
 	add     r7, r0, #0x0c8
@@ -1248,7 +1254,7 @@ LAB_0211213c:
 	ldr     r1, [r1, #0x4]
 	mov     r2, r5
 	mov     r3, r4
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 LAB_02112168:
 	add     r9, r9, #0x1
 	cmp     r9, #0x5
@@ -1271,7 +1277,7 @@ LAB_021121a0:
 	ldr     r1, [r1, #0x4]
 	mov     r2, r6
 	mov     r3, r4
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	add     r8, r8, #0x1
 	cmp     r8, #0x5
 	add     r7, r7, #0x64
@@ -2458,7 +2464,7 @@ LAB_021132e0:
 	ldr     r1, [r1, #0x4]
 	ldr     r3, [r13, #0x30]
 	mov     r0, r8
-	bl      _ZN9ModelBase7SetFileEPcii
+	bl      _ZN9ModelBase7SetFileEP8BMD_Fileii
 	ldr     r0, [r13, #0x34]
 	ldr     r2, [r13, #0x34]
 	str     r0, [r13]
@@ -2466,12 +2472,12 @@ LAB_021132e0:
 	mov     r3, r4
 	ldr     r1, [r0, #0x4]
 	mov     r0, r8
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	ldr     r0, [r13, #0x18]
 	ldr     r1, [r13, #0x20]
 	ldr     r0, [r0, #0x4]
 	ldr     r1, [r1, #0x4]
-	bl      _ZN15TextureSequence7PrepareEPcS0_
+	bl      _ZN15TextureSequence7PrepareER8BMD_FileR8BTP_File
 	ldr     r0, [r13, #0x38]
 	ldr     r2, [r13, #0x38]
 	str     r0, [r13]
@@ -2479,7 +2485,7 @@ LAB_021132e0:
 	mov     r3, r4
 	ldr     r1, [r0, #0x4]
 	mov     r0, r11
-	bl      _ZN15TextureSequence7SetFileEPci5Fix12IiEj
+	bl      _ZN15TextureSequence7SetFileER8BTP_Filei5Fix12IiEj
 	ldr     r1, [r13, #0x3c]
 	ldr     r0, [r13, #0x0c]
 	cmp     r9, #0x0
@@ -2560,7 +2566,7 @@ LAB_021134b0:
 	mov     r1, r10
 	mov     r2, r5
 	add     r3, r3, #0x0a000
-	bl      _ZN19CylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
+	bl      _ZN25MovingCylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
 	ldr     r0, [r13, #0x48]
 	ldr     r3, [r13, #0x28]
 	str     r0, [r13]
@@ -2571,7 +2577,7 @@ LAB_021134b0:
 	mov     r2, r5
 	str     r0, [r13, #0x8]
 	ldr     r0, [r13, #0x14]
-	bl      _ZN19CylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
+	bl      _ZN25MovingCylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
 	ldr     r0, [r13, #0x0c]
 	add     r9, r9, #0x1
 	add     r0, r0, #0x14
@@ -2602,7 +2608,7 @@ LAB_021134b0:
 	add     r0, r10, #0x110
 	ldr     r1, [r1, #0x4]
 	mov     r2, #0x0
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	add     r0, r10, #0x110
 	add     r7, r0, #0x64
 	mov     r8, #0x1
@@ -2623,7 +2629,7 @@ LAB_021135bc:
 	ldr     r1, [r1, #0x4]
 	mov     r2, r5
 	mov     r3, r4
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	add     r8, r8, #0x1
 	cmp     r8, #0x5
 	add     r7, r7, #0x64
@@ -2711,21 +2717,21 @@ FUN_021136a4:
 	mov     r2, #0x6
 	ldr     r3, =#0x203d73c
 	bl      0x020733a8
-	ldr     r1, =_ZN19CylinderClsnWithPosD1Ev
+	ldr     r1, =_ZN25MovingCylinderClsnWithPosD1Ev
 	ldr     r0, =#0x478
 	str     r1, [r13]
 	add     r0, r4, r0
 	mov     r1, #0x5
 	mov     r2, #0x40
-	ldr     r3, =_ZN19CylinderClsnWithPosC1Ev
+	ldr     r3, =_ZN25MovingCylinderClsnWithPosC1Ev
 	bl      0x020733a8
-	ldr     r1, =_ZN19CylinderClsnWithPosD1Ev
+	ldr     r1, =_ZN25MovingCylinderClsnWithPosD1Ev
 	ldr     r0, =#0x5b8
 	str     r1, [r13]
 	add     r0, r4, r0
 	mov     r1, #0x5
 	mov     r2, #0x40
-	ldr     r3, =_ZN19CylinderClsnWithPosC1Ev
+	ldr     r3, =_ZN25MovingCylinderClsnWithPosC1Ev
 	bl      0x020733a8
 	ldr     r0, =#0x708
 	add     r0, r4, r0

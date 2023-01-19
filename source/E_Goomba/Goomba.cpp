@@ -1,40 +1,57 @@
-#include "Goomba.h"
-#include "../E_Goomboss/Goomboss.h"
+#include "SM64DS_2.h"
+#include "Actors/Goomba.h"
+#include "Actors/Goomboss.h"
 
 namespace
 {
 	using StateFuncPtr = void(Goomba::*)();
 
-	const char materialName[] = "kuribo_all";
-	char aliveMatVals[] = {0x1f, 0x10, 0x00, 0x00};
-	MaterialProperties aliveMatProps =
+	char materialName[] = "kuribo_all";
+	u8 aliveMatVals[] = {0x1f, 0x10, 0x00, 0x00};
+	BMA_File::MaterialProperties aliveMatProps =
 	{
-		(s16)0xffff, 0,
+		0xffff, 0,
 		&materialName[0],
-		0x01, 0x00, 0x0000,    0x01, 0x00, 0x0000,    0x01, 0x00, 0x0000, 
-		0x01, 0x00, 0x0001,    0x01, 0x00, 0x0001,    0x01, 0x00, 0x0001,  
-		0x01, 0x00, 0x0002,    0x01, 0x00, 0x0002,    0x01, 0x00, 0x0002, 
-		0x01, 0x00, 0x0002,    0x01, 0x00, 0x0002,    0x01, 0x00, 0x0002, 
-		0x01, 0x00, 0x0000, 
+		{ 0x01, 0x00, 0x0000 },
+		{ 0x01, 0x00, 0x0000 },
+		{ 0x01, 0x00, 0x0000 },
+		{ 0x01, 0x00, 0x0001 },
+		{ 0x01, 0x00, 0x0001 },
+		{ 0x01, 0x00, 0x0001 },  
+		{ 0x01, 0x00, 0x0002 },
+		{ 0x01, 0x00, 0x0002 },
+		{ 0x01, 0x00, 0x0002 }, 
+		{ 0x01, 0x00, 0x0002 },
+		{ 0x01, 0x00, 0x0002 },
+		{ 0x01, 0x00, 0x0002 }, 
+		{ 0x01, 0x00, 0x0000 }, 
 	};
-	MaterialDef aliveMat = {0x0002, 0x0000, &aliveMatVals[0], 1, &aliveMatProps};
+	BMA_File aliveMat = {0x0002, 0x0000, &aliveMatVals[0], 1, &aliveMatProps};
 
-	char regurgMatVals[] = {0x00, 0x03, 0x0c, 0x16, 0x1f, 0x1f, 0x1f, 0x1f,
+	u8 regurgMatVals[] = {0x00, 0x03, 0x0c, 0x16, 0x1f, 0x1f, 0x1f, 0x1f,
 							0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f,
 							0x1f, 0x10, 0x00, 0x00};
-	MaterialProperties regurgMatProps =
+	BMA_File::MaterialProperties regurgMatProps =
 	{
-		(s16)0xffff, 0,
+		0xffff, 0,
 		&materialName[0],
-		0x01, 0x01, 0x0000,    0x01, 0x00, 0x0004,    0x01, 0x00, 0x0004,
-		0x01, 0x00, 0x0011,    0x01, 0x00, 0x0011,    0x01, 0x00, 0x0011, 
-		0x01, 0x00, 0x0000,    0x01, 0x00, 0x0000,    0x01, 0x00, 0x0000,
-		0x01, 0x00, 0x0000,    0x01, 0x00, 0x0000,    0x01, 0x00, 0x0000,
-		0x01, 0x00, 0x0004, 
+		{ 0x01, 0x01, 0x0000 },
+		{ 0x01, 0x00, 0x0004 },
+		{ 0x01, 0x00, 0x0004 },
+		{ 0x01, 0x00, 0x0011 },
+		{ 0x01, 0x00, 0x0011 },
+		{ 0x01, 0x00, 0x0011 }, 
+		{ 0x01, 0x00, 0x0000 },
+		{ 0x01, 0x00, 0x0000 },
+		{ 0x01, 0x00, 0x0000 },
+		{ 0x01, 0x00, 0x0000 },
+		{ 0x01, 0x00, 0x0000 },
+		{ 0x01, 0x00, 0x0000 },
+		{ 0x01, 0x00, 0x0004 }, 
 	};
-	MaterialDef regurgMat = {0x0011, 0x0000, &regurgMatVals[0], 1, &regurgMatProps};
-
-	const StateFuncPtr stateFuncs[] =
+	BMA_File regurgMat = {0x0011, 0x0000, &regurgMatVals[0], 1, &regurgMatProps};
+	
+	constexpr StateFuncPtr stateFuncs[] =
 	{
 		&Goomba::State0,
 		&Goomba::State1,
@@ -42,57 +59,78 @@ namespace
 		&Goomba::State3,
 		&Goomba::State4
 	};
-
-	const Fix12i SCALES[]          = { 0x00000555_f,  0x00001000_f,  0x00002555_f,  0x00001000_f}; // 0x02130258
-	const Fix12i HORZ_CLSN_SIZES[] = { 0x00028000_f,  0x00064000_f,  0x000e0000_f,  0x00064000_f}; // 0x02130208
-	const Fix12i VERT_ACCELS[]     = {-0x00000aaa_f, -0x00002000_f, -0x00005aaa_f, -0x00002000_f}; // 0x02130238
-	const Fix12i WALK_SPEEDS[]     = { 0x00000aaa_f,  0x00002000_f,  0x00004aaa_f,  0x00006000_f}; // 0x02130228
-	const Fix12i RUN_SPEEDS[]      = { 0x0000a800_f,  0x00015000_f,  0x00015000_f,  0x00015000_f}; // 0x02130268
-	const Fix12i JUMP_SPEEDS[]     = { 0x00008000_f,  0x00010000_f,  0x00020000_f,  0x00010000_f}; // 0x02130248
-	const u32 DAMAGES[] = { 0, 1, 2, 1 };	// 0x02130204
-	const u32 DYING_SOUND_IDS[] = {0x00000110, 0x000000d6, 0x00000111};
 	
-	const Vector3 CAP_OFFSET = {0x00000_f, 0x6c000_f, 0x00000_f};
+	constexpr Fix12i SCALES[]          = { 0.3333_f,    1._f,  2.3333_f,    1._f}; // 0x02130258
+	constexpr Fix12i HORZ_CLSN_SIZES[] = {    40._f,  100._f,    224._f,  100._f}; // 0x02130208
+	constexpr Fix12i VERT_ACCELS[]     = {-0.6666_f,   -2._f, -5.6666_f,   -2._f}; // 0x02130238
+	constexpr Fix12i WALK_SPEEDS[]     = { 0.6666_f,    2._f,  4.6666_f,    6._f}; // 0x02130228
+	constexpr Fix12i RUN_SPEEDS[]      = {   10.5_f,   21._f,     21._f,   21._f}; // 0x02130268
+	constexpr Fix12i JUMP_SPEEDS[]     = {     8._f,   16._f,     32._f,   16._f}; // 0x02130248
+	constexpr u32 DAMAGES[] = { 0, 1, 2, 1 };	// 0x02130204
+	
+	constexpr SoundIDs DYING_SOUNDS[] =
+	{
+		"NCS_SE_SCT_SKB_DOWN"sfx,
+		"NCS_SE_SCT_KRB_DOWN"sfx,
+		"NCS_SE_SCT_LKB_DOWN"sfx,
+		"NCS_SE_SCT_KRB_DOWN"sfx,
+	};
+	
+	constexpr Vector3 CAP_OFFSET = { 0._f, 108._f, 0._f };
+	
+	constexpr u32 CYL_CLSN_VULNERABLE_FLAGS =
+		CylinderClsn::HIT_BY_SPIN_OR_GROUND_POUND |
+		CylinderClsn::HIT_BY_PUNCH |
+		CylinderClsn::HIT_BY_KICK |
+		CylinderClsn::HIT_BY_BREAKDANCE |
+		CylinderClsn::HIT_BY_SLIDE_KICK |
+		CylinderClsn::HIT_BY_DIVE |
+		CylinderClsn::HIT_BY_UNK_11 |
+		CylinderClsn::HIT_BY_EGG |
+		CylinderClsn::HIT_BY_EXPLOSION |
+		CylinderClsn::HIT_BY_YOSHI_TONGUE |
+		CylinderClsn::HIT_BY_REGURG_GOOMBA |
+		CylinderClsn::HIT_BY_FIRE |
+		CylinderClsn::HIT_BY_ENEMY |
+		CylinderClsn::HIT_BY_INTERACT_WITH_PLAYER;
 }
+
+SpawnInfo Goomba::spawnData[NUM_SIZES]
+{
+	{
+		[]() -> ActorBase* { return new Goomba; },
+		0x00c9,
+		0x0019,
+		Actor::NO_RENDER_IF_OFF_SCREEN | Actor::UNK_02 | Actor::AIMABLE_BY_EGG,
+		50._f,
+		70._f,
+		1700._f,
+		2048._f,
+	},
+	{
+		[]() -> ActorBase* { return new Goomba; },
+		0x00c8,
+		0x0018,
+		Actor::NO_RENDER_IF_OFF_SCREEN | Actor::UNK_02 | Actor::AIMABLE_BY_EGG,
+		50._f,
+		70._f,
+		4096._f,
+		4096._f,
+	},
+	{
+		[]() -> ActorBase* { return new Goomba; },
+		0x00ca,
+		0x001a,
+		Actor::NO_RENDER_IF_OFF_SCREEN | Actor::UNK_02 | Actor::AIMABLE_BY_EGG,
+		100._f,
+		200._f,
+		4096._f,
+		4096._f,
+	},
+};
 
 GloballySharedFilePtr Goomba::modelFile;
 GloballySharedFilePtr Goomba::animFiles[NUM_ANIMS];
-
-SpawnInfo Goomba::spawnData =
-{
-	[]() -> ActorBase* { return new Goomba; },
-	0x00c8,
-	0x0018,
-	0x10000006,
-	0x00032000_f,
-	0x00046000_f,
-	0x01000000_f,
-	0x01000000_f
-};
-
-SpawnInfo Goomba::spawnDataSmall =
-{
-	[]() -> ActorBase* { return new Goomba; },
-	0x00c9,
-	0x0019,
-	0x10000006,
-	0x00032000_f,
-	0x00046000_f,
-	0x006a4000_f,
-	0x00800000_f
-};
-
-SpawnInfo Goomba::spawnDataLarge =
-{
-	[]() -> ActorBase* { return new Goomba; },
-	0x00ca,
-	0x001a,
-	0x10000006,
-	0x00064000_f,
-	0x000c8000_f,
-	0x01000000_f,
-	0x01000000_f
-};
 
 s32 Goomba::InitResources()
 {
@@ -108,32 +146,32 @@ s32 Goomba::InitResources()
 		LoadSilverStarAndNumber();
 	}
 		
-	Model::LoadFile(modelFile.Get());
+	Model::LoadFile(modelFile);
 	for(s32 i = 0; i < NUM_ANIMS; ++i)
-		Animation::LoadFile(animFiles[i].Get());
+		Animation::LoadFile(animFiles[i]);
 		
-	AddCap((u8)(param1 & 0xf));
+	AddCap((u8)param1 & 0xf);
 	if (capID < 6)
 		param1 &= 0xf0ff; // invalid cap, so never spawn cap
 	
 	if (!DestroyIfCapNotNeeded())
 		return 0;
 	
-	if (!modelAnim.SetFile(modelFile.GetFilePtr(), 1, -1))
+	if (!modelAnim.SetFile(modelFile.BMD(), 1, -1))
 		return 0;
 	
 	if (!shadow.InitCylinder())
 		return 0;
 	
-	MaterialChanger::Prepare(modelFile.GetFilePtr(), aliveMat);
-	materialChg.SetMaterial(aliveMat, Animation::NO_LOOP, 0x1000_f, 0);
+	MaterialChanger::Prepare(*modelFile.BMD(), aliveMat);
+	materialChg.SetFile(aliveMat, Animation::NO_LOOP, 1._f, 0);
 	coinType = Enemy::CN_YELLOW;
 
-	if (actorID == 0xc9)
+	if (actorID == GOOMBA_SMALL_ACTOR_ID)
 	{
 		type = Type::SMALL;
 	}
-	else if (actorID == 0xc8)
+	else if (actorID == GOOMBA_ACTOR_ID)
 	{
 		if (param1 - 0xeeeeU < 2)
 		{
@@ -153,21 +191,19 @@ s32 Goomba::InitResources()
 		LoadBlueCoinModel();
 	}
 	
-	scale.x = SCALES[type];
-	scale.y = SCALES[type];
-	scale.z = SCALES[type];
+	scale.x = scale.y = scale.z = SCALES[type];
 	
-	cylClsn.Init(this, scale.x * 0x3c, HORZ_CLSN_SIZES[type], 0x00200000, 0x00a6efe0);
+	cylClsn.Init(this, scale.x * 60, HORZ_CLSN_SIZES[type], CylinderClsn::ENEMY, CYL_CLSN_VULNERABLE_FLAGS);
 	if (type == Type::BIG)
-		cylClsn.vulnerableFlags &= ~CylinderClsn::HIT_BY_UNK_16;
+		cylClsn.vulnerableFlags &= ~CylinderClsn::HIT_BY_KNOCK_PLAYER_DIZZY;
 		
-	wmClsn.Init(this, scale.x * 0x3c, scale.x * 0x3c, nullptr, nullptr);
+	wmClsn.Init(this, scale.x * 60, scale.x * 60, nullptr, nullptr);
 	wmClsn.SetFlag_2();
 	
 	flags468 = state = 0;
 	defeatMethod = Enemy::DF_NOT;
 	player = nullptr;
-	distToPlayer = 0x7fffffff_f;
+	distToPlayer = Fix12i::max;
 	
 	targetDir = motionAng.y;
 	targetSpeed = WALK_SPEEDS[type];
@@ -179,9 +215,9 @@ s32 Goomba::InitResources()
 	originalPos = pos;
 	
 	vertAccel = VERT_ACCELS[type];
-	termVel = -0x32000_f;
+	termVel = -50._f;
 	
-	modelAnim.SetAnim(animFiles[WALK].GetFilePtr(), Animation::LOOP, 0x1000_f, 0);
+	modelAnim.SetAnim(animFiles[WALK].BCA(), Animation::LOOP, 1._f, 0);
 	
 	recoverFlags = 0;
 	
@@ -225,7 +261,7 @@ s32 Goomba::Behavior()
 	}
 	
 	if (type != Type::GOOMBOSS_GOOMBA && state != 3 && !isBeingSpit 
-		&& defeatMethod == Enemy::DF_NOT && IsTooFarAwayFromPlayer(0x5dc000_f) != 0)
+		&& defeatMethod == Enemy::DF_NOT && IsTooFarAwayFromPlayer(1500._f) != 0)
 	{
 		Unk_02005d94();
 		return 1;
@@ -256,14 +292,14 @@ s32 Goomba::Behavior()
 	if (UpdateIfEaten())
 		return 1;
 	
-	if (state < 3 && (type != Type::GOOMBOSS_GOOMBA || modelAnim.file != animFiles[WAIT].GetFilePtr()))
+	if (state < 3 && (type != Type::GOOMBOSS_GOOMBA || modelAnim.file != animFiles[WAIT].BCA()))
 	{
 		modelAnim.speed = horzSpeed / (2 * scale.x);
-		if (modelAnim.speed > 0x3000_f)
-			modelAnim.speed = 0x3000_f;
+		if (modelAnim.speed > 3._f)
+			modelAnim.speed = 3._f;
 	}
 	else
-		modelAnim.speed = 0x1000_f;
+		modelAnim.speed = 1._f;
 	
 	MakeVanishLuigiWork(cylClsn);
 	
@@ -289,7 +325,7 @@ s32 Goomba::Behavior()
 	
 	if (defeatMethod == Enemy::DF_NOT && state != 2 && state != 3)
 	{
-		if (!IsGoingOffCliff(wmClsn, 0x32000_f, 0x1f49, 0, 1, 0x32000_f))
+		if (!IsGoingOffCliff(wmClsn, 50._f, 43.9948_deg, false, true, 50._f))
 			noCliffPos = pos;
 		else
 			pos = noCliffPos;
@@ -309,15 +345,15 @@ s32 Goomba::Behavior()
 	
 	if (state == 0 && (flags & OFF_SCREEN) == 0)
 	{
-		if (pos.Dist(backupPos) < 0xa000_f)
+		if (pos.Dist(backupPos) < 10._f)
 		{
 			++stuckInSpotTimer;
-			if (capID < 6 && stuckInSpotTimer == 0x1e)
+			if (capID < 6 && stuckInSpotTimer == 30)
 			{
 				Jump();
-				noChargeTimer = 0x5a;
+				noChargeTimer = 90;
 			}
-			if (0x12b < stuckInSpotTimer && noChargeTimer == 0)
+			if (stuckInSpotTimer >= 300 && noChargeTimer == 0)
 			{
 				SpawnStarIfNecessary();
 				SpawnCoin();
@@ -372,10 +408,11 @@ u32 Goomba::OnYoshiTryEat()
 {
 	switch (actorID)
 	{
-		case 0xc8:
+		case GOOMBA_ACTOR_ID:
 			return Actor::YE_KEEP_AND_CAN_MAKE_EGG;
-		case 0xc9:
+		case GOOMBA_SMALL_ACTOR_ID:
 			return Actor::YE_SWALLOW;
+		// case GOOMBA_LARGE_ACTOR_ID:
 		default:
 			return Actor::YE_DONT_EAT;
 	}
@@ -390,16 +427,16 @@ void Goomba::OnTurnIntoEgg(Player& player)
 	}
 	
 	u32 res = OnYoshiTryEat();
-	if (res == 6)
+	if (res == Actor::YE_KEEP_AND_CAN_MAKE_EGG)
 	{
-		if (player.Unk_020bea94() == 0)
+		if (!player.IsCollectingCap())
 		{
 			bool starUntracked = false;
 			if (spawnStar == 1)
 			{
 				UntrackStar(starID);
 				starUntracked = true;
-				Actor::Spawn(0xb4, 0x50, originalPos, nullptr, areaID, -1);
+				Actor::Spawn(STAR_MARKER_ACTOR_ID, 0x0050, originalPos, nullptr, areaID, -1);
 				param1 &= 0xff0f;
 			}
 			else if (spawnStar == 2 && starID_VS == VS_STAR_SPAWN_ORDER[NUM_VS_STARS_COLLECTED])
@@ -408,6 +445,7 @@ void Goomba::OnTurnIntoEgg(Player& player)
 				spawnStar = 3;
 				starUntracked = true;
 			}
+			
 			player.RegisterEggCoinCount(coinType == 1, starUntracked, false);
 		}
 		else
@@ -418,26 +456,36 @@ void Goomba::OnTurnIntoEgg(Player& player)
 			SpawnStarIfNecessary();
 		}
 	}
-	else if (res == 4 && coinType == 1)
+	else if (res == Actor::YE_SWALLOW && coinType == 1)
 	{
 		Unk_0201061c(player, 1, 0);
 	}
 	
 	Kill();
-	return;
 }
 
 Fix12i Goomba::OnAimedAtWithEgg()
 {
 	switch (actorID)
 	{
-		case 0xc8:
-			return 0x41000_f;
-		case 0xc9:
-			return 0x14000_f;
+		case GOOMBA_ACTOR_ID:
+			return 65._f;
+		case GOOMBA_SMALL_ACTOR_ID:
+			return 20._f;
+		// case GOOMBA_LARGE_ACTOR_ID:
 		default:
-			return 0x96000_f;
+			return 150._f;
 	}
+}
+
+BMA_File* Goomba::vGetRegurgMaterialDef()
+{
+	return &regurgMat;
+}
+
+void Goomba::vSetOriginalPos(Vector3& newOriginalPos)
+{
+	SetOriginalPos(newOriginalPos);
 }
 
 void Goomba::UpdateMaxDist()
@@ -451,12 +499,12 @@ void Goomba::UpdateMaxDist()
 	}
 	else if (capID >= 6 && stuckInSpotTimer > 10)
 	{
-		maxDist = 0x1f4000_f - ((stuckInSpotTimer - 10) * 0x14000_f);
-		if (maxDist < 0xa000_f)
-			maxDist = 0xa000_f;
+		maxDist = 500._f - ((stuckInSpotTimer - 10) * 20._f);
+		if (maxDist < 10._f)
+			maxDist = 10._f;
 	}
 	else
-		maxDist = 0x1f4000_f;
+		maxDist = 500._f;
 }
 
 void Goomba::TrackVsStarIfNecessary()
@@ -478,8 +526,8 @@ void Goomba::SpawnStarIfNecessary()
 	if (spawnStar == 1)
 	{
 		UntrackStar(starID);
-		Actor* starMarker = Actor::Spawn(0xb4, 0x50, originalPos, nullptr, areaID, -1);
-		Actor* silverStar = Actor::Spawn(0xb3, 0x10, pos,         nullptr, areaID, -1);
+		Actor* starMarker = Actor::Spawn(STAR_MARKER_ACTOR_ID, 0x0050, originalPos, nullptr, areaID, -1);
+		Actor* silverStar = Actor::Spawn(SILVER_STAR_ACTOR_ID, 0x0010, pos,         nullptr, areaID, -1);
 		
 		if (starMarker && silverStar)
 		{
@@ -495,8 +543,8 @@ void Goomba::SpawnStarIfNecessary()
 		if (starID_VS == VS_STAR_SPAWN_ORDER[NUM_VS_STARS_COLLECTED])
 		{
 			UntrackStar(starID);
-			Actor::Spawn(0xb4, starID_VS | 0x30, pos, nullptr, areaID, -1);
-			Actor::Spawn(0xb3, starID_VS | 0x30, pos, nullptr, areaID, -1);
+			Actor::Spawn(STAR_MARKER_ACTOR_ID, starID_VS | 0x0030, pos, nullptr, areaID, -1);
+			Actor::Spawn(SILVER_STAR_ACTOR_ID, starID_VS | 0x0030, pos, nullptr, areaID, -1);
 			spawnStar = 3;
 			param1 &= 0xff0f;
 			SpawnSoundObj(1);
@@ -509,19 +557,19 @@ bool Goomba::UpdateIfDying()
 	bool dying = UpdateDeath(wmClsn);
 	if (defeatMethod - 2 <= 4)
 	{
-		modelAnim.speed = 0x1000_f;
+		modelAnim.speed = 1._f;
 		modelAnim.Advance();
 		
 		if (type == Type::GOOMBOSS_GOOMBA)
 		{
 			Actor* actor;
-			if (cylClsn.otherObjID != 0 && (actor = Actor::FindWithID(cylClsn.otherObjID), actor != nullptr) && actor->actorID == 0xc6)
+			if (cylClsn.otherObjID != 0 && (actor = Actor::FindWithID(cylClsn.otherObjID), actor != nullptr) && actor->actorID == GOOMBOSS_ACTOR_ID)
 			{
 				// the actor is Goomboss
 				SpawnCoin();
 				Kill();
 			}
-			cylClsn.flags1 |= 0x20000;
+			cylClsn.flags1 |= CylinderClsn::SPIT_ACTOR;
 			cylClsn.Clear();
 			cylClsn.Update();
 		}
@@ -529,7 +577,7 @@ bool Goomba::UpdateIfDying()
 	
 	if (dying)
 	{
-		Sound::Play(3, DYING_SOUND_IDS[type], camSpacePos);
+		Sound::Play(DYING_SOUNDS[type], camSpacePos);
 		SpawnStarIfNecessary();
 		if (capID < 6 || spawnStar == 2)
 		{
@@ -545,14 +593,14 @@ bool Goomba::UpdateIfDying()
 
 void Goomba::RenderRegurgGoombaHelpless(Player* player)
 {
-	regurgTimer = 0x3c;
-	speed.y = (0xd000_f - vertAccel) / floorNormal.y;
+	regurgTimer = 60;
+	speed.y = (13._f - vertAccel) / floorNormal.y;
 	horzSpeed = -speed.HorzLen();
 	
 	if (player)
 		motionAng.y = pos.HorzAngle(player->pos);
 	
-	modelAnim.SetAnim(animFiles[UNBALANCE].GetFilePtr(), Animation::LOOP, 0x1000_f, 0);
+	modelAnim.SetAnim(animFiles[UNBALANCE].BCA(), Animation::LOOP, 1._f, 0);
 	state = 3;
 	isBeingSpit = false;
 	
@@ -563,7 +611,7 @@ void Goomba::RenderRegurgGoombaHelpless(Player* player)
 	
 	regurgBounceCount = 0;
 	
-	Sound::Play(3, 0x13a, camSpacePos);
+	Sound::Play("NCS_SE_SCT_KRB_BOUND"sfx, camSpacePos);
 }
 
 void Goomba::KillIfTouchedBadSurface()
@@ -571,7 +619,7 @@ void Goomba::KillIfTouchedBadSurface()
 	if (wmClsn.IsOnGround())
 		return;
 	
-	if (wmClsn.sphere.floorResult.surfaceInfo.clps.isWater)
+	if (wmClsn.sphere.floorResult.surfaceInfo.splc.isWater)
 	{
 		SpawnStarIfNecessary();
 		SpawnCoin();
@@ -583,12 +631,12 @@ void Goomba::KillIfTouchedBadSurface()
 	}
 	
 	ClsnResult& clsnRes = wmClsn.sphere.floorResult;
-	CLPS& clps = clsnRes.surfaceInfo.clps;
-	u32 behav = clps.behaviorID;
+	SPLC& splc = clsnRes.surfaceInfo.splc;
+	u32 behav = splc.behaviorID;
 	
-	if ((clps.textureID == CLPS::TX_SAND &&
-		(behav == CLPS::BH_LOW_JUMPS || behav == CLPS::BH_SLOW_SHALLOW_QUICKSAND || behav == CLPS::BH_SLOW_DEEP_QUICKSAND || behav == CLPS::BH_INSTANT_QUICKSAND)) ||
-		behav == CLPS::BH_WIND_GUST || behav == CLPS::BH_LAVA || behav == CLPS::BH_DEATH || behav == CLPS::BH_DEATH_2)
+	if ((splc.textureID == SPLC::TX_SAND &&
+		(behav == SPLC::BH_LOW_JUMPS || behav == SPLC::BH_SLOW_SHALLOW_QUICKSAND || behav == SPLC::BH_SLOW_DEEP_QUICKSAND || behav == SPLC::BH_INSTANT_QUICKSAND)) ||
+		behav == SPLC::BH_WIND_GUST || behav == SPLC::BH_LAVA || behav == SPLC::BH_DEATH || behav == SPLC::BH_DEATH_2)
 	{
 		SpawnCoin();
 		Kill();
@@ -608,26 +656,27 @@ void Goomba::UpdateModelTransform()
 	modelAnim.mat4x3 = modelAnim.mat4x3.RotationY(ang.y);
 	modelAnim.mat4x3.c3 = pos >> 3;
 	
-	if (!(flags & 0x40000))
-		DropShadowRadHeight(shadow, modelAnim.mat4x3, scale.x * 0x50, wmClsn.IsOnGround() ? 0x1e000_f : 0x96000_f, 0xf);
+	if (!(flags & Actor::IN_YOSHI_MOUTH))
+		DropShadowRadHeight(shadow, modelAnim.mat4x3, scale.x * 80, wmClsn.IsOnGround() ? 30._f : 150._f, 0xf);
 	
-	UpdateCapPos(Vector3{Sin(ang.y) * 0xa, CAP_OFFSET.y, Cos(ang.y) * 0xa}, ang);
+	UpdateCapPos(Vector3{ Sin(ang.y) * 10, CAP_OFFSET.y, Cos(ang.y) * 10 }, ang);
 }
 
 bool Goomba::UpdateIfEaten()
 {
-	u32 eatState = UpdateYoshiEat(wmClsn); //r4
-	if (eatState == 0) return false;
+	u32 eatState = UpdateYoshiEat(wmClsn);
+	if (eatState == 0)
+		return false;
 	else if (eatState == 1)
 	{
 		if (GetCapEatenOffIt(CAP_OFFSET))
 		{
 			RenderRegurgGoombaHelpless(eater);
-			horzSpeed = -0xf000_f;
-			speed.y = 0x14000_f;
-			MaterialChanger::Prepare(modelFile.GetFilePtr(), regurgMat);
-			materialChg.SetMaterial(regurgMat, Animation::NO_LOOP, 0x1000_f, 0);
-			materialChg.currFrame = 0x0_f;
+			horzSpeed = -15._f;
+			speed.y = 20._f;
+			MaterialChanger::Prepare(*modelFile.BMD(), regurgMat);
+			materialChg.SetFile(regurgMat, Animation::NO_LOOP, 1._f, 0);
+			materialChg.currFrame = 0._f;
 			cylClsn.Clear();
 			return false;
 		}
@@ -643,7 +692,7 @@ bool Goomba::UpdateIfEaten()
 		Actor* other = Actor::FindWithID(cylClsn.otherObjID); // guaranteed to exist by condition
 		defeatMethod = Enemy::DF_HIT_REGURG;
 		KillByAttack(*other, wmClsn);
-		modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+		modelAnim.SetAnim(animFiles[ROLLING].BCA(), Animation::NO_LOOP, 1._f, 0);
 		cylClsn.flags1 |= CylinderClsn::DISABLED;
 		return true;
 	}
@@ -657,13 +706,13 @@ bool Goomba::UpdateIfEaten()
 			cylClsn.Update();
 		else if (spitTimer == 5)
 		{
-			modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
-			motionAng.y += 0x8000;
+			modelAnim.SetAnim(animFiles[ROLLING].BCA(), Animation::NO_LOOP, 1._f, 0);
+			motionAng.y += 180._deg;
 			horzSpeed = -horzSpeed;
 			
-			MaterialChanger::Prepare(modelFile.GetFilePtr(), regurgMat);
-			materialChg.SetMaterial(regurgMat, Animation::NO_LOOP, 0x1000_f, 0);
-			materialChg.currFrame = 0x0_f;
+			MaterialChanger::Prepare(*modelFile.BMD(), regurgMat);
+			materialChg.SetFile(regurgMat, Animation::NO_LOOP, 1._f, 0);
+			materialChg.currFrame = 0._f;
 		}
 		
 		modelAnim.Advance();
@@ -683,13 +732,13 @@ void Goomba::PlayMovingSound()
 		return;
 		
 	u32 currFrameInt = (s32)modelAnim.currFrame;
-	if ((modelAnim.file == animFiles[WALK].GetFilePtr() && (currFrameInt <= 4 || (currFrameInt >= 12 && currFrameInt <= 16))) ||
-		(modelAnim.file == animFiles[RUN ].GetFilePtr() && (currFrameInt <= 3 || (currFrameInt >= 10 && currFrameInt <= 13))))
+	if ((modelAnim.file == animFiles[WALK].BCA() && (currFrameInt <= 4 || (currFrameInt >= 12 && currFrameInt <= 16))) ||
+		(modelAnim.file == animFiles[RUN ].BCA() && (currFrameInt <= 3 || (currFrameInt >= 10 && currFrameInt <= 13))))
 	{
 		if (flags468 & 2)
 			return;
 			
-		Sound::Play(3, 0xd0, camSpacePos);
+		Sound::Play("NCS_SE_SCT_KRB_WALK"sfx, camSpacePos);
 		flags468 |= 2;	
 	}
 	else
@@ -708,14 +757,15 @@ void Goomba::GetHurtOrHurtPlayer()
 	hitFlags = cylClsn.hitFlags;
 	bool rotate = false;
 	
-	Fix12i hurtSpeed = 0xc000_f;
+	Fix12i hurtSpeed = 12._f;
 	if (type == Type::GOOMBOSS_GOOMBA)
-		hurtSpeed = 0x5000_f;
+		hurtSpeed = 5._f;
 	
-	if (actorID != SMALL_GOOMBA_ACTOR_ID && (hitFlags & CylinderClsn::HIT_BY_MEGA_CHAR) != 0)
+	if (actorID != GOOMBA_SMALL_ACTOR_ID && (hitFlags & CylinderClsn::HIT_BY_MEGA_CHAR) != 0)
 	{
 		ReleaseCap(CAP_OFFSET);
-		KillByInvincibleChar(Vector3_16{(s16)(actorID == GOOMBA_ACTOR_ID ? -0x2000 : -0x1800), 0, 0}, *player);
+		s16 angX = actorID == GOOMBA_ACTOR_ID ? -45._deg : -33.75_deg;
+		KillByInvincibleChar(Vector3_16{ angX, 0._deg, 0._deg }, *player);
 		return;
 	}
 	else if ((hitFlags & CylinderClsn::HIT_BY_SPIN_OR_GROUND_POUND) != 0)
@@ -724,26 +774,26 @@ void Goomba::GetHurtOrHurtPlayer()
 		if (type == Type::BIG)
 			coinType = Enemy::CN_BLUE;
 		
-		scale.x = scale.y = scale.z = 0x1000_f;
-		Sound::Play(3, 0xe0, camSpacePos);
+		scale.x = scale.y = scale.z = 1._f;
+		Sound::Play("NCS_SE_SCT_KRB_SMASH"sfx, camSpacePos);
 	}
 	else if ((hitFlags & CylinderClsn::HIT_BY_FIRE) != 0)
 	{
 		rotate = true;
-		modelAnim.SetAnim(animFiles[STRETCH].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+		modelAnim.SetAnim(animFiles[STRETCH].BCA(), Animation::NO_LOOP, 1._f, 0);
 		defeatMethod = Enemy::DF_BURNED;
 	}
-	else if (actorID == LARGE_GOOMBA_ACTOR_ID)
+	else if (actorID == GOOMBA_LARGE_ACTOR_ID)
 	{
 		if (player->actorID == PLAYER_ACTOR_ID)
 		{
 			// Vector3 playerPos = player->pos;
 			if (JumpedOnByPlayer(cylClsn, *player))
 			{
-				player->Bounce(0x28000_f);
-				Sound::Play(3, 0xe0, camSpacePos);
+				player->Bounce(40._f);
+				Sound::Play("NCS_SE_SCT_KRB_SMASH"sfx, camSpacePos);
 				defeatMethod = Enemy::DF_SQUASHED;
-				scale.x = scale.y = scale.z = 0x1000_f;
+				scale.x = scale.y = scale.z = 1._f;
 			}
 			else
 			{
@@ -753,7 +803,7 @@ void Goomba::GetHurtOrHurtPlayer()
 				if (state == 0)
 				{
 					state = 1;
-					if ((cylClsn.hitFlags & CylinderClsn::HIT_BY_UNK_22) != 0)
+					if ((cylClsn.hitFlags & CylinderClsn::HIT_BY_PLAYER) != 0)
 						player->Hurt(pos, DAMAGES[type], hurtSpeed, 1, 0, 1);
 					
 					return;
@@ -764,37 +814,37 @@ void Goomba::GetHurtOrHurtPlayer()
 	else if ((hitFlags & CylinderClsn::HIT_BY_REGURG_GOOMBA) != 0)
 	{
 		defeatMethod = Enemy::DF_HIT_REGURG;
-		modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+		modelAnim.SetAnim(animFiles[ROLLING].BCA(), Animation::NO_LOOP, 1._f, 0);
 		cylClsn.flags1 |= CylinderClsn::DISABLED;
 	}
 	else if ((hitFlags & (CylinderClsn::HIT_BY_DIVE | CylinderClsn::HIT_BY_EGG)) != 0)
 	{
 		defeatMethod = Enemy::DF_DIVED;
-		modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+		modelAnim.SetAnim(animFiles[ROLLING].BCA(), Animation::NO_LOOP, 1._f, 0);
 	}
-	else if ((hitFlags & CylinderClsn::HIT_BY_UNK_14) != 0)
+	else if ((hitFlags & CylinderClsn::HIT_BY_EXPLOSION) != 0)
 	{
 		defeatMethod = Enemy::DF_UNK_6;
-		modelAnim.SetAnim(animFiles[STRETCH].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+		modelAnim.SetAnim(animFiles[STRETCH].BCA(), Animation::NO_LOOP, 1._f, 0);
 	}
 	else if ((hitFlags & (CylinderClsn::HIT_BY_KICK | CylinderClsn::HIT_BY_BREAKDANCE | CylinderClsn::HIT_BY_SLIDE_KICK)) != 0)
 	{
 		rotate = true;
-		modelAnim.SetAnim(animFiles[STRETCH].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+		modelAnim.SetAnim(animFiles[STRETCH].BCA(), Animation::NO_LOOP, 1._f, 0);
 		defeatMethod = Enemy::DF_KICKED;
 	}
 	else if ((hitFlags & CylinderClsn::HIT_BY_PUNCH) != 0)
 	{
-		modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+		modelAnim.SetAnim(animFiles[ROLLING].BCA(), Animation::NO_LOOP, 1._f, 0);
 		defeatMethod = Enemy::DF_PUNCHED;
 		rotate = true;
 	}
-	else if ((hitFlags & CylinderClsn::HIT_BY_UNK_15) == 0 && player->actorID == PLAYER_ACTOR_ID)
+	else if ((hitFlags & CylinderClsn::HIT_BY_YOSHI_TONGUE) == 0 && player->actorID == PLAYER_ACTOR_ID)
 	{
 		if (player->isMetalWario)
 		{
 			ReleaseCap(CAP_OFFSET);
-			KillByInvincibleChar(Vector3_16{0x2000, 0, 0}, *player);
+			KillByInvincibleChar(Vector3_16{ 45._deg, 0._deg, 0._deg }, *player);
 			return;
 		}
 		
@@ -804,17 +854,17 @@ void Goomba::GetHurtOrHurtPlayer()
 		{
 			defeatMethod = Enemy::DF_DIVED;
 			rotate = true;
-			modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+			modelAnim.SetAnim(animFiles[ROLLING].BCA(), Animation::NO_LOOP, 1._f, 0);
 		}
 		else if (JumpedOnByPlayer(cylClsn, *player))
 		{
-			player->Bounce(0x28000_f);
-			Sound::Play(3, 0xe0, camSpacePos);
+			player->Bounce(40._f);
+			Sound::Play("NCS_SE_SCT_KRB_SMASH"sfx, camSpacePos);
 			defeatMethod = Enemy::DF_SQUASHED;
-			scale.x = scale.y = scale.z = 0x1000_f;
+			scale.x = scale.y = scale.z = 1._f;
 		}
 		else if (player->isVanishLuigi)
-				return;
+			return;
 		else if (state == 0)
 		{
 			if (type == Type::SMALL)
@@ -822,9 +872,9 @@ void Goomba::GetHurtOrHurtPlayer()
 				SmallPoofDust();
 				player->Hurt(pos, 0, hurtSpeed, 1, 0, 1);
 				Kill();
-				Sound::Play(3, 0x110, camSpacePos);
+				Sound::Play("NCS_SE_SCT_SKB_DOWN"sfx, camSpacePos);
 			}
-			else if ((cylClsn.hitFlags & CylinderClsn::HIT_BY_UNK_22) != 0)
+			else if ((cylClsn.hitFlags & CylinderClsn::HIT_BY_PLAYER) != 0)
 			{
 				player->Hurt(pos, DAMAGES[type], hurtSpeed, 1, 0, 1);
 				state = 1;
@@ -840,15 +890,18 @@ void Goomba::GetHurtOrHurtPlayer()
 	KillByAttack(*player, wmClsn);
 	
 	if (rotate)
-		ang.y = motionAng.y + 0x8000;
+		ang.y = motionAng.y + 180._deg;
 	
 	if (type == Type::GOOMBOSS_GOOMBA)
 	{
-		if ((hitFlags & 0x40) != 0 || (hitFlags & 0x380) != 0)
-			horzSpeed += horzSpeed;
+		if ((hitFlags & CylinderClsn::HIT_BY_PUNCH) != 0 ||
+			(hitFlags & (CylinderClsn::HIT_BY_KICK | CylinderClsn::HIT_BY_BREAKDANCE | CylinderClsn::HIT_BY_SLIDE_KICK)) != 0)
+		{
+			horzSpeed += player->horzSpeed;
+		}
 		
-		if ((hitFlags & 0x400) != 0)
-			horzSpeed += 0x20;
+		if ((hitFlags & CylinderClsn::HIT_BY_DIVE) != 0)
+			horzSpeed += 0.0078_f;
 	}
 }
 
@@ -862,9 +915,9 @@ void Goomba::KillIfIntoxicated()
 	raycaster.SetFlag_8();
 	raycaster.ClearFlag_1();
 	
-	raycaster.SetObjAndPos(Vector3{pos.x, pos.y + 0x190000_f, pos.z}, this);
-	if (raycaster.DetectClsn() && raycaster.result.surfaceInfo.clps.isToxic &&
-	   raycaster.clsnPosY != 0x80000000_f && pos.y < raycaster.clsnPosY)
+	raycaster.SetObjAndPos(Vector3{ pos.x, pos.y + 400._f, pos.z }, this);
+	if (raycaster.DetectClsn() && raycaster.result.surfaceInfo.splc.isToxic &&
+	   raycaster.clsnPosY != Fix12i::min && pos.y < raycaster.clsnPosY)
 	{
 		SpawnCoin();
 		PoofDust();
@@ -877,9 +930,9 @@ void Goomba::KillIfIntoxicated()
 
 void Goomba::Jump()
 {
-	Sound::Play(3, 0x118, camSpacePos);
+	Sound::Play("NCS_SE_SCT_KRB_JUMP"sfx, camSpacePos);
 	state = 2;
-	horzSpeed = 0x0_f;
+	horzSpeed = 0._f;
 	speed.y = JUMP_SPEEDS[type];
 	wmClsn.ClearGroundFlag();
 	cylClsn.flags1 |= 4;
@@ -892,7 +945,7 @@ void Goomba::UpdateTargetDirAndDist(Fix12i theMaxDist)
 	if (pos.Dist(originalPos) > theMaxDist || !player)
 	{
 		targetDir = pos.HorzAngle(originalPos);
-		distToPlayer = 0x061a8000_f;
+		distToPlayer = 25000._f;
 		return;
 	}
 	
@@ -900,7 +953,7 @@ void Goomba::UpdateTargetDirAndDist(Fix12i theMaxDist)
 	
 	if (originalPos.Dist(playerPos) > theMaxDist)
 	{
-		distToPlayer = 0x061a8000_f;
+		distToPlayer = 25000._f;
 		return;
 	}
 	
@@ -925,13 +978,13 @@ void Goomba::State0()
 
 void Goomba::State0_NormalGoomba()
 {
-	s16 angAccel = 0x200;
-	UpdateTargetDirAndDist(0x3e8000_f);
-	horzSpeed.ApproachLinear(targetSpeed, 0x500_f);
+	s16 angAccel = 2.8125_deg;
+	UpdateTargetDirAndDist(1000._f);
+	horzSpeed.ApproachLinear(targetSpeed, 0.3125_f);
 	
 	if (flags468 & 1)
 	{
-		if (ApproachLinear(motionAng.y, targetDir, 0x200) != 0)
+		if (ApproachLinear(motionAng.y, targetDir, angAccel) != 0)
 			flags468 &= ~1;
 		
 		return;
@@ -939,10 +992,10 @@ void Goomba::State0_NormalGoomba()
 	
 	if (noChargeTimer == 0)
 	{
-		if (0x61a7fff_f < distToPlayer)
+		if (distToPlayer > 25000._f)
 		{
 			targetDir2 = targetDir;
-			movementTimer = 0x19;
+			movementTimer = 25;
 		}
 		
 		bool redirected = AngleAwayFromWallOrCliff(wmClsn, targetDir2);
@@ -950,15 +1003,15 @@ void Goomba::State0_NormalGoomba()
 		
 		if (!redirected)
 		{
-			if (distToPlayer < maxDist || (capID < 6 && 0x3e8000_f < pos.Dist(originalPos)))
+			if (distToPlayer < maxDist || (capID < 6 && pos.Dist(originalPos) > 1000._f))
 			{
 				if (WALK_SPEEDS[type] < targetSpeed)
-					modelAnim.SetAnim(animFiles[RUN].GetFilePtr(), Animation::LOOP, 0x1000_f, 0);
+					modelAnim.SetAnim(animFiles[RUN].BCA(), Animation::LOOP, 1._f, 0);
 				else
 					Jump();
 				
 				if (capID < 6 && noChargeTimer == 0)
-					angAccel = 0x600;
+					angAccel = 8.4375_deg;
 				
 				targetDir2 = targetDir;
 				targetSpeed = RUN_SPEEDS[type];
@@ -966,19 +1019,19 @@ void Goomba::State0_NormalGoomba()
 			else
 			{
 				targetSpeed = WALK_SPEEDS[type];
-				modelAnim.SetAnim(animFiles[WALK].GetFilePtr(), Animation::LOOP, 0x1000_f, 0);
+				modelAnim.SetAnim(animFiles[WALK].BCA(), Animation::LOOP, 1._f, 0);
 				
 				if (movementTimer == 0)
 				{
-					if (((RandomIntInternal(&RNG_STATE) >> 0x10) & 3) == 0)
+					if (((RandomInt() >> 16) & 3) == 0)
 					{
-						targetDir2 = RandomIntInternal(&RNG_STATE);
+						targetDir2 = RandomInt();
 						Jump();
 					}
 					else
 					{
-						RandomIntInternal(&RNG_STATE);
-						targetDir2 = motionAng.y + RandomIntInternal(&RNG_STATE);
+						RandomInt();
+						targetDir2 = motionAng.y + RandomInt();
 						movementTimer = 100;
 					}
 				}
@@ -989,7 +1042,7 @@ void Goomba::State0_NormalGoomba()
 			}
 		}
 		
-		if (5 < capID && (0x1e < stuckInSpotTimer))
+		if (capID > 5 && stuckInSpotTimer > 30)
 			noChargeTimer = stuckInSpotTimer;
 		
 		ApproachLinear(motionAng.y, targetDir2, angAccel);
@@ -999,20 +1052,20 @@ void Goomba::State0_NormalGoomba()
 	if (capID < 6)
 	{
 		if (WALK_SPEEDS[type] < targetSpeed)
-			modelAnim.SetAnim(animFiles[RUN].GetFilePtr(), Animation::LOOP, 0x1000_f, 0);
+			modelAnim.SetAnim(animFiles[RUN].BCA(), Animation::LOOP, 1._f, 0);
 		else
 			Jump();
 		
-		angAccel = 0x800;
+		angAccel = 11.25_deg;
 		targetSpeed = RUN_SPEEDS[type];
 		targetDir2 = targetDir;
 	}
 	else
 	{
 		targetSpeed = WALK_SPEEDS[type];
-		modelAnim.SetAnim(animFiles[WALK].GetFilePtr(), Animation::LOOP, 0x1000_f, 0);
+		modelAnim.SetAnim(animFiles[WALK].BCA(), Animation::LOOP, 1._f, 0);
 		targetDir2 = pos.HorzAngle(originalPos);
-		angAccel = 0x400;
+		angAccel = 5.625_deg;
 	}
 	
 	ApproachLinear(motionAng.y, targetDir2, angAccel);
@@ -1029,20 +1082,20 @@ void Goomba::State0_GoombossGoomba()
 	}
 	
 	if (targetSpeed == 0)
-		modelAnim.SetAnim(animFiles[WAIT].GetFilePtr(), Animation::LOOP, 0x1000_f, 0);
+		modelAnim.SetAnim(animFiles[WAIT].BCA(), Animation::LOOP, 1._f, 0);
 	else
-		modelAnim.SetAnim(animFiles[WALK].GetFilePtr(), Animation::LOOP, 0x1000_f, 0);
+		modelAnim.SetAnim(animFiles[WALK].BCA(), Animation::LOOP, 1._f, 0);
 	
 	Vector3 relativeSpawnPos;
 	goomboss->vGetGoombaSpawnPos(relativeSpawnPos, goombaID);
 	
-	if (ApproachAngle(motionAng.y, targetDir, 4, 0x1000, 0x400) == 0 && wmClsn.IsOnGround() != 0)
+	if (ApproachAngle(motionAng.y, targetDir, 4, 4096, 1024) == 0 && wmClsn.IsOnGround() != 0)
 	{
 		//pos.HorzDist(originalPos); // ???
-		if ((goomboss->state == 4 && goomboss->walkSpeed == 0) || DecIfAbove0_Byte(followGoombossTimer) != 0 || 0x3e8000_f < pos.HorzDist(relativeSpawnPos))
+		if ((goomboss->state == 4 && goomboss->walkSpeed == 0) || DecIfAbove0_Byte(followGoombossTimer) != 0 || 1000._f < pos.HorzDist(relativeSpawnPos))
 		{
 			bool isRunning = true;
-			if ((DistToCPlayer() < 0x3e8000_f) && AngleDiff(HorzAngleToCPlayer(), ang.y) < 0x3000)
+			if ((DistToCPlayer() < 1000._f) && AngleDiff(HorzAngleToCPlayer(), ang.y) < 67.5_deg)
 			{
 				targetDir2 = targetDir = HorzAngleToCPlayer();
 				
@@ -1053,7 +1106,7 @@ void Goomba::State0_GoombossGoomba()
 				if (!isRunning)
 				{
 					speed.y = JUMP_SPEEDS[type];
-					horzSpeed = 0;
+					horzSpeed = 0._f;
 					targetSpeed = RUN_SPEEDS[type];
 				}
 				
@@ -1064,45 +1117,45 @@ void Goomba::State0_GoombossGoomba()
 			{
 				if (DecIfAbove0_Short(changeDirTimer) == 0)
 				{
-					u32 random = RandomIntInternal(&RNG_STATE);
-					changeDirTimer = (u16)((random >> 0xb) + 0x1e);
+					u32 random = RandomInt();
+					changeDirTimer = (u16)((random >> 11) + 30);
 					targetDir = (u16)random;
 				}
-				targetSpeed = 0;
+				targetSpeed = 0._f;
 			}
 			
 			if (isRunning)
-				horzSpeed.ApproachLinear(targetSpeed, 0x500_f);
+				horzSpeed.ApproachLinear(targetSpeed, 0.3125_f);
 		}
 		else
 		{
 			targetDir = pos.HorzAngle(relativeSpawnPos);
 			
-			if (pos.HorzDist(relativeSpawnPos) < 0x32000_f)
+			if (pos.HorzDist(relativeSpawnPos) < 50._f)
 				targetSpeed = goomboss->goombaTargetSpeed >> 2;
-			else if (pos.HorzDist(relativeSpawnPos) < 0x64000_f)
+			else if (pos.HorzDist(relativeSpawnPos) < 100._f)
 				targetSpeed = goomboss->goombaTargetSpeed >> 1;
-			else if (pos.HorzDist(relativeSpawnPos) < 0x96000_f)
+			else if (pos.HorzDist(relativeSpawnPos) < 150._f)
 				targetSpeed = goomboss->goombaTargetSpeed;
 			else
 				targetSpeed = RUN_SPEEDS[type] + goomboss->goombaTargetSpeed;
 			
-			Math_Function_0203b14c(horzSpeed, targetSpeed, 0x800_f, 0x10000_f, 0x4_f);
+			Math_Function_0203b14c(horzSpeed, targetSpeed, 0.5_f, 16._f, 0.001_f);
 		}
 	}
 	
-	if (pos.y < originalPos.y - 0x3e8000_f)
+	if (pos.y < originalPos.y - 1000._f)
 		MarkForDestruction();
 	
 	if (goomboss->state == 4 && goomboss->walkSpeed == 0)
-		followGoombossTimer = 0x1e;
+		followGoombossTimer = 30;
 }
 
 void Goomba::State1()
 {
 	Jump();
-	if (actorID == 0xca)
-		speed.y *= 0x1800_f;
+	if (actorID == GOOMBA_LARGE_ACTOR_ID)
+		speed.y *= 1.5_f;
 	
 	targetDir2 = targetDir;
 	flags468 &= ~1;
@@ -1125,7 +1178,7 @@ void Goomba::State2()
 		cylClsn.flags1 &= ~4;
 	}
 	else
-		ApproachLinear(motionAng.y, targetDir2, 0x800);
+		ApproachLinear(motionAng.y, targetDir2, 11.25_deg);
 	
 	ang.y = motionAng.y;
 }
@@ -1140,18 +1193,18 @@ void Goomba::State3()
 		
 		flags = recoverFlags;
 		state = 0;
-		modelAnim.SetAnim(animFiles[WALK].GetFilePtr(), Animation::LOOP, 0x1000_f, 0);
+		modelAnim.SetAnim(animFiles[WALK].BCA(), Animation::LOOP, 1._f, 0);
 		targetSpeed = WALK_SPEEDS[type];
 		wmClsn.ClearLimMovFlag();
 		motionAng.y = ang.y;
-		cylClsn.flags1 &= ~0x00020000;
-		MaterialChanger::Prepare(modelFile.GetFilePtr(), aliveMat);
-		materialChg.SetMaterial(aliveMat, Animation::NO_LOOP, 0x1000_f, 0);
-		materialChg.currFrame = 0x0_f;
+		cylClsn.flags1 &= ~CylinderClsn::SPIT_ACTOR;
+		MaterialChanger::Prepare(*modelFile.BMD(), aliveMat);
+		materialChg.SetFile(aliveMat, Animation::NO_LOOP, 1._f, 0);
+		materialChg.currFrame = 0._f;
 		return;
 	}
 	
-	if (regurgTimer < 0x3d && --regurgTimer == 0)
+	if (regurgTimer <= 60 && --regurgTimer == 0)
 	{
 		SpawnStarIfNecessary();
 		SpawnCoin();
@@ -1166,36 +1219,36 @@ void Goomba::State3()
 		if (wmClsn.IsOnGround() != 0)
 		{
 			wmClsn.ClearLimMovFlag();
-			speed.y = horzSpeed = 0x0_f;
+			speed.y = horzSpeed = 0._f;
 			
-			if (0x3c < regurgTimer)
-				regurgTimer = 0x1e;
+			if (regurgTimer > 60)
+				regurgTimer = 30;
 		}
 	}
 	else
 	{
-		if (0x3c < regurgTimer)
-			regurgTimer = 0x1e;
+		if (regurgTimer > 60)
+			regurgTimer = 30;
 		
-		if (Abs(speed.y) <= 0x500_f * regurgTimer)
-			speed.y = regurgTimer * 0x400_f - vertAccel;
+		if (Abs(speed.y) <= 0.3125_f * regurgTimer)
+			speed.y = regurgTimer * 0.25_f - vertAccel;
 		else
-			speed.y = -0x50 * speed.y / (0x64 * floorNormal.y);
+			speed.y = -80 * speed.y / (100 * floorNormal.y);
 		
 		horzSpeed >>= 1;
 		
-		if (Abs(horzSpeed) < 0x5000_f)
+		if (Abs(horzSpeed) < 5._f)
 		{
-			if (horzSpeed < 0_f)
-				horzSpeed = -0x5000_f;
+			if (horzSpeed < 0._f)
+				horzSpeed = -5._f;
 			else
-				horzSpeed = 0x5000_f;
+				horzSpeed = 5._f;
 		}
 		
 		if (regurgBounceCount == 0)
-			Sound::Play(3, 0x13a, camSpacePos);
+			Sound::Play("NCS_SE_SCT_KRB_BOUND"sfx, camSpacePos);
 		else if (regurgBounceCount < 3)
-			Sound::Play(3, 0x13b, camSpacePos);
+			Sound::Play("NCS_SE_SCT_KRB_BOUND_S"sfx, camSpacePos);
 		
 		++regurgBounceCount;
 	}
@@ -1205,7 +1258,7 @@ void Goomba::State3()
 	{
 		defeatMethod = Enemy::DF_HIT_REGURG;
 		KillByAttack(*Actor::FindWithID(cylClsn.otherObjID), wmClsn);
-		modelAnim.SetAnim(animFiles[ROLLING].GetFilePtr(), Animation::NO_LOOP, 0x1000_f, 0);
+		modelAnim.SetAnim(animFiles[ROLLING].BCA(), Animation::NO_LOOP, 1._f, 0);
 		cylClsn.flags1 |= 1;
 	}
 	isBeingSpit = false;
@@ -1215,20 +1268,13 @@ void Goomba::State3()
 
 void Goomba::State4()
 {
-	horzSpeed = 0x0_f;
+	horzSpeed = 0._f;
 	if (changeDirTimer == 0 || --changeDirTimer != 0)
 		return;
 	
 	state = 0;
-	modelAnim.SetAnim(animFiles[WALK].GetFilePtr(), 0, 0x1000_f, 0);
+	modelAnim.SetAnim(animFiles[WALK].BCA(), 0, 1._f, 0);
 }
 
-MaterialDef* Goomba::vGetRegurgMaterialDef()
-{
-	return &regurgMat;
-}
-
-void Goomba::vSetOriginalPos(Vector3& newOriginalPos)
-{
-	SetOriginalPos(newOriginalPos);
-}
+Goomba::Goomba() {}
+Goomba::~Goomba() {}

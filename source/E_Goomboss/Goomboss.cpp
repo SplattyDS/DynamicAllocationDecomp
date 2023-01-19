@@ -1,13 +1,14 @@
-#include "Goomboss.h"
-#include "ExplosionGoomba.h"
+#include "SM64DS_2.h"
+#include "Actors/Goomboss.h"
+#include "Actors/ExplosionGoomba.h"
 
 namespace
 {
-	const char faceMatName[] = "mat_face";  // 0x021123a4
-	const char lEyeMatName[] = "mat_eye_l"; // 0x021123b0
-	const char rEyeMatName[] = "mat_eye_r"; // 0x021123bc
+	char faceMatName[] = "mat_face";
+	char lEyeMatName[] = "mat_eye_l";
+	char rEyeMatName[] = "mat_eye_r";
 	
-	char faceMatVals[] = { // 0x0211194c
+	u8 faceMatVals[] = {
 		// difRed
 		0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x1a, 0x1a, 0x1a, 0x1a, 0x1a,
 		0x1a, 0x1a, 0x1a, 0x1a, 0x1a, 0x1a, 0x1a, 0x1a, 0x1a, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b,
@@ -51,55 +52,48 @@ namespace
 		0x02, 0x02, 0x02, 0x02, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
 		0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 	};
-	MaterialProperties faceMatProps = // 0x02111384
+	BMA_File::MaterialProperties faceMatProps =
 	{
-		(s16)0xffff, 0,
+		0xffff, 0,
 		&faceMatName[0],
-		0x01, true,  0x0000,    0x01, true,  0x005a,    0x01, true,  0x00b4, 
-		0x01, true,  0x010e,    0x01, true,  0x0168,    0x01, true,  0x01c2,  
-		0x01, false, 0x00b0,    0x01, false, 0x00b0,    0x01, false, 0x00b0, 
-		0x01, false, 0x00b0,    0x01, false, 0x00b0,    0x01, false, 0x00b0, 
-		0x01, false, 0x0052, 
+		{ 0x01, true,  0x0000 },
+		{ 0x01, true,  0x005a },
+		{ 0x01, true,  0x00b4 },
+		{ 0x01, true,  0x010e },
+		{ 0x01, true,  0x0168 },
+		{ 0x01, true,  0x01c2 },
+		{ 0x01, false, 0x00b0 },
+		{ 0x01, false, 0x00b0 },
+		{ 0x01, false, 0x00b0 },
+		{ 0x01, false, 0x00b0 },
+		{ 0x01, false, 0x00b0 },
+		{ 0x01, false, 0x00b0 },
+		{ 0x01, false, 0x0052 },
 	};
-	MaterialDef unkMat = {0x005a, 0x0000, &faceMatVals[0], 1, &faceMatProps}; // 0x021123f4
+	BMA_File unkMat = {0x005a, 0x0000, &faceMatVals[0], 1, &faceMatProps};
 	
 	Fix12i texScales[7][1] = 
 	{
-		// 0x021111d8
 		{ 0x1000_f },
-		// 0x021111d0
 		{ 0x1000_f },
-		// 0x021111dc
 		{ 0x1000_f },
-		// 0x021111c8
 		{ 0x1000_f },
-		// 0x021111c0
 		{ 0x1000_f },
-		// 0x021111d4
 		{ 0x1000_f },
-		// 0x021111c4
-		{ 0x1000_f }
+		{ 0x1000_f },
 	};
 	
 	s16 texRots[7][1] =
 	{
-		// 0x021111a4
 		{ 0 },
-		// 0x021111a8
 		{ 0 },
-		// 0x021111b0
 		{ 0 },
-		// 0x021111a0
 		{ 0 },
-		// 0x021111bc
 		{ 0 },
-		// 0x021111b8
 		{ 0 },
-		// 0x021111ac
-		{ 0 }
+		{ 0 },
 	};
 	
-	// 0x02111b68
 	Fix12i texTranss0[] =
 	{
 		 0x00000000_f,
@@ -145,7 +139,6 @@ namespace
 		 0x0000103e_f,  0x0000103e_f,  0x0000103e_f
 	};
 	
-	// 0x021115ec
 	Fix12i texTranss1[] =
 	{
 		 0x00000000_f,
@@ -175,7 +168,6 @@ namespace
 		 0x00001031_f,  0x000010f7_f,  0x0000108c_f,  0x0000103e_f
 	};
 	
-	// 0x02111750
 	Fix12i texTranss2[] =
 	{
 		0x00000000_f,
@@ -215,7 +207,6 @@ namespace
 		 0x0000108c_f,  0x000010cd_f,  0x0000103e_f
 	};
 	
-	// 0x021113c0
 	Fix12i texTranss3[] =
 	{
 		 0x00000000_f,
@@ -227,7 +218,6 @@ namespace
 		 0x00000097_f,  0x000030b6_f,  0x00000097_f
 	};
 	
-	// 0x021114f8
 	Fix12i texTranss4[] =
 	{
 		 0x00000000_f,
@@ -251,7 +241,6 @@ namespace
 		-0x00000030_f,  0x0000104e_f
 	};
 	
-	// 0x02112098
 	Fix12i texTranss5[] =
 	{
 		 0x00000000_f,
@@ -305,7 +294,6 @@ namespace
 		 0x0000102e_f,  0x0000103e_f
 	};
 	
-	// 0x02111404
 	Fix12i texTranss6[] =
 	{
 		 0x00000000_f,
@@ -329,10 +317,9 @@ namespace
 		 0x000010cb_f,  0x0000109d_f
 	};
 	
-	TexSRTAnim texAnims[7][2] =
+	BTA_File::Animation texAnims[7][2] =
 	{
 		{
-			TexSRTAnim // 0x02111314
 			{
 				0xffff,
 				0,
@@ -348,7 +335,6 @@ namespace
 				0x4b, //numTransYs
 				1  //transYOffset
 			},
-			TexSRTAnim // 0x02111330
 			{
 				0xffff,
 				0,
@@ -366,7 +352,6 @@ namespace
 			}
 		},
 		{
-			TexSRTAnim // 0x02111234
 			{
 				0xffff,
 				0,
@@ -382,7 +367,6 @@ namespace
 				0x2c,
 				1
 			},
-			TexSRTAnim // 0x02111250
 			{
 				0xffff,
 				0,
@@ -400,7 +384,6 @@ namespace
 			}
 		},
 		{
-			TexSRTAnim // 0x02111234
 			{
 				0xffff,
 				0,
@@ -416,7 +399,6 @@ namespace
 				0x3f,
 				1
 			},
-			TexSRTAnim // 0x02111234
 			{
 				0xffff,
 				0,
@@ -434,7 +416,6 @@ namespace
 			}
 		},
 		{
-			TexSRTAnim // 0x021112dc
 			{
 				0xffff,
 				0,
@@ -450,7 +431,6 @@ namespace
 				8,
 				1
 			},
-			TexSRTAnim // 0x021112f8
 			{
 				0xffff,
 				0,
@@ -468,7 +448,6 @@ namespace
 			}
 		},
 		{
-			TexSRTAnim // 0x0211126c
 			{
 				0xffff,
 				0,
@@ -484,7 +463,6 @@ namespace
 				0x1e,
 				1
 			},
-			TexSRTAnim // 0x02111288
 			{
 				0xffff,
 				0,
@@ -502,7 +480,6 @@ namespace
 			}
 		},
 		{
-			TexSRTAnim // 0x021111fc
 			{
 				0xffff,
 				0,
@@ -518,7 +495,6 @@ namespace
 				0x5a,
 				1
 			},
-			TexSRTAnim // 0x02111218
 			{
 				0xffff,
 				0,
@@ -536,7 +512,6 @@ namespace
 			}
 		},
 		{
-			TexSRTAnim // 0x0211134c
 			{
 				0xffff,
 				0,
@@ -552,7 +527,6 @@ namespace
 				0x1e,
 				1
 			},
-			TexSRTAnim // 0x02111368
 			{
 				0xffff,
 				0,
@@ -571,27 +545,24 @@ namespace
 		}
 	};
 	
-	TexSRTDef texSRTDefs[] = 
+	BTA_File texSRTDefs[] = 
 	{
-		TexSRTDef // 0x02112404
 		{
 			0x0000004b,
-			&texScales[0][0], // 0x021111d8
-			&texRots[0][0],   // 0x021111a4
-			&texTranss0[0], // 0x02111b68
+			&texScales[0][0],
+			&texRots[0][0],
+			&texTranss0[0],
 			0x00000002,
-			&texAnims[0][0]   // 0x02111314
+			&texAnims[0][0]
 		},
-		TexSRTDef // 0x0211244c
 		{
 			0x0000002c,
-			&texScales[1][0], // 0x021111d0
-			&texRots[1][0],   // 0x021111a8
-			&texTranss1[0], // 0x021115ec
+			&texScales[1][0],
+			&texRots[1][0],
+			&texTranss1[0],
 			0x00000002,
-			&texAnims[1][0]   // 0x02111234
+			&texAnims[1][0]
 		},
-		TexSRTDef // 0x02112494
 		{
 			0x0000003f,
 			&texScales[2][0], // 0x021111dc
@@ -600,7 +571,6 @@ namespace
 			0x00000002,
 			&texAnims[2][0]   // 0x021112a4
 		},
-		TexSRTDef // 0x021124c4
 		{
 			0x00000008,
 			&texScales[3][0], // 0x021111c8
@@ -609,7 +579,6 @@ namespace
 			0x00000002,
 			&texAnims[3][0]   // 0x021112dc
 		},
-		TexSRTDef // 0x02112464
 		{
 			0x0000001e,
 			&texScales[4][0], // 0x021111c0
@@ -618,7 +587,6 @@ namespace
 			0x00000002,
 			&texAnims[4][0]   // 0x0211126c
 		},
-		TexSRTDef // 0x02112434
 		{
 			0x0000005a,
 			&texScales[5][0], // 0x021111d4
@@ -627,7 +595,6 @@ namespace
 			0x00000002,
 			&texAnims[5][0]   // 0x021111fc
 		},
-		TexSRTDef // 0x021124ac
 		{
 			0x0000001e,
 			&texScales[6][0], // 0x021111c4
@@ -638,33 +605,21 @@ namespace
 		}
 	};
 	
-	
-	/*TexSRTDef* texDefArr[] =
-	{
-		&texSRTDefs[0],// 0x02112404
-		&texSRTDefs[0],// 0x0211244c
-		&texSRTDefs[0],// 0x02112494
-		&texSRTDefs[0],// 0x021124c4
-		&texSRTDefs[0],// 0x02112464
-		&texSRTDefs[0],// 0x02112434
-		&texSRTDefs[0] // 0x021124ac
-	};*/
-	
 	GoombossAnim animations[] = // 0x02122f34
 	{
-		GoombossAnim{ Goomboss::animFiles[Goomboss::ANGER],        texSRTDefs[0], Animation::NO_LOOP },
-		GoombossAnim{ Goomboss::animFiles[Goomboss::DAMAGE_BACK],  texSRTDefs[1], Animation::NO_LOOP },
-		GoombossAnim{ Goomboss::animFiles[Goomboss::DAMAGE_FRONT], texSRTDefs[1], Animation::NO_LOOP },
-		GoombossAnim{ Goomboss::animFiles[Goomboss::DOWN_START],   texSRTDefs[4], Animation::NO_LOOP },
-		GoombossAnim{ Goomboss::animFiles[Goomboss::DOWN],         texSRTDefs[3], Animation::LOOP    },
-		GoombossAnim{ Goomboss::animFiles[Goomboss::SERCH_WAIT],   texSRTDefs[5], Animation::LOOP    },
-		GoombossAnim{ Goomboss::animFiles[Goomboss::TURN],         texSRTDefs[6], Animation::NO_LOOP },
-		GoombossAnim{ Goomboss::animFiles[Goomboss::WAIT],         texSRTDefs[6], Animation::LOOP    },
-		GoombossAnim{ Goomboss::animFiles[Goomboss::WALK],         texSRTDefs[6], Animation::LOOP    },
-		GoombossAnim{ Goomboss::animFiles[Goomboss::WALK_END],     texSRTDefs[6], Animation::NO_LOOP },
-		GoombossAnim{ Goomboss::animFiles[Goomboss::WALK_START],   texSRTDefs[6], Animation::NO_LOOP },
-		GoombossAnim{ Goomboss::animFiles[Goomboss::SPAWN],        texSRTDefs[0], Animation::NO_LOOP },
-		GoombossAnim{ Goomboss::animFiles[Goomboss::WAIT],         texSRTDefs[6], Animation::NO_LOOP },
+		{ Goomboss::animFiles[Goomboss::ANGER],        texSRTDefs[0], Animation::NO_LOOP },
+		{ Goomboss::animFiles[Goomboss::DAMAGE_BACK],  texSRTDefs[1], Animation::NO_LOOP },
+		{ Goomboss::animFiles[Goomboss::DAMAGE_FRONT], texSRTDefs[1], Animation::NO_LOOP },
+		{ Goomboss::animFiles[Goomboss::DOWN_START],   texSRTDefs[4], Animation::NO_LOOP },
+		{ Goomboss::animFiles[Goomboss::DOWN],         texSRTDefs[3], Animation::LOOP    },
+		{ Goomboss::animFiles[Goomboss::SERCH_WAIT],   texSRTDefs[5], Animation::LOOP    },
+		{ Goomboss::animFiles[Goomboss::TURN],         texSRTDefs[6], Animation::NO_LOOP },
+		{ Goomboss::animFiles[Goomboss::WAIT],         texSRTDefs[6], Animation::LOOP    },
+		{ Goomboss::animFiles[Goomboss::WALK],         texSRTDefs[6], Animation::LOOP    },
+		{ Goomboss::animFiles[Goomboss::WALK_END],     texSRTDefs[6], Animation::NO_LOOP },
+		{ Goomboss::animFiles[Goomboss::WALK_START],   texSRTDefs[6], Animation::NO_LOOP },
+		{ Goomboss::animFiles[Goomboss::SPAWN],        texSRTDefs[0], Animation::NO_LOOP },
+		{ Goomboss::animFiles[Goomboss::WAIT],         texSRTDefs[6], Animation::NO_LOOP },
 	};
 	
 	struct State
@@ -675,26 +630,47 @@ namespace
 		FuncPtr main;
 	};
 	
-	const State states[]
+	constexpr State states[]
 	{
-		State{ &Goomboss::State0_Talk_Init,	     &Goomboss::State0_Talk_Main },
-		State{ &Goomboss::State1_StopTalk_Init,  &Goomboss::State1_StopTalk_Main },
-		State{ &Goomboss::State2_Spawn_Init,     &Goomboss::State2_Spawn_Main },
-		State{ &Goomboss::State3_Walk_Init,      &Goomboss::State3_Walk_Main },
-		State{ &Goomboss::State4_Wait_Init,      &Goomboss::State4_Wait_Main },
-		State{ &Goomboss::State5_Hurt_Init,      &Goomboss::State5_Hurt_Main },
-		State{ &Goomboss::State6_Grow_Init,      &Goomboss::State6_Grow_Main },
-		State{ &Goomboss::State7_Defeat_Init,    &Goomboss::State7_Defeat_Main },
-		State{ &Goomboss::State8_HitByMega_Init, &Goomboss::State8_HitByMega_Main }
+		{ &Goomboss::State0_Talk_Init,      &Goomboss::State0_Talk_Main },
+		{ &Goomboss::State1_StopTalk_Init,  &Goomboss::State1_StopTalk_Main },
+		{ &Goomboss::State2_Spawn_Init,     &Goomboss::State2_Spawn_Main },
+		{ &Goomboss::State3_Walk_Init,      &Goomboss::State3_Walk_Main },
+		{ &Goomboss::State4_Wait_Init,      &Goomboss::State4_Wait_Main },
+		{ &Goomboss::State5_Hurt_Init,      &Goomboss::State5_Hurt_Main },
+		{ &Goomboss::State6_Grow_Init,      &Goomboss::State6_Grow_Main },
+		{ &Goomboss::State7_Defeat_Init,    &Goomboss::State7_Defeat_Main },
+		{ &Goomboss::State8_HitByMega_Init, &Goomboss::State8_HitByMega_Main }
 	};
 	
-	//const float GOOMBOSS_SCALES[] = { 12288.0f, 9557.0f, 6826.0f, 4096.0f };				// 0x02122e4c (why use floats Nintendo...)
-	const Fix12i GOOMBOSS_SCALES[]        = { 0x3000_f, 0x2555_f, 0x1aaa_f, 0x1000_f };		// same as above, but converted to Fix12i
-	const s16 MATERIAL_CHANGER_FRAMES[]   = { 0x0059,   0x003c,   0x001e,   0x0001 };		// 0x02122e04
-	const s16 MAX_WALK_SPEEDS[]           = { 0x0000,   0x00d0,   0x0080,   0x0050 };		// 0x02122dfc
-	const Fix12i EARTHQUAKE_MAGNITUDES[]  = { 0x0_f, 0x320000_f, 0x258000_f, 0x190000_f};	// 0x0212290c
-	const Fix12i ANIM_SPEED_DENOMINATOR[] = { 0x0_f, 0x0_f,      0x70000_f,  0x0_f};		// 0x0212291c
-	const u8 NUM_GOOMBAS_TO_SPAWN[]       = { 16, 9, 6, 3 };								// 0x02122d80
+	// constexpr float GOOMBOSS_SCALES[] = { 12288.0f, 9557.0f, 6826.0f, 4096.0f }; // why use floats Nintendo...
+	constexpr Fix12i GOOMBOSS_SCALES[]        = { 3._f, 2.3333_f, 1.6666_f, 1._f }; // same as above, but converted to Fix12i
+	
+	constexpr s16 MATERIAL_CHANGER_FRAMES[]   = { 89, 60, 30, 1 };
+	constexpr s16 MAX_WALK_SPEEDS[]           = { 0._deg, 1.1426_deg, 0.7031_deg, 0.4395_deg };
+	
+	constexpr Fix12i EARTHQUAKE_MAGNITUDES[]  = { 0._f, 800._f, 600._f, 400._f};
+	constexpr Fix12i ANIM_SPEED_DENOMINATOR[] = { 0._f,   0._f, 112._f,   0._f};
+	constexpr u8 NUM_GOOMBAS_TO_SPAWN[]       = { 16, 9, 6, 3 };
+	
+	// head, toe_l, toe_r, get used to get the position of cylClsns[1, 2, 3]
+	constexpr s32 CYL_CLSN_TRANSFORM_INDEXES[3] = { 1, 8, 10 };
+	
+	constexpr u32 CYL_CLSN_FLAGS =
+		CylinderClsn::VERTICAL_PUSHBACK_ONLY |
+		CylinderClsn::ENEMY;
+	
+	constexpr u32 CYL_CLSN_VULNERABLE_FLAGS =
+		CylinderClsn::HIT_BY_SPIN_OR_GROUND_POUND |
+		CylinderClsn::HIT_BY_PUNCH |
+		CylinderClsn::HIT_BY_KICK |
+		CylinderClsn::HIT_BY_BREAKDANCE |
+		CylinderClsn::HIT_BY_SLIDE_KICK |
+		CylinderClsn::HIT_BY_DIVE |
+		CylinderClsn::HIT_BY_UNK_11 |
+		CylinderClsn::HIT_BY_EGG |
+		CylinderClsn::HIT_BY_EXPLOSION |
+		CylinderClsn::HIT_BY_REGURG_GOOMBA;
 }
 
 // replace this when the keys have been decompiled
@@ -703,23 +679,23 @@ asm("UnloadKeyModels = 0x021310cc");
 extern "C" void LoadKeyModels(u32 keyID);
 extern "C" void UnloadKeyModels(u32 keyID);
 
-GloballySharedFilePtr Goomboss::modelFile;
-GloballySharedFilePtr Goomboss::texSeqFile;
-GloballySharedFilePtr Goomboss::animFiles[NUM_ANIMS];
-GloballySharedFilePtr Goomboss::goombaModelFile;
-GloballySharedFilePtr Goomboss::goombaAnimFiles[Goomba::NUM_ANIMS];
-
 SpawnInfo Goomboss::spawnData =
 {
 	[]() -> ActorBase* { return new Goomboss; },
 	0x00c6,
 	0x0016,
-	0x34800000,
-	0x00000000_f,
-	0x00100000_f,
-	0x03000000_f,
-	0x03000000_f
+	Actor::UPDATE_WHEN_READING_SIGN | Actor::UPDATE_DURING_STAR_CUTSCENE | Actor::AIMABLE_BY_EGG | Actor::UPDATE_DURING_CUTSCENE,
+	0._f,
+	256._f,
+	12288._f,
+	12288._f,
 };
+
+SharedFilePtr Goomboss::modelFile;
+SharedFilePtr Goomboss::texSeqFile;
+SharedFilePtr Goomboss::animFiles[NUM_ANIMS];
+GloballySharedFilePtr Goomboss::goombaModelFile;
+GloballySharedFilePtr Goomboss::goombaAnimFiles[Goomba::NUM_ANIMS];
 
 s32 Goomboss::InitResources()
 {
@@ -727,17 +703,17 @@ s32 Goomboss::InitResources()
 	
 	LoadKeyModels(2);
 	
-	Model::LoadFile(goombaModelFile.Get());
+	Model::LoadFile(goombaModelFile);
 	
 	for (s32 i = 0; i < Goomba::NUM_ANIMS; i++)
-		Animation::LoadFile(goombaAnimFiles[i].Get());
+		Animation::LoadFile(goombaAnimFiles[i]);
 	
 	for (s32 i = 0; i < NUM_ANIMS; i++)
-		Animation::LoadFile(animFiles[i].Get());
+		Animation::LoadFile(animFiles[i]);
 	
-	TextureSequence::LoadFile(texSeqFile.Get());
-	Model::LoadFile(modelFile.Get());
-	modelAnim.SetFile(modelFile.GetFilePtr(), 1, -1);
+	TextureSequence::LoadFile(texSeqFile);
+	Model::LoadFile(modelFile);
+	modelAnim.SetFile(modelFile.BMD(), 1, -1);
 	
 	for (s32 i = 0; i < 3; i++)
 		shadows[i].InitCylinder();
@@ -745,49 +721,49 @@ s32 Goomboss::InitResources()
 	health = 3;
 	scale.x = scale.y = scale.z = GOOMBOSS_SCALES[health];
 	
-	vertAccel = -0xa000_f;
-	termVel = -0x3c000_f;
+	vertAccel = -10._f;
+	termVel = -60._f;
 	originalPos = pos;
 	
 	for (s32 i = 0; i < 4; i++)
-		cylClsns[i].Init(this, pos, scale.x * 10, scale.y * 10, 0x200004, 0x26fe0);
+		cylClsns[i].Init(this, pos, scale.x * 10, scale.y * 10, CYL_CLSN_FLAGS, CYL_CLSN_VULNERABLE_FLAGS);
 	
-	modelAnim.SetAnim(animFiles[WAIT].GetFilePtr(), Animation::LOOP, 0x1000_f, 0);
-	TextureSequence::Prepare(modelFile.GetFilePtr(), texSeqFile.GetFilePtr());
-	MaterialChanger::Prepare(modelFile.GetFilePtr(), unkMat);
+	modelAnim.SetAnim(animFiles[WAIT].BCA(), Animation::LOOP, 1._f, 0);
+	TextureSequence::Prepare(*modelFile.BMD(), *texSeqFile.BTP());
+	MaterialChanger::Prepare(*modelFile.BMD(), unkMat);
 	
 	for (s32 i = 0; i < 7; i++)
-		TextureTransformer::Prepare(modelFile.GetFilePtr(), texSRTDefs[i]);
+		TextureTransformer::Prepare(*modelFile.BMD(), texSRTDefs[i]);
 	
-	texSeq.SetFile(texSeqFile.GetFilePtr(), Animation::LOOP, 0x1000_f, 0);
-	matChg.SetMaterial(unkMat, Animation::NO_LOOP, 0x1000_f, 0);
-	texSRT.SetTexSRT(texSRTDefs[6], Animation::LOOP, 0x1000_f, 0);
+	texSeq.SetFile(*texSeqFile.BTP(), Animation::LOOP, 1._f, 0);
+	matChg.SetFile(unkMat, Animation::NO_LOOP, 1._f, 0);
+	texSRT.SetFile(texSRTDefs[6], Animation::LOOP, 1._f, 0);
 	
-	texSeq.speed = 0x0_f;
+	texSeq.speed = 0._f;
 	matChg.currFrame = (Fix12i)MATERIAL_CHANGER_FRAMES[health];
 	
-	wmClsn.Init(this, 0x14000_f, 0x14000_f, nullptr, nullptr);
+	wmClsn.Init(this, 20._f, 20._f, nullptr, nullptr);
 	
 	direction = -1;
 	maxWalkSpeed = (s16)direction * MAX_WALK_SPEEDS[health];
-	walkSpeed = 0;
-	walkAngle = 0x1000 + walkSpeed; // ???
+	walkSpeed = 0._deg;
+	walkAngle = 22.5_deg + walkSpeed; // ???
 	
-	pos.x = Sin(walkAngle) * 0x546000_f;
-	pos.z = Cos(walkAngle) * 0x546000_f;
+	pos.x = Sin(walkAngle) * 1350._f;
+	pos.z = Cos(walkAngle) * 1350._f;
 	
 	RaycastGround raycaster;
-	raycaster.SetObjAndPos(Vector3{pos.x, pos.y + 0x64000_f, pos.z}, nullptr);
+	raycaster.SetObjAndPos(Vector3{ pos.x, pos.y + 100._f, pos.z }, nullptr);
 	
 	if (raycaster.DetectClsn())
 		pos.y = raycaster.clsnPosY;
 	
-	UpdateCylClsnPosMultMat();
+	UpdateCylClsnMat();
 	UpdateModelTransform();
 	
 	megaMushroomID = 0;
 	shouldRender = true;
-	currentScale = 0x1000_f;
+	currentScale = 1._f;
 	
 	return 1;
 }
@@ -815,8 +791,8 @@ s32 Goomboss::CleanupResources()
 
 s32 Goomboss::Behavior()
 {
-	Fix12i newGoombaTargetSpeed = (Fix12s(walkSpeed, as_raw) * 0x646_f) * 0x546000_f;
-	if (newGoombaTargetSpeed < 0x0_f)
+	Fix12i newGoombaTargetSpeed = (Fix12s(walkSpeed, as_raw) * 0.3921_f) * 1350._f;
+	if (newGoombaTargetSpeed < 0._f)
 		newGoombaTargetSpeed = -newGoombaTargetSpeed;
 	goombaTargetSpeed = newGoombaTargetSpeed;
 	
@@ -843,30 +819,30 @@ s32 Goomboss::Behavior()
 		
 		if (leftFootSteppedOnGround)
 		{
-			dustPos = Vector3{cylClsnPos[2].x, cylClsnPos[2].y, cylClsnPos[2].z};
+			dustPos = Vector3{ cylClsnPos[2].x, cylClsnPos[2].y, cylClsnPos[2].z };
 			if (health < 2)
 				LandingDustAt(dustPos, true);
 			else
 				BigLandingDustAt(dustPos, true);
 			
-			Sound::Play(3, 0x15e, camSpacePos);
-			Earthquake(Vector3{cylClsnPos[2].x, cylClsnPos[2].y, cylClsnPos[2].z}, magnitude);
+			Sound::Play("NCS_SE_SCT_KRK_WALK"sfx, camSpacePos);
+			Earthquake(Vector3{ cylClsnPos[2].x, cylClsnPos[2].y, cylClsnPos[2].z }, magnitude);
 		}
 		
 		if (rightFootSteppedOnGround)
 		{
-			dustPos = Vector3{cylClsnPos[1].x, cylClsnPos[1].y, cylClsnPos[1].z};
+			dustPos = Vector3{ cylClsnPos[1].x, cylClsnPos[1].y, cylClsnPos[1].z };
 			if (health < 2)
 				LandingDustAt(dustPos, true);
 			else
 				BigLandingDustAt(dustPos, true);
 			
-			Sound::Play(3, 0x15e, camSpacePos);
-			Earthquake(Vector3{cylClsnPos[1].x, cylClsnPos[1].y, cylClsnPos[1].z}, magnitude);
+			Sound::Play("NCS_SE_SCT_KRK_WALK"sfx, camSpacePos);
+			Earthquake(Vector3{ cylClsnPos[1].x, cylClsnPos[1].y, cylClsnPos[1].z }, magnitude);
 		}
 	}
 	
-	UpdateCylClsnPosMultMat();
+	UpdateCylClsnMat();
 	UpdateModelTransform();
 	DropShadow();
 	
@@ -887,20 +863,21 @@ s32 Goomboss::Render()
 	return 1;
 }
 
-void Goomboss::UpdateCylClsnPosMultMat()
+void Goomboss::vGetGoombaSpawnPos(Vector3& goombaPos, s32 numerator)
 {
-	Vector3 posAsr3 = pos >> 3;
-	
-	Matrix4x3_FromTranslation(MATRIX_SCRATCH_PAPER, posAsr3.x, posAsr3.y, posAsr3.z);
-	Matrix4x3_ApplyInPlaceToRotationY(MATRIX_SCRATCH_PAPER, ang.y);
-	Matrix4x3_ConcatScale(MATRIX_SCRATCH_PAPER, scale.x, scale.y, scale.z);
-	
-	cylClsnPosMulMat = MATRIX_SCRATCH_PAPER;
+	GetGoombaSpawnPos(goombaPos, numerator);
+}
+
+void Goomboss::UpdateCylClsnMat()
+{
+	cylClsnMat = Matrix4x3::Translation(pos >> 3);
+	cylClsnMat.RotateY(ang.y);
+	cylClsnMat.ApplyScale(scale.x, scale.y, scale.z);
 }
 
 void Goomboss::UpdateModelTransform()
 {
-	Matrix4x3_FromRotationY(modelAnim.mat4x3, ang.y);
+	modelAnim.mat4x3 = Matrix4x3::RotationY(ang.y);
 	modelAnim.mat4x3.c3 = pos >> 3;
 }
 
@@ -909,9 +886,9 @@ void Goomboss::UpdateAnims()
 	if (!IsCurrentAnim(WALK))
 	{
 		if (!IsCurrentAnim(WAIT_NO_LOOP))
-			modelAnim.speed = 0x1000_f;
+			modelAnim.speed = 1._f;
 		else if ((s32)modelAnim.speed == 8)
-			Sound::Play(3, 0x15d, camSpacePos);
+			Sound::Play("NCS_SE_SCT_KRK_GENERATE"sfx, camSpacePos);
 	}
 	else
 		modelAnim.speed = GetAnimSpeed();
@@ -933,7 +910,7 @@ void Goomboss::GetHurtOrHurtPlayer()
 		return;
 	
 	Actor* otherActor = nullptr;
-	CylinderClsnWithPos* cylClsn;
+	MovingCylinderClsnWithPos* cylClsn;
 	
 	for (s32 i = 0; i < 4; i++)
 	{
@@ -953,41 +930,41 @@ void Goomboss::GetHurtOrHurtPlayer()
 	
 	if (!hitByPlayer)
 	{
-		if (otherActor->actorID == 0xbf || hitByPlayer)
+		if (otherActor->actorID == PLAYER_ACTOR_ID || hitByPlayer)
 		{
 			Player* player = (Player*)otherActor;
 			if (hurtTimer == 0)
 			{
-				if (((hitflags & (CylinderClsn::HIT_BY_SPIN_OR_GROUND_POUND         | CylinderClsn::HIT_BY_PUNCH
-					| CylinderClsn::HIT_BY_KICK   | CylinderClsn::HIT_BY_BREAKDANCE | CylinderClsn::HIT_BY_SLIDE_KICK
-					| CylinderClsn::HIT_BY_DIVE   | CylinderClsn::HIT_BY_UNK_11     | CylinderClsn::HIT_BY_UNK_12
-					| CylinderClsn::HIT_BY_UNK_14 | CylinderClsn::HIT_BY_REGURG_GOOMBA)) == 0)
+				if (((hitflags & (CylinderClsn::HIT_BY_SPIN_OR_GROUND_POUND            | CylinderClsn::HIT_BY_PUNCH
+					| CylinderClsn::HIT_BY_KICK      | CylinderClsn::HIT_BY_BREAKDANCE | CylinderClsn::HIT_BY_SLIDE_KICK
+					| CylinderClsn::HIT_BY_DIVE      | CylinderClsn::HIT_BY_UNK_11     | CylinderClsn::HIT_BY_GRAB
+					| CylinderClsn::HIT_BY_EXPLOSION | CylinderClsn::HIT_BY_REGURG_GOOMBA)) == 0)
 					&& player->unk708 == 0)
 				{
 					if (cylClsn == &cylClsns[3])
 					{
 						if (walkSpeed == 0)
-							player->Hurt(Vector3{pos.x, pos.y, pos.z}, 1, 0x5000_f, 1, 0, 1);
+							player->Hurt(Vector3{ pos.x, pos.y, pos.z }, 1, 5._f, 1, 0, 1);
 						else
 						{
 							player->Unk_020c6a10(2);
-							hurtTimer = 0x1e;
+							hurtTimer = 30;
 						}
 					}
 					else if (cylClsn == &cylClsns[4])
 					{
 						if (walkSpeed == 0)
-							player->Hurt(Vector3{pos.x, pos.y, pos.z}, 1, 0x5000_f, 1, 0, 1);
+							player->Hurt(Vector3{ pos.x, pos.y, pos.z }, 1, 5._f, 1, 0, 1);
 						else
 						{
 							player->Unk_020c6a10(2);
-							hurtTimer = 0x1e;
+							hurtTimer = 30;
 						}
 					}
 					else
 					{
-						player->Hurt(Vector3{pos.x, pos.y, pos.z}, 1, 0x5000_f, 1, 0, 1);
-						hurtTimer = 0x10;
+						player->Hurt(Vector3{ pos.x, pos.y, pos.z }, 1, 5._f, 1, 0, 1);
+						hurtTimer = 16;
 					}
 				}
 				
@@ -1002,15 +979,15 @@ void Goomboss::GetHurtOrHurtPlayer()
 						
 						if (player->param1 == 0)
 						{
-							Vector3 mushroomPos = {pos.x, pos.y, pos.z};
+							Vector3 mushroomPos = { pos.x, pos.y, pos.z };
 							
 							if (megaMushroomID == 0 && Actor::FindWithID(0) == nullptr)
 							{
 								u16 angle = (u16)((direction * scale.x) + walkAngle + maxWalkSpeed).val;
 								
-								mushroomPos.y += 0x32000_f;
-								mushroomPos.x = Sin(angle) * 0x546000_f;
-								mushroomPos.z = Cos(angle) * 0x546000_f;
+								mushroomPos.y += 50._f;
+								mushroomPos.x = Sin(angle) * 1350._f;
+								mushroomPos.z = Cos(angle) * 1350._f;
 								
 								Actor* megaMushroom = Actor::Spawn(MEGA_MUSHROOM_ACTOR_ID, 0x0000, mushroomPos, nullptr, areaID, -1);
 								megaMushroomID = megaMushroom->uniqueID;
@@ -1024,13 +1001,13 @@ void Goomboss::GetHurtOrHurtPlayer()
 						| CylinderClsn::HIT_BY_BREAKDANCE | CylinderClsn::HIT_BY_SLIDE_KICK)) == 0)
 					{
 						s32 multiplier = 1;
-						if (0x4000 < AngleDiff(pos.HorzAngle(player->pos), ang.y))
+						if (AngleDiff(pos.HorzAngle(player->pos), ang.y) > 90._deg)
 							multiplier = -1;
 						
 						SetAnim(WAIT);
 						ChangeState(ST_HIT_BY_MEGA);
 						SpawnParticles(*player, *cylClsn, 0);
-						Sound::Play(3, 0x15a, camSpacePos);
+						Sound::Play("NCS_SE_SCT_KRK_MESSAGE"sfx, camSpacePos);
 						walkSpeed = multiplier * (s16)direction * -200;
 					}
 					else
@@ -1051,11 +1028,11 @@ void Goomboss::GetHurtOrHurtPlayer()
 	if (!hitByPlayer)
 		return;
 	
-	Sound::Play(3, 0x15b, camSpacePos);
+	Sound::Play("NCS_SE_SCT_KRK_DAMAGE"sfx, camSpacePos);
 	
 	s32 multiplier = 1;
 	
-	if (AngleDiff(pos.HorzAngle(otherActor->pos), ang.y) < 0x4001)
+	if (AngleDiff(pos.HorzAngle(otherActor->pos), ang.y) <= 90._deg)
 		SetAnim(DAMAGE_FRONT);
 	else
 	{
@@ -1070,23 +1047,22 @@ void Goomboss::GetHurtOrHurtPlayer()
 
 void Goomboss::UpdateCylinderCollisions()
 {
-	s32 transformIndexes[3] = {1, 8, 10};
 	Fix12i cylClsnOffsetsY[3];
 	Fix12i cylClsnRadius[3];
 	Fix12i cylClsnHeights[3];
 	
-	cylClsnHeights[1]  = cylClsnHeights[2]  = scale.y *  0x40000_f;
-	cylClsnRadius[1]   = cylClsnRadius[2]   = scale.x *  0x50000_f;
-	cylClsnOffsetsY[1] = cylClsnOffsetsY[2] = scale.y * -0x10000_f;
+	cylClsnHeights[1]  = cylClsnHeights[2]  = scale.y *  64._f;
+	cylClsnRadius[1]   = cylClsnRadius[2]   = scale.x *  80._f;
+	cylClsnOffsetsY[1] = cylClsnOffsetsY[2] = scale.y * -16._f;
 	
-	cylClsnOffsetsY[0] = scale.y * 0x14000_f;
-	cylClsnRadius[0]   = scale.x * 0xb4000_f;
-	cylClsnHeights[0]  = scale.y * 0x104000_f;
+	cylClsnOffsetsY[0] = scale.y * 20._f;
+	cylClsnRadius[0]   = scale.x * 180._f;
+	cylClsnHeights[0]  = scale.y * 260._f;
 	
 	for (s32 i = 0; i < 3; i++)
 	{
 		Vector3 newCylClsnPos;
-		GetCylClsnPos(newCylClsnPos, transformIndexes[i]);
+		GetCylClsnPos(newCylClsnPos, CYL_CLSN_TRANSFORM_INDEXES[i]);
 		cylClsnPos[i] = newCylClsnPos;
 		
 		s32 j = i + 1;
@@ -1097,15 +1073,15 @@ void Goomboss::UpdateCylinderCollisions()
 		cylClsns[j].pos.z = cylClsnPos[i].z;
 	}
 	
-	cylClsns[0].radius = scale.x * 0x5a000_f;
-	cylClsns[0].height = scale.y * 0x96000_f;
+	cylClsns[0].radius = scale.x * 90._f;
+	cylClsns[0].height = scale.y * 150._f;
 	cylClsns[0].pos.x = pos.x;
-	cylClsns[0].pos.y = pos.y + (scale.y *  0x40000_f);
+	cylClsns[0].pos.y = pos.y + (scale.y *  64._f);
 	cylClsns[0].pos.z = pos.z;
 	
-	Fix12i unkMultRes = scale.y * -0x4a000_f;
+	Fix12i clsnOffsetY = scale.y * -74._f;
 	
-	if (cylClsnPos[2].y + unkMultRes < pos.y)
+	if (cylClsnPos[2].y + clsnOffsetY < pos.y)
 	{
 		leftFootSteppedOnGround = !leftFootCurrentlyOnGround;
 		leftFootCurrentlyOnGround = true;
@@ -1116,7 +1092,7 @@ void Goomboss::UpdateCylinderCollisions()
 		leftFootCurrentlyOnGround = false;
 	}
 	
-	if (cylClsnPos[1].y + unkMultRes < pos.y)
+	if (cylClsnPos[1].y + clsnOffsetY < pos.y)
 	{
 		rightFootSteppedOnGround = !rightFootCurrentlyOnGround;
 		rightFootCurrentlyOnGround = true;
@@ -1128,14 +1104,14 @@ void Goomboss::UpdateCylinderCollisions()
 	}
 	
 	if (!rightFootCurrentlyOnGround)
-		cylClsns[2].flags1 |= 0x20;
+		cylClsns[2].flags1 |= CylinderClsn::SPIN_OR_GROUND_POUND;
 	else
-		cylClsns[2].flags1 &= ~0x20;
+		cylClsns[2].flags1 &= ~CylinderClsn::SPIN_OR_GROUND_POUND;
 	
 	if (!leftFootCurrentlyOnGround)
-		cylClsns[3].flags1 |= 0x20;
+		cylClsns[3].flags1 |= CylinderClsn::SPIN_OR_GROUND_POUND;
 	else
-		cylClsns[3].flags1 &= ~0x20;
+		cylClsns[3].flags1 &= ~CylinderClsn::SPIN_OR_GROUND_POUND;
 }
 
 void Goomboss::DropShadow()
@@ -1145,56 +1121,56 @@ void Goomboss::DropShadow()
 	
 	for (s32 i = 0; i < 3; i++)
 	{
-		shadowMats[i].c0.x = 0x1000_f;
-		shadowMats[i].c0.y = 0x0_f;
-		shadowMats[i].c0.z = 0x0_f;
-		shadowMats[i].c1.x = 0x0_f;
-		shadowMats[i].c1.y = 0x1000_f;
-		shadowMats[i].c1.z = 0x0_f;
-		shadowMats[i].c2.x = 0x0_f;
-		shadowMats[i].c2.y = 0x0_f;
-		shadowMats[i].c2.z = 0x1000_f;
-		//shadowMats[i].c3.x = 0x0_f;
-		//shadowMats[i].c3.y = 0x0_f;
-		//shadowMats[i].c3.z = 0x0_f;
+		shadowMats[i].c0.x = 1._f;
+		shadowMats[i].c0.y = 0._f;
+		shadowMats[i].c0.z = 0._f;
+		shadowMats[i].c1.x = 0._f;
+		shadowMats[i].c1.y = 1._f;
+		shadowMats[i].c1.z = 0._f;
+		shadowMats[i].c2.x = 0._f;
+		shadowMats[i].c2.y = 0._f;
+		shadowMats[i].c2.z = 1._f;
+		//shadowMats[i].c3.x = 0._f;
+		//shadowMats[i].c3.y = 0._f;
+		//shadowMats[i].c3.z = 0._f;
 		
 		Fix12i depth = pos.y - originalPos.y;
-		if (depth < 0x1001_f)
-			depth = 0x1000_f;
+		if (depth <= 1._f)
+			depth = 1._f;
 		
-		Fix12i radius = (cylClsns[i + 1].radius * 2) - (depth * 0x180_f);
-		if (radius < 0xa000_f)
-			radius = 0xa000_f;
+		Fix12i radius = (cylClsns[i + 1].radius * 2) - (depth * 0.0938_f);
+		if (radius < 10._f)
+			radius = 10._f;
 		
 		shadowMats[i].c3.x = cylClsnPos[i].x >> 3;
 		shadowMats[i].c3.y = pos.y >> 3;
 		shadowMats[i].c3.z = cylClsnPos[i].z >> 3;
 		
-		DropShadowRadHeight(shadows[i], shadowMats[i], radius, depth + 0x28000_f, 0xf);
+		DropShadowRadHeight(shadows[i], shadowMats[i], radius, depth + 40._f, 0xf);
 	}
 }
 
 bool Goomboss::IsCurrentAnim(s32 animID)
 {
-	return modelAnim.file == animations[animID].animFile.GetFilePtr();
+	return modelAnim.file == animations[animID].animFile.BCA();
 }
 
 Fix12i Goomboss::GetAnimSpeed()
 {
 	Fix12i animSpeed = (Fix12i)walkSpeed;
-	if (animSpeed < 0x0_f)
+	if (animSpeed < 0._f)
 		animSpeed = (Fix12i)-walkSpeed;
 	
-	animSpeed /= (ANIM_SPEED_DENOMINATOR[health] + 0x50001_f);
+	animSpeed /= (ANIM_SPEED_DENOMINATOR[health] + 80.0002_f);
 	
-	if (0xfff_f < animSpeed)
+	if (animSpeed >= 1._f)
 	{
-		if (0x3000_f < animSpeed)
-			animSpeed = 0x3000_f;
+		if (animSpeed > 3._f)
+			animSpeed = 3._f;
 		return animSpeed;
 	}
 	
-	return 0x1000_f;
+	return 1._f;
 }
 
 void Goomboss::ChangeState(u32 newState)
@@ -1205,18 +1181,18 @@ void Goomboss::ChangeState(u32 newState)
 
 void Goomboss::SetAnim(s32 animID)
 {
-	modelAnim.SetAnim(animations[animID].animFile.GetFilePtr(), animations[animID].animFlags, 0x1000_f, 0);
-	texSRT.SetTexSRT(animations[animID].texAnim, Animation::LOOP, 0x1000_f, 0);
+	modelAnim.SetAnim(animations[animID].animFile.BCA(), animations[animID].animFlags, 1._f, 0);
+	texSRT.SetFile(animations[animID].texAnim, Animation::LOOP, 1._f, 0);
 }
 
 void Goomboss::SpawnParticles(Player& player, CylinderClsn& cylClsn, bool spawnStarParticles)
 {
-	Vector3 particlePos = Vector3{pos.x, pos.y + cylClsn.height, pos.z};
-	Vector3 playerPos = Vector3{player.pos.x, player.pos.y + 0x46000_f, player.pos.z};
+	Vector3 particlePos = Vector3{ pos.x, pos.y + cylClsn.height, pos.z };
+	Vector3 playerPos = Vector3{ player.pos.x, player.pos.y + 70._f, player.pos.z };
 	Vector3 subVec = playerPos - particlePos;
 	
-	s16 atanX = cstd::atan2(subVec.x, subVec.z) & 0xffff;
-	s16 atanY = cstd::atan2(subVec.y, subVec.HorzLen()) & 0xffff;
+	s16 atanX = cstd::atan2(subVec.x, subVec.z);
+	s16 atanY = cstd::atan2(subVec.y, subVec.HorzLen());
 	
 	Fix12i multiplier = cylClsn.radius * Cos(atanX);
 	
@@ -1237,7 +1213,8 @@ void Goomboss::SpawnParticles(Player& player, CylinderClsn& cylClsn, bool spawnS
 
 void Goomboss::TurnIfNotFacingPlayer()
 {
-	if (0x4000 < AngleDiff(((direction * 0x4500 + (s32)walkAngle) * 0x10000) >> 0x10, HorzAngleToCPlayer()))
+	s16 angle = (s16)(direction * 97.0313_deg + walkAngle);
+	if (AngleDiff(angle, HorzAngleToCPlayer()) > 90._deg)
 	{
 		SetAnim(TURN);
 		direction = -direction;
@@ -1248,7 +1225,7 @@ bool Goomboss::HasFinishedTurning()
 {
 	if (IsCurrentAnim(TURN) && modelAnim.Finished())
 	{
-		ang.y -= 0x8000;
+		ang.y -= 180._deg;
 		return true;
 	}
 	return false;
@@ -1270,9 +1247,9 @@ bool Goomboss::ShouldSpawnOrWait()
 	}
 	else
 	{
-		if (ApproachAngle(walkSpeed, 0, 0x1e, 0x20, 1) == 0)
+		if (ApproachAngle(walkSpeed, 0._deg, 30, 32, 1) == 0)
 		{
-			if (((u16)(s32)modelAnim.currFrame) == 0)
+			if ((u16)(s32)modelAnim.currFrame == 0)
 				SetAnim(WALK_END);
 		}
 		else
@@ -1306,31 +1283,31 @@ void Goomboss::GetGoombaSpawnPos(Vector3& goombaPos, s32 goombaID)
 			col = goombaID % goombasPerRow;
 		}
 		
-		Fix12i multiplier = col * 0x64000_f + 0x4e2000_f;
+		Fix12i multiplier = col * 100._f + 1250._f;
 		
 		s16 angle = (s16)(walkAngle + walkSpeed - direction2 * direction *
-			((s16)((s32)scale.x * 0x350 + 0x250) + 0x600));
+			((s16)((s32)scale.x * 848 + 592) + 1536));
 		
 		
 		goombaPos.x = multiplier * Sin(angle);
-		goombaPos.y += 0x32000_f;
+		goombaPos.y += 50._f;
 		goombaPos.z = multiplier * Cos(angle);
 	}
 	else // the player is Yoshi
 	{
 		Fix12i multiplier;
 		if (health == 3)
-			multiplier = 0x546000_f;
+			multiplier = 1350._f;
 		else if (health == 2)
-			multiplier = Fix12i((goombaID / 3) * 0xb4) + 0x4ec000_f;
+			multiplier = Fix12i((goombaID / 3) * 180) + 1260._f;
 		else
-			multiplier = Fix12i((goombaID / 3) * 0xb4) + 0x438000_f;
+			multiplier = Fix12i((goombaID / 3) * 180) + 1080._f;
 		
 		s16 angle = (s16)(walkAngle + maxWalkSpeed - direction *
-			((s16)((s32)scale.x * 0x350 + 0x500) + (goombaID % 3 * 0x6000000 >> 0x10)));
+			((s16)((s32)scale.x * 848 + 1280) + (goombaID % 3 * 0x6000000 >> 16)));
 		
 		goombaPos.x = multiplier * Sin(angle);
-		goombaPos.y += 0x32000_f;
+		goombaPos.y += 50._f;
 		goombaPos.z = multiplier * Cos(angle);
 	}
 }
@@ -1345,10 +1322,10 @@ void Goomboss::UpdatePosAndAngle()
 	if (wmClsn.IsOnGround() != 0)
 	{
 		walkAngle += walkSpeed;
-		pos.x = Sin(walkAngle) * 0x546000_f;
-		pos.z = Cos(walkAngle) * 0x546000_f;
+		pos.x = Sin(walkAngle) * 1350._f;
+		pos.z = Cos(walkAngle) * 1350._f;
 	}
-	ApproachAngle(ang.y, (s16)(direction * 0x4500 + (s32)walkAngle), 10, 0x800, 0x10);
+	ApproachAngle(ang.y, (s16)(direction * 97.0313_deg + walkAngle), 10, 2048, 16);
 }
 
 bool Goomboss::AdvanceMaterialChanger()
@@ -1366,11 +1343,11 @@ bool Goomboss::AdvanceMaterialChanger()
 
 bool Goomboss::GrowBigger()
 {
-	nextScale = GOOMBOSS_SCALES[health + 1] + ((GOOMBOSS_SCALES[health] - GOOMBOSS_SCALES[health + 1]) / Fix12i(timesToGrow << 0xc, as_raw));
+	nextScale = GOOMBOSS_SCALES[health + 1] + ((GOOMBOSS_SCALES[health] - GOOMBOSS_SCALES[health + 1]) / Fix12i(timesToGrow << 12, as_raw));
 	
-	if (Math_Function_0203b14c(currentScale, nextScale, 0x78_f, 0x100_f, 0x20_f) == 0x0_f)
+	if (Math_Function_0203b14c(currentScale, nextScale, 0.0293_f, 0.0625_f, 0.0078_f) == 0._f)
 	{
-		if (scaleAng == 0)
+		if (scaleAng == 0._deg)
 			scale.x = scale.y = scale.z = currentScale;
 		
 		if (timesToGrow < 2)
@@ -1379,59 +1356,55 @@ bool Goomboss::GrowBigger()
 		timesToGrow--;
 		
 		if (state == 6)
-			Particle::System::NewSimple(Particle::PTS_DUST_LANDING_SOFT_2, pos.x, pos.y + (currentScale * 0x190000_f), pos.z);
+			Particle::System::NewSimple(Particle::PTS_DUST_LANDING_SOFT_2, pos.x, pos.y + (currentScale * 400._f), pos.z);
 	}
 	
-	Fix12i multiplier = (nextScale - currentScale) + 0x11e_f;
+	Fix12i multiplier = (nextScale - currentScale) + 0.0698_f;
 	
 	scale.y = currentScale + (multiplier * Sin(scaleAng));
 	scale.x = scale.z = currentScale + (multiplier * Cos(scaleAng));
 	
-	scaleAng += 0x1230;
+	scaleAng += 25.5762_deg;
 	
 	return false;
 }
 
 void Goomboss::SetExplosionGoombasShouldRender(bool newShouldRender)
 {
-	ExplosionGoomba* explosionGoomba = (ExplosionGoomba*)Actor::FindWithActorID(0xc7, nullptr);
-	if (explosionGoomba == nullptr)
-		return;
+	ExplosionGoomba* explosionGoomba = (ExplosionGoomba*)Actor::FindWithActorID(EXPLOSION_GOOMBA_ACTOR_ID, nullptr);
 	
-	do
+	while (explosionGoomba != nullptr)
 	{
 		explosionGoomba->shouldRender = newShouldRender;
-		explosionGoomba = (ExplosionGoomba*)Actor::FindWithActorID(0xc7, explosionGoomba);
-	} while (explosionGoomba != nullptr);
+		explosionGoomba = (ExplosionGoomba*)Actor::FindWithActorID(EXPLOSION_GOOMBA_ACTOR_ID, explosionGoomba);
+	}
 }
 
 void Goomboss::SetExplosionGoombaSpeeds()
 {
-	ExplosionGoomba* explosionGoomba = (ExplosionGoomba*)Actor::FindWithActorID(0xc7, nullptr);
-	if (explosionGoomba == nullptr)
-		return;
+	ExplosionGoomba* explosionGoomba = (ExplosionGoomba*)Actor::FindWithActorID(EXPLOSION_GOOMBA_ACTOR_ID, nullptr);
 	
-	do
+	while (explosionGoomba != nullptr)
 	{
-		explosionGoomba->vertAccel = -0xa000_f;
-		u32 random = RandomIntInternal(&RNG_STATE);
-		explosionGoomba->stateTimer = 0x30;
-		explosionGoomba->horzSpeed = Fix12i((random >> 8 & 0xf) * 0x1000, as_raw) + 0x16000_f;
+		explosionGoomba->vertAccel = -10._f;
+		u32 random = RandomInt() >> 8;
+		explosionGoomba->stateTimer = 48;
+		explosionGoomba->horzSpeed = (Fix12i)(s32)(random & 0xf) + 22._f;
 		explosionGoomba->speed.x = 0;
-		explosionGoomba->speed.y = Fix12i((random >> 8 & 0x1f) * 0x1000, as_raw) + 0x60000_f;
+		explosionGoomba->speed.y = (Fix12i)(s32)(random & 0x1f) + 96._f;
 		explosionGoomba->speed.z = 0;
 		
 		//explosionGoomba->motionAng.x = explosionGoomba->motionAng.x;
-		explosionGoomba->motionAng.y += ((u16)(random >> 8) & 0x1000);
+		explosionGoomba->motionAng.y += (s16)(random & 22.5_deg);
 		//explosionGoomba->motionAng.z = explosionGoomba->motionAng.z;
 		explosionGoomba->ang.x = explosionGoomba->motionAng.x;
-		explosionGoomba->ang.y = explosionGoomba->motionAng.y + ((u16)(random >> 8) & 0x1000);
+		explosionGoomba->ang.y = explosionGoomba->motionAng.y + (s16)(random & 22.5_deg);
 		explosionGoomba->ang.z = explosionGoomba->motionAng.z;
 		
 		explosionGoomba->shouldBehave = true;
 		
-		explosionGoomba = (ExplosionGoomba*)Actor::FindWithActorID(0xc7, explosionGoomba);
-	} while (explosionGoomba != nullptr);
+		explosionGoomba = (ExplosionGoomba*)Actor::FindWithActorID(EXPLOSION_GOOMBA_ACTOR_ID, explosionGoomba);
+	}
 }
 
 void Goomboss::SetBossCamera()
@@ -1440,16 +1413,16 @@ void Goomboss::SetBossCamera()
 	
 	Matrix4x3 cameraMat = Matrix4x3
 	{
-		Vector3{pos.x, pos.y + 0x1a0000_f, pos.z},
-		Vector3{pos.x, pos.y, pos.z},
-		Vector3{0x0_f, 0x0_f, 0x59c000_f},
-		Vector3{0x0_f, 0x0_f, 0x0_f}
+		{ pos.x, pos.y + 416._f, pos.z },
+		{ pos.x, pos.y,          pos.z },
+		{ 0._f,  0._f,           1436._f },
+		{ 0._f,  0._f,           0._f },
 	};
 	
-	Matrix4x3_FromRotationY(MATRIX_SCRATCH_PAPER, ang.y);
+	MATRIX_SCRATCH_PAPER = Matrix4x3::RotationY(ang.y);
 	MulVec3Mat4x3(cameraMat.c2, MATRIX_SCRATCH_PAPER, cameraMat.c3);
 	
-	cameraMat.c1.y += 0x300000_f;
+	cameraMat.c1.y += 768._f;
 	cameraMat.c1.x += cameraMat.c3.x;
 	cameraMat.c1.z += cameraMat.c3.z;
 	
@@ -1459,41 +1432,41 @@ void Goomboss::SetBossCamera()
 
 bool Goomboss::SpawnExplosionGoomba()
 {
-	Vector3_16 spawnAng = Vector3_16{0, ang.y, 0}; // local_30, local_2e, local_2c
-	Vector3 spawnPos = Vector3{pos.x, pos.y + 0xe4000_f, pos.z}; // local_28, local_24, local_20
-	Vector3 originalSpawnPos = spawnPos; // local_1c, local_18, local_14
+	Vector3_16 spawnAng = { 0, ang.y, 0 };
+	Vector3 spawnPos = { pos.x, pos.y + 228._f, pos.z };
+	Vector3 originalSpawnPos = spawnPos;
 	
 	if (DecIfAbove0_Short(stateTimer) == 0)
 	{
 		Fix12i multiplier;
 		if (numGoombasAlive < 7)
 		{
-			multiplier = 0x18c000_f;
-			spawnAng.y += numGoombasAlive * 0x2492;
+			multiplier = 396._f;
+			spawnAng.y += numGoombasAlive * 51.427_deg;
 		}
 		else if (numGoombasAlive < 12)
 		{
-			spawnPos.y += 0xc4000_f;
-			multiplier = 0x108000_f;
-			spawnAng.y += (numGoombasAlive - 7) * 0x3333;
+			spawnPos.y += 196._f;
+			multiplier = 264._f;
+			spawnAng.y += (numGoombasAlive - 7) * 72._deg;
 		}
 		else if (numGoombasAlive < 15)
 		{
-			spawnPos.y += 0x188000_f;
-			multiplier = 0x84000_f;
-			spawnAng.y += (numGoombasAlive - 12) * 0x5555;
+			spawnPos.y += 392._f;
+			multiplier = 132._f;
+			spawnAng.y += (numGoombasAlive - 12) * 120._deg;
 		}
 		else
 		{
-			multiplier = 0x0_f;
-			spawnPos.y += 0x24c000_f;
+			multiplier = 0._f;
+			spawnPos.y += 588._f;
 		}
 		
 		spawnPos.x += multiplier * Sin(spawnAng.y);
 		spawnPos.z += multiplier * Cos(spawnAng.y);
 		
 		spawnAng.x = originalSpawnPos.VertAngle(spawnPos);
-		Actor::Spawn(0xc7, 0x1111, spawnPos, &spawnAng, areaID, -1);
+		Actor::Spawn(EXPLOSION_GOOMBA_ACTOR_ID, 0x1111, spawnPos, &spawnAng, areaID, -1);
 		numGoombasAlive++;
 		stateTimer = 2;
 	}
@@ -1510,11 +1483,11 @@ bool Goomboss::SpawnExplosionGoomba()
 // but I made it a member function for simplicity
 void Goomboss::GetCylClsnPos(Vector3& cylClsnPos, s32 transformIndex)
 {
-	cylClsnPos = Vector3{0x0_f, 0x0_f, 0x0_f};
-	MATRIX_SCRATCH_PAPER = cylClsnPosMulMat;
-	MulMat4x3Mat4x3(modelAnim.data.transforms[transformIndex], MATRIX_SCRATCH_PAPER, MATRIX_SCRATCH_PAPER);
-	cylClsnPos = MATRIX_SCRATCH_PAPER.c3;
-	cylClsnPos <<= 3;
+	// cylClsnPos = Vector3{ 0._f, 0._f, 0._f };
+	// MATRIX_SCRATCH_PAPER = cylClsnMat;
+	// MATRIX_SCRATCH_PAPER = MATRIX_SCRATCH_PAPER(modelAnim.data.transforms[transformIndex]);
+	MATRIX_SCRATCH_PAPER = cylClsnMat(modelAnim.data.transforms[transformIndex]);
+	cylClsnPos = MATRIX_SCRATCH_PAPER.c3 << 3;
 }
 
 void Goomboss::State0_Talk_Init()
@@ -1527,13 +1500,13 @@ void Goomboss::State0_Talk_Main()
 	Player* player = ClosestPlayer();
 	
 	CAMERA->SetFlag_3();
-	CAMERA->SetLookAt(Vector3{pos.x + 0x130000_f, 0x1cd000_f, pos.z - 0x2a0000_f});
-	CAMERA->SetPos(Vector3{pos.x - 0x2f0000_f, pos.y + 0x20000_f, pos.z + 0x254000_f});
+	CAMERA->SetLookAt(Vector3{ pos.x + 304._f, 461._f, pos.z - 672._f });
+	CAMERA->SetPos(Vector3{ pos.x - 752._f, pos.y + 32._f, pos.z + 596._f });
 	
 	//Vector3 unusedVec = player->pos;
 	
-	player->ang = Vector3_16{ang.x, (short)-ang.y, ang.z};
-	ang.y = (s16)direction * 0x4500 + walkAngle;
+	player->ang = Vector3_16{ ang.x, (s16)-ang.y, ang.z };
+	ang.y = (s16)direction * 97.0313_deg + walkAngle;
 	listener = player;
 	
 	if (!player->StartTalk(*this, true))
@@ -1542,13 +1515,13 @@ void Goomboss::State0_Talk_Main()
 	Message::PrepareTalk();
 	if (!musicLoaded)
 	{
-		Sound::LoadAndSetMusic_Layer3(0x2c);
+		Sound::LoadAndSetMusic_Layer3(44);
 		musicLoaded = true;
 	}
 	
-	if (player->ShowMessage(*this, (s16)player->param1 + 0xd3, Vector3{pos.x, pos.y + 0x78000_f, pos.z}, 0, 2))
+	if (player->ShowMessage(*this, (s16)player->param1 + 0xd3, Vector3{ pos.x, pos.y + 120._f, pos.z }, 0, 2))
 	{
-		Sound::Play(3, 0x15a, camSpacePos);
+		Sound::Play("NCS_SE_SCT_KRK_MESSAGE"sfx, camSpacePos);
 		ChangeState(ST_STOP_TALK);
 	}
 }
@@ -1564,7 +1537,7 @@ void Goomboss::State1_StopTalk_Main()
 		return;
 	
 	CAMERA->flags &= ~(Camera::BOSS_TALK);
-	Sound::LoadAndSetMusic_Layer3(0x2d);
+	Sound::LoadAndSetMusic_Layer3(45);
 	Sound::Func_02048ee4();
 	Message::EndTalk();
 	ChangeState(ST_SPAWN);
@@ -1608,7 +1581,7 @@ void Goomboss::State2_Spawn_Main()
 	DisappearPoofDustAt(goombaPos);
 	
 	u32 goombaParam = 0xeeee;
-	if (playerNotYoshi && -1 < (s32)(numGoombasAlive * -0x80000000))
+	if (playerNotYoshi && (s32)(numGoombasAlive * -0x80000000) > -1)
 		goombaParam = 0xeeef;
 	
 	Goomba* goomba = (Goomba*)Actor::Spawn(GOOMBA_ACTOR_ID, goombaParam, goombaPos, &ang, areaID, -1);
@@ -1624,7 +1597,7 @@ void Goomboss::State2_Spawn_Main()
 		numerator = 5;
 	
 	if (numGoombasAlive % numerator == 0)
-		modelAnim.currFrame = 0x0_f;
+		modelAnim.currFrame = 0._f;
 	
 	if (numGoombasToSpawn <= numGoombasAlive)
 		ChangeState(ST_WALK);
@@ -1649,12 +1622,12 @@ void Goomboss::State3_Walk_Main()
 			SetAnim(WALK);
 		return;
 	}
-	ApproachAngle(walkSpeed, maxWalkSpeed, 10, 0x20, 1);
+	ApproachAngle(walkSpeed, maxWalkSpeed, 10, 32, 1);
 	UpdatePosAndAngle();
-	if (0x4affff_f < DistToCPlayer())
+	if (DistToCPlayer() >= 1200._f)
 		return;
 	
-	if (0x4000 < AngleDiff(HorzAngleToCPlayer(), ang.y))
+	if (AngleDiff(HorzAngleToCPlayer(), ang.y) > 90._deg)
 		ChangeState(ST_WAIT);
 }
 
@@ -1672,9 +1645,9 @@ void Goomboss::State4_Wait_Main()
 		return;
 	}
 	
-	if (DistToCPlayer() < 0x4b0000_f)
+	if (DistToCPlayer() < 1200._f)
 	{
-		if (AngleDiff(HorzAngleToCPlayer(), ang.y) < 0x3000)
+		if (AngleDiff(HorzAngleToCPlayer(), ang.y) < 67.5_deg)
 		{
 			ChangeState(ST_WALK);
 			return;
@@ -1696,7 +1669,7 @@ void Goomboss::State5_Hurt_Init()
 
 void Goomboss::State5_Hurt_Main()
 {
-	if (ApproachAngle(walkSpeed, 0, 10, 0x100, 1) != 0)
+	if (ApproachAngle(walkSpeed, 0._deg, 10, 256, 1) != 0)
 	{
 		UpdatePosAndAngle();
 		return;
@@ -1747,7 +1720,7 @@ void Goomboss::State6_Grow_Main()
 		{
 			stateState++;
 			SetAnim(ANGER);
-			Sound::Play(3, 0x15c, camSpacePos);
+			Sound::Play("NCS_SE_SCT_KRK_BIG"sfx, camSpacePos);
 		}
 		return;
 	}
@@ -1764,8 +1737,8 @@ void Goomboss::State7_Defeat_Init()
 {
 	health = 0;
 	scale.x = scale.y = scale.z = GOOMBOSS_SCALES[1];
-	texSeq.currFrame = 0x2000_f;
-	matChg.currFrame = 0x3c000_f;
+	texSeq.currFrame = 2._f;
+	matChg.currFrame = 60._f;
 	stateState = 0;
 	SetAnim(DOWN_START);
 	timesToGrow = 3;
@@ -1803,7 +1776,7 @@ void Goomboss::State7_Defeat_Main()
 			
 			if (numGoombasAlive == 0)
 			{
-				Sound::Play(3, 0x15c, camSpacePos);
+				Sound::Play("NCS_SE_SCT_KRK_BIG"sfx, camSpacePos);
 				stateState++;
 				numGoombasAlive = 0;
 			}
@@ -1822,24 +1795,24 @@ void Goomboss::State7_Defeat_Main()
 			if (listener->HasFinishedTalking())
 			{
 				shouldRender = false;
-				Particle::System::NewSimple(Particle::PTS_FAST_SPREAD_WHITE_DOTS, pos.x, pos.y + 0x190000_f, pos.z);
-				Particle::System::NewSimple(Particle::PTS_DUST_POOF_BIG_REDDISH, pos.x, pos.y + 0x190000_f, pos.z);
-				Sound::Play(3, 0x15f, camSpacePos);
+				Particle::System::NewSimple(Particle::PTS_FAST_SPREAD_WHITE_DOTS, pos.x, pos.y + 400._f, pos.z);
+				Particle::System::NewSimple(Particle::PTS_DUST_POOF_BIG_REDDISH, pos.x, pos.y + 400._f, pos.z);
+				Sound::Play("NCS_SE_SCT_KRK_DOWN"sfx, camSpacePos);
 				SetExplosionGoombasShouldRender(true);
 				SetExplosionGoombaSpeeds();
 				CAMERA->flags &= ~(Camera::BOSS_TALK);
 				Message::EndTalk();
 				Sound::StopLoadedMusic_Layer3();
 				Sound::Func_02048eb4();
-				Sound::ChangeMusicVolume(0x7f, 0x15666);
+				Sound::ChangeMusicVolume(127, 21.4_f);
 				shadowInvisible = true;
-				stateTimer = 0xf;
+				stateTimer = 15;
 				stateState++;
 			}
 			return;
 		case 4:
-			Actor::Spawn(KEY_ACTOR_ID, MARIO_KEY_PARAMETER, Vector3{pos.x, pos.y + 0x12c000_f, pos.z}, nullptr, areaID,-1); // Key
-			Sound::Play(3, 0xbb, camSpacePos);
+			Actor::Spawn(KEY_ACTOR_ID, 0x0002, Vector3{ pos.x, pos.y + 300._f, pos.z }, nullptr, areaID, -1);
+			Sound::Play("NCS_SE_SCT_KUPPA_KEYFALL"sfx, camSpacePos);
 			MarkForDestruction();
 		default:
 			return;
@@ -1848,8 +1821,8 @@ void Goomboss::State7_Defeat_Main()
 	SetBossCamera();
 	if (listener->GetTalkState() == Player::TK_START)
 	{
-		if (listener->ShowMessage(*this, (s16)listener->param1 + 0xd7, Vector3{pos.x, pos.y + 0x78000_f, pos.z}, 1, 2))
-			Sound::Func_0201277c(0x15a);
+		if (listener->ShowMessage(*this, (s16)listener->param1 + 0xd7, Vector3{ pos.x, pos.y + 120._f, pos.z }, 1, 2))
+			Sound::Play2D("NCS_SE_SCT_KRK_MESSAGE"sfx);
 	}
 	else if (listener->GetTalkState() == Player::TK_UNK2)
 		stateState++;
@@ -1862,13 +1835,11 @@ void Goomboss::State8_HitByMega_Init()
 
 void Goomboss::State8_HitByMega_Main()
 {
-	if (ApproachAngle(walkSpeed, 0, 10, 0x100, 1) == 0)
+	if (ApproachAngle(walkSpeed, 0._deg, 10, 256, 1) == 0)
 		ChangeState(ST_WALK);
 	else
 		UpdatePosAndAngle();
 }
 
-void Goomboss::vGetGoombaSpawnPos(Vector3& goombaPos, s32 numerator)
-{
-	GetGoombaSpawnPos(goombaPos, numerator);
-}
+Goomboss::Goomboss() {}
+Goomboss::~Goomboss() {}

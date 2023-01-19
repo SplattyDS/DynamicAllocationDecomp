@@ -1,5 +1,6 @@
-#include "Bowser.h"
-#include "BowserShockwaves.h"
+#include "SM64DS_2.h"
+#include "Actors/Bowser.h"
+#include "Actors/BowserShockwaves.h"
 
 extern "C"
 {
@@ -164,11 +165,11 @@ SpawnInfo Bowser::spawnData =
 	&FUN_02116428,
 	0x0117,
 	0x008f,
-	0x04000000,
-	0x00064000_f,
-	0x00064000_f,
-	0x01000000_f,
-	0x01000000_f,
+	Actor::UPDATE_DURING_STAR_CUTSCENE,
+	100._f,
+	100._f,
+	4096._f,
+	4096._f,
 };
 
 SpawnInfo BowserTail::spawnData = 
@@ -176,11 +177,11 @@ SpawnInfo BowserTail::spawnData =
 	&FUN_021163f0,
 	0x0116,
 	0x008e,
-	0x00000080,
-	0x00064000_f,
-	0x00064000_f,
-	0x01000000_f,
-	0x01000000_f,
+	Actor::GRABBABLE,
+	100._f,
+	100._f,
+	4096._f,
+	4096._f,
 };
 
 asm(".global FUN_02111c68");
@@ -264,7 +265,7 @@ FUN_02111900:
 	ldr     r1, =VTable_Bowser
 	add     r0, r4, #0x360
 	str     r1, [r4]
-	bl      _ZN19CylinderClsnWithPosD1Ev
+	bl      _ZN25MovingCylinderClsnWithPosD1Ev
 	add     r0, r4, #0x308
 	bl      _ZN11ShadowModelD1Ev
 	add     r0, r4, #0x14c
@@ -287,7 +288,7 @@ FUN_02111950:
 	ldr     r1, =VTable_Bowser
 	add     r0, r4, #0x360
 	str     r1, [r4]
-	bl      _ZN19CylinderClsnWithPosD1Ev
+	bl      _ZN25MovingCylinderClsnWithPosD1Ev
 	add     r0, r4, #0x308
 	bl      _ZN11ShadowModelD1Ev
 	add     r0, r4, #0x14c
@@ -535,7 +536,7 @@ FUN_02111cc0:
 	ldr     r1, [r1, #0x4]
 	add     r0, r4, #0x0d4
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	cmp     r5, #0x0e
 	addls   r15, r15, r5, lsl #0x2
 	b       LAB_02111ea0
@@ -559,14 +560,14 @@ LAB_02111d38:
 	ldr     r1, =_ZN6Bowser11texSeqFilesE + 0x00
 	ldr     r0, [r0, #0x4]
 	ldr     r1, [r1, #0x4]
-	bl      _ZN15TextureSequence7PrepareEPcS0_
+	bl      _ZN15TextureSequence7PrepareER8BMD_FileR8BTP_File
 	mov     r2, #0x0
 	ldr     r0, =_ZN6Bowser11texSeqFilesE + 0x00
 	str     r2, [r13]
 	ldr     r1, [r0, #0x4]
 	add     r0, r4, #0x138
 	mov     r3, #0x1000
-	bl      _ZN15TextureSequence7SetFileEPci5Fix12IiEj
+	bl      _ZN15TextureSequence7SetFileER8BTP_Filei5Fix12IiEj
 	add     r0, r4, #0x138
 	mov     r1, #0x40000000
 	bl      _ZN9Animation8SetFlagsEi
@@ -578,14 +579,14 @@ LAB_02111d80:
 	ldr     r1, =_ZN6Bowser11texSeqFilesE + 0x08
 	ldr     r0, [r0, #0x4]
 	ldr     r1, [r1, #0x4]
-	bl      _ZN15TextureSequence7PrepareEPcS0_
+	bl      _ZN15TextureSequence7PrepareER8BMD_FileR8BTP_File
 	mov     r2, #0x0
 	ldr     r0, =_ZN6Bowser11texSeqFilesE + 0x08
 	str     r2, [r13]
 	ldr     r1, [r0, #0x4]
 	add     r0, r4, #0x138
 	mov     r3, #0x1000
-	bl      _ZN15TextureSequence7SetFileEPci5Fix12IiEj
+	bl      _ZN15TextureSequence7SetFileER8BTP_Filei5Fix12IiEj
 	add     r0, r4, #0x138
 	mov     r1, #0x40000000
 	bl      _ZN9Animation8SetFlagsEi
@@ -597,14 +598,14 @@ LAB_02111dc8:
 	ldr     r1, =_ZN6Bowser11texSeqFilesE + 0x10
 	ldr     r0, [r0, #0x4]
 	ldr     r1, [r1, #0x4]
-	bl      _ZN15TextureSequence7PrepareEPcS0_
+	bl      _ZN15TextureSequence7PrepareER8BMD_FileR8BTP_File
 	mov     r2, #0x0
 	ldr     r0, =_ZN6Bowser11texSeqFilesE + 0x10
 	str     r2, [r13]
 	ldr     r1, [r0, #0x4]
 	add     r0, r4, #0x138
 	mov     r3, #0x1000
-	bl      _ZN15TextureSequence7SetFileEPci5Fix12IiEj
+	bl      _ZN15TextureSequence7SetFileER8BTP_Filei5Fix12IiEj
 	add     r0, r4, #0x138
 	mov     r1, #0x0
 	bl      _ZN9Animation8SetFlagsEi
@@ -616,14 +617,14 @@ LAB_02111e10:
 	ldr     r1, =_ZN6Bowser11texSeqFilesE + 0x18
 	ldr     r0, [r0, #0x4]
 	ldr     r1, [r1, #0x4]
-	bl      _ZN15TextureSequence7PrepareEPcS0_
+	bl      _ZN15TextureSequence7PrepareER8BMD_FileR8BTP_File
 	mov     r2, #0x0
 	ldr     r0, =_ZN6Bowser11texSeqFilesE + 0x18
 	str     r2, [r13]
 	ldr     r1, [r0, #0x4]
 	add     r0, r4, #0x138
 	mov     r3, #0x1000
-	bl      _ZN15TextureSequence7SetFileEPci5Fix12IiEj
+	bl      _ZN15TextureSequence7SetFileER8BTP_Filei5Fix12IiEj
 	add     r0, r4, #0x138
 	mov     r1, #0x0
 	bl      _ZN9Animation8SetFlagsEi
@@ -635,14 +636,14 @@ LAB_02111e58:
 	ldr     r1, =_ZN6Bowser11texSeqFilesE + 0x28
 	ldr     r0, [r0, #0x4]
 	ldr     r1, [r1, #0x4]
-	bl      _ZN15TextureSequence7PrepareEPcS0_
+	bl      _ZN15TextureSequence7PrepareER8BMD_FileR8BTP_File
 	mov     r2, #0x0
 	ldr     r0, =_ZN6Bowser11texSeqFilesE + 0x28
 	str     r2, [r13]
 	ldr     r1, [r0, #0x4]
 	add     r0, r4, #0x138
 	mov     r3, #0x1000
-	bl      _ZN15TextureSequence7SetFileEPci5Fix12IiEj
+	bl      _ZN15TextureSequence7SetFileER8BTP_Filei5Fix12IiEj
 	add     r0, r4, #0x138
 	mov     r1, #0x40000000
 	bl      _ZN9Animation8SetFlagsEi
@@ -654,14 +655,14 @@ LAB_02111ea0:
 	ldr     r1, =_ZN6Bowser11texSeqFilesE + 0x20
 	ldr     r0, [r0, #0x4]
 	ldr     r1, [r1, #0x4]
-	bl      _ZN15TextureSequence7PrepareEPcS0_
+	bl      _ZN15TextureSequence7PrepareER8BMD_FileR8BTP_File
 	mov     r2, #0x0
 	ldr     r0, =_ZN6Bowser11texSeqFilesE + 0x20
 	str     r2, [r13]
 	ldr     r1, [r0, #0x4]
 	add     r0, r4, #0x138
 	mov     r3, #0x1000
-	bl      _ZN15TextureSequence7SetFileEPci5Fix12IiEj
+	bl      _ZN15TextureSequence7SetFileER8BTP_Filei5Fix12IiEj
 	add     r0, r4, #0x138
 	mov     r1, #0x0
 	bl      _ZN9Animation8SetFlagsEi
@@ -1394,10 +1395,10 @@ LAB_021129cc:
 	cmp     r0, #0x0
 	beq     LAB_02112ab8
 	add     r0, r5, #0x14c
-	bl      0x0203566c
+	bl      _ZNK12WithMeshClsn14GetFloorResultEv
 	add     r0, r0, #0x4
 	add     r1, r5, #0x3bc
-	bl      0x02037dcc
+	bl      _ZNK11SurfaceInfo12CopyNormalToER7Vector3
 	ldr     r0, [r5, #0x5c]
 	str     r0, [r5, #0x3c8]
 	ldr     r0, [r5, #0x60]
@@ -1813,7 +1814,7 @@ LAB_02112fd4:
 	cmp     r0, r1
 	bne     LAB_021130a4
 	mov     r0, #0x3c
-	bl      0x02013050
+	bl      _ZN5Sound22StopLoadedMusic_Layer1Ej
 	mov     r0, r5
 	bl      FUN_021135fc
 	ldr     r0, =#0x3fe
@@ -1957,7 +1958,7 @@ LAB_021131bc:
 	strb    r3, [r12]
 	bl      FUN_02111cc0
 	mov     r0, #0x3c
-	bl      0x02013050
+	bl      _ZN5Sound22StopLoadedMusic_Layer1Ej
 	ldr     r1, =#0x7222
 	mov     r0, #0x7f
 	bl      _ZN5Sound17ChangeMusicVolumeEj5Fix12IiE
@@ -2346,7 +2347,7 @@ FUN_02113740:
 	beq     LAB_021137c0
 	add     r0, r13, #0x1c
 	ldr     r4, [r13, #0x50]
-	bl      0x02037f4c
+	bl      _ZNK10ClsnResult9GetClsnIDEv
 	mvn     r1, #0x0
 	cmp     r0, r1
 	movne   r5, #0x1
@@ -3012,7 +3013,7 @@ LAB_02114144:
 	bne     LAB_02114214
 	add     r0, r4, #0x124
 	mov     r1, #0x5
-	bl      _ZN9Animation13Func_02015A98Ei
+	bl      _ZNK9Animation12WillHitFrameEi
 	cmp     r0, #0x0
 	beq     LAB_02114214
 	ldr     r3, [r4, #0x5c]
@@ -3379,7 +3380,7 @@ FUN_0211469c:
 	bl      FUN_02111cc0
 	add     r0, r4, #0x124
 	mov     r1, #0x20
-	bl      _ZN9Animation13Func_02015A98Ei
+	bl      _ZNK9Animation12WillHitFrameEi
 	cmp     r0, #0x0
 	movne   r0, #0x1
 	moveq   r0, #0x0
@@ -3923,7 +3924,7 @@ FUN_02114e9c:
 	bne     LAB_02114ee0
 	add     r0, r4, #0x124
 	mov     r1, #0x8
-	bl      _ZN9Animation13Func_02015A98Ei
+	bl      _ZNK9Animation12WillHitFrameEi
 	cmp     r0, #0x0
 	beq     LAB_02114ee0
 	add     r1, r4, #0x74
@@ -4599,7 +4600,7 @@ LAB_021157d8:
 	mov     r2, #0x1
 	mov     r1, r1, asr #0x3
 	and     r1, r1, #0x0ff
-	bl      0x02016a9c
+	bl      _ZN9ModelBase12ApplyOpacityEj
 	ldr     r7, =MATRIX_SCRATCH_PAPER
 	add     r6, r13, #0x8
 	ldmia   r7!, { r0-r3 }
@@ -4728,12 +4729,12 @@ FUN_02115a30:
 	cmp     r0, #0x0
 	bne     LAB_02115a6c
 	add     r0, r4, #0x124
-	bl      _ZN9Animation13GetFrameCountEv
+	bl      _ZNK9Animation13GetFrameCountEv
 	sub     r0, r0, #0x1
 	mov     r1, r0, lsl #0x10
 	add     r0, r4, #0x124
 	mov     r1, r1, lsr #0x10
-	bl      _ZN9Animation13Func_02015A98Ei
+	bl      _ZNK9Animation12WillHitFrameEi
 	cmp     r0, #0x0
 	beq     LAB_02115a78
 LAB_02115a6c:
@@ -4989,7 +4990,7 @@ LAB_02115da8:
 	movs    r4, r0
 	popeq   { r4-r6, r14 }
 	bxeq    r14
-	bl      _ZN6Player12Unk_020bea94Ev
+	bl      _ZN6Player15IsCollectingCapEv
 	cmp     r0, #0x0
 	popne   { r4-r6, r14 }
 	bxne    r14
@@ -5155,7 +5156,7 @@ LAB_02115fcc:
 	add     r0, r4, #0x360
 	str     r2, [r13]
 	str     r2, [r13, #0x4]
-	bl      _ZN19CylinderClsnWithPos21SetPosRelativeToActorERK7Vector3
+	bl      _ZN25MovingCylinderClsnWithPos21SetPosRelativeToActorERK7Vector3
 	add     r0, r4, #0x360
 	bl      _ZN12CylinderClsn6UpdateEv
 	ldrb    r0, [r4, #0x42b]
@@ -5234,7 +5235,7 @@ FUN_02116130:
 	add     r0, r4, #0x0d4
 	mov     r2, #0x1
 	mov     r3, #0x16
-	bl      _ZN9ModelBase7SetFileEPcii
+	bl      _ZN9ModelBase7SetFileEP8BMD_Fileii
 	mov     r6, #0x0
 	ldr     r5, =ANIM_FILE_PTRS
 LAB_02116160:
@@ -5270,14 +5271,14 @@ LAB_0211617c:
 	ldr     r1, =_ZN6Bowser11texSeqFilesE + 0x20
 	ldr     r0, [r0, #0x4]
 	ldr     r1, [r1, #0x4]
-	bl      _ZN15TextureSequence7PrepareEPcS0_
+	bl      _ZN15TextureSequence7PrepareER8BMD_FileR8BTP_File
 	mov     r2, #0x0
 	ldr     r0, =_ZN6Bowser11texSeqFilesE + 0x20
 	str     r2, [r13]
 	ldr     r1, [r0, #0x4]
 	add     r0, r4, #0x138
 	mov     r3, #0x1000
-	bl      _ZN15TextureSequence7SetFileEPci5Fix12IiEj
+	bl      _ZN15TextureSequence7SetFileER8BTP_Filei5Fix12IiEj
 	add     r0, r4, #0x138
 	mov     r1, #0x40000000
 	bl      _ZN9Animation8SetFlagsEi
@@ -5294,7 +5295,7 @@ LAB_0211617c:
 	mov     r1, r4
 	add     r2, r13, #0x0c
 	mov     r3, #0x78000
-	bl      _ZN19CylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
+	bl      _ZN25MovingCylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
 	ldr     r1, [r4, #0x5c]
 	mov     r0, #0x2000
 	str     r1, [r4, #0x3b0]
@@ -5438,7 +5439,7 @@ FUN_02116428:
 	add     r0, r4, #0x308
 	bl      _ZN11ShadowModelC1Ev
 	add     r0, r4, #0x360
-	bl      _ZN19CylinderClsnWithPosC1Ev
+	bl      _ZN25MovingCylinderClsnWithPosC1Ev
 LAB_02116470:
 	mov     r0, r4
 	pop     { r4, r14 }

@@ -1,4 +1,5 @@
-#include "BowserSkyPlatform.h"
+#include "SM64DS_2.h"
+#include "Actors/BowserSkyPlatform.h"
 
 extern "C"
 {
@@ -55,7 +56,7 @@ extern "C"
 		Vector3{ -0x00000302, -0x000003e8,  0x00007c00 },
 	};
 	
-	OldFixedSizeCLPS_Block<2> clpsBlock1 =	// 0x021115bc
+	OldFixedSizeSPLC_Block<2> splcBlock1 =	// 0x021115bc
 	{
 		{'C', 'L', 'P', 'S'},
 		0x0008,
@@ -63,12 +64,12 @@ extern "C"
 		{
 			// low: 0x00000fc0, high: 0x000000ff
 			// low: 0x00038fc4, high: 0x000000ff
-			OldCLPS{ 0x00000fc0, 0x000000ff },
-			OldCLPS{ 0x00038fc4, 0x000000ff },
+			OldSPLC{ 0x00000fc0, 0x000000ff },
+			OldSPLC{ 0x00038fc4, 0x000000ff },
         }
 	};
 	
-	OldFixedSizeCLPS_Block<2> clpsBlock2 =	// 0x021115bc
+	OldFixedSizeSPLC_Block<2> splcBlock2 =	// 0x021115bc
 	{
 		{'C', 'L', 'P', 'S'},
 		0x0008,
@@ -76,32 +77,32 @@ extern "C"
 		{
 			// low: 0x00038fc4, high: 0x000000ff
 			// low: 0x00000fc0, high: 0x000000ff
-			OldCLPS{ 0x00000fc0, 0x000000ff },
-			OldCLPS{ 0x00038fc4, 0x000000ff },
+			OldSPLC{ 0x00000fc0, 0x000000ff },
+			OldSPLC{ 0x00038fc4, 0x000000ff },
         }
 	};
 	
-	CLPS_Block* clpsBlocks[10] = // 0x0211a980
+	SPLC_Block* splcBlocks[10] = // 0x0211a980
 	{
-		(CLPS_Block*)&clpsBlock1,
-		(CLPS_Block*)&clpsBlock2,
-		(CLPS_Block*)&clpsBlock1,
-		(CLPS_Block*)&clpsBlock2,
-		(CLPS_Block*)&clpsBlock1,
-		(CLPS_Block*)&clpsBlock2,
-		(CLPS_Block*)&clpsBlock1,
-		(CLPS_Block*)&clpsBlock1,
-		(CLPS_Block*)&clpsBlock1,
-		(CLPS_Block*)&clpsBlock2,
+		(SPLC_Block*)&splcBlock1,
+		(SPLC_Block*)&splcBlock2,
+		(SPLC_Block*)&splcBlock1,
+		(SPLC_Block*)&splcBlock2,
+		(SPLC_Block*)&splcBlock1,
+		(SPLC_Block*)&splcBlock2,
+		(SPLC_Block*)&splcBlock1,
+		(SPLC_Block*)&splcBlock1,
+		(SPLC_Block*)&splcBlock1,
+		(SPLC_Block*)&splcBlock2,
 	};
 	
-	/*using clpsBlock1 = StaticCLPS_Block<
+	/*using splcBlock1 = StaticSPLC_Block<
 		{  },
-		{ .textureID = CLPS::TX_ROCK, .camBehavID = CLPS::CA_GO_BEHIND_7, }
+		{ .textureID = SPLC::TX_ROCK, .camBehavID = SPLC::CA_GO_BEHIND_7, }
 	>;
 	
-	using clpsBlock2 = StaticCLPS_Block<
-		{ .textureID = CLPS::TX_ROCK, .camBehavID = CLPS::CA_GO_BEHIND_7, }, 
+	using splcBlock2 = StaticSPLC_Block<
+		{ .textureID = SPLC::TX_ROCK, .camBehavID = SPLC::CA_GO_BEHIND_7, }, 
 		{  } 
 	>;*/
 	
@@ -129,11 +130,11 @@ SpawnInfo BowserSkyPlatform::spawnData =
 	&FUN_02118408,
 	0x00a7,
 	0x0092,
-	0x00000000,
-	0x00190000_f,
-	0x00190000_f,
-	0x01000000_f,
-	0x01900000_f,
+	0,
+	400._f,
+	400._f,
+	4096._f,
+	6400._f,
 };
 
 asm(R"(
@@ -178,7 +179,7 @@ FUN_02117d1c:
 	push    { r4, r14 }
 	ldr     r2, =VTable_BowserSkyPlatform
 	mov     r4, r0
-	ldr     r1, =VTable_Platform
+	ldr     r1, =_ZTV8Platform
 	str     r2, [r4]
 	add     r0, r4, #0x124
 	str     r1, [r4]
@@ -197,7 +198,7 @@ FUN_02117d60:
 	push    { r4, r14 }
 	ldr     r2, =VTable_BowserSkyPlatform
 	mov     r4, r0
-	ldr     r1, =VTable_Platform
+	ldr     r1, =_ZTV8Platform
 	str     r2, [r4]
 	add     r0, r4, #0x124
 	str     r1, [r4]
@@ -570,7 +571,7 @@ FUN_021182b0:
 	add     r0, r4, #0x0d4
 	mov     r2, #0x1
 	mvn     r3, #0x0
-	bl      _ZN9ModelBase7SetFileEPcii
+	bl      _ZN9ModelBase7SetFileEP8BMD_Fileii
 	add     r0, r4, #0x0dc
 	bl      0x0202b3d8
 	mov     r2, #0x1
@@ -584,14 +585,14 @@ FUN_021182b0:
 	bl      _ZN12MeshCollider8LoadFileER13SharedFilePtr
 	mov     r1, r0
 	ldrsh   r3, [r4, #0x8e]
-	ldr     r2, =clpsBlocks
+	ldr     r2, =splcBlocks
 	add     r0, r4, #0x124
 	str     r3, [r13]
 	ldr     r3, [r2, r5, lsl #0x2]
 	add     r2, r4, #0x2ec
 	str     r3, [r13, #0x4]
 	mov     r3, #0x1000
-	bl      _ZN18MovingMeshCollider7SetFileEPcRK9Matrix4x35Fix12IiEsR10CLPS_Block
+	bl      _ZN18MovingMeshCollider7SetFileEP8KCL_FileRK9Matrix4x35Fix12IiEsR10SPLC_Block
 	add     r0, r4, #0x124
 	ldr     r1, =#0x2039348
 	bl      0x020393d4

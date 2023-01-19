@@ -1,16 +1,16 @@
-#include "HootTheOwl.h"
+#include "SM64DS_2.h"
+#include "Actors/HootTheOwl.h"
 
 void init()
 {
-	asm("mov r11, r11");
 	OBJ_TO_ACTOR_ID_TABLE[HOOT_THE_OWL_OBJECT_ID] = HOOT_THE_OWL_ACTOR_ID;
 	
-	ACTOR_SPAWN_TABLE[HOOT_THE_OWL_ACTOR_ID] = (u32)&HootTheOwl::spawnData;
+	ACTOR_SPAWN_TABLE[HOOT_THE_OWL_ACTOR_ID] = &HootTheOwl::spawnData;
 	
-	HootTheOwl::modelFile   .Construct(HOOT_THE_OWL_MODEL_FILE_ID);
-	HootTheOwl::animFiles[0].Construct(HOOT_THE_OWL_FLY_2_ANIM_FILE_ID);
-	HootTheOwl::animFiles[1].Construct(HOOT_THE_OWL_FLY_FREE_ANIM_FILE_ID);
-	HootTheOwl::animFiles[2].Construct(HOOT_THE_OWL_FLY_1_ANIM_FILE_ID);
+	HootTheOwl::modelFile   .Construct("data/enemy/owl/owl.bmd"ov0);
+	HootTheOwl::animFiles[0].Construct("data/enemy/owl/owl_fly_2.bca"ov0);
+	HootTheOwl::animFiles[1].Construct("data/enemy/owl/owl_fly_free.bca"ov0);
+	HootTheOwl::animFiles[2].Construct("data/enemy/owl/owl_fly_1.bca"ov0);
 }
 
 void cleanup()

@@ -1,4 +1,5 @@
-#include "BowserFire.h"
+#include "SM64DS_2.h"
+#include "Actors/BowserFire.h"
 
 extern "C"
 {
@@ -22,7 +23,7 @@ extern "C"
 	void FUN_02116f90(BowserFire* bowserFire);
 	void FUN_02116f90(BowserFire* bowserFire);
 	
-	Fix12i TERMINAL_VELOCITY[3] = { -0x8000_f, -0x6000_f, -0x6000_f }; // 0x0211934c
+	Fix12i TERMINAL_VELOCITY[3] = { -8._f, -6._f, -6._f }; // 0x0211934c
 	u32 PARTICLE_IDS[3] = { Particle::PTL_FIRE_4, Particle::PTL_FIRE_NEGATIVE, Particle::PTL_FIRE_NEGATIVE }; // 0x02119358
 	u16 UNK_02119364[43][5] = // 0x02119364 (info for the spawned flames?)
 	{
@@ -109,11 +110,11 @@ SpawnInfo BowserFire::spawnData =
 	&FUN_02117938,
 	0x0118,
 	0x0090,
-	0x00000002,
-	0x00050000_f,
-	0x00050000_f,
-	0x01000000_f,
-	0x00800000_f,
+	Actor::NO_RENDER_IF_OFF_SCREEN,
+	80._f,
+	80._f,
+	4096._f,
+	2048._f,
 };
 
 asm(R"(
@@ -216,7 +217,7 @@ LAB_02116540:
 	ldr     r2, [r7, #0x5c]
 	mov     r1, r6
 	add     r3, r3, r4
-	bl      0x02022bb4
+	bl      _ZN8Particle6System17NewUnkCallback818Ejj5Fix12IiES2_S2_PK11Vector3_16f
 	str     r0, [r7, #0x37c]
 	b       LAB_0211659c
 LAB_02116570:
@@ -937,7 +938,7 @@ FUN_02116f90:
 	ldr     r2, [r4, #0x5c]
 	add     r3, r1, #0x37000
 	mov     r1, #0x9e
-	bl      0x02022bb4
+	bl      _ZN8Particle6System17NewUnkCallback818Ejj5Fix12IiES2_S2_PK11Vector3_16f
 	str     r0, [r4, #0x37c]
 	add     r2, r4, #0x2e8
 	ldr     r1, [r2]
@@ -1184,7 +1185,7 @@ FUN_021172e0:
 	mov     r4, #0x1
 LAB_02117384:
 	mov     r0, r5
-	bl      0x0201392c
+	bl      _ZN8SaveData19IsCharacterUnlockedEj
 	cmp     r0, #0x0
 	orrne   r0, r8, r4, lsl r5
 	add     r5, r5, #0x1
@@ -1285,7 +1286,7 @@ LAB_021174ac:
 	ldrsh   r5, [r3, r5]
 	ldrsh   r4, [r3, r2]
 	ldr     r6, =UNK_02119364
-	bl      _ZN9Animation13GetFrameCountEv
+	bl      _ZNK9Animation13GetFrameCountEv
 	cmp     r8, r0
 	moveq   r8, #0x0
 	mov     r0, #0x5

@@ -1,16 +1,14 @@
-#include "CastleWater.h"
+#include "SM64DS_2.h"
+#include "Actors/CastleWater.h"
 
 void init()
 {
-	// modify object id to actor id table
 	OBJ_TO_ACTOR_ID_TABLE[CASTLE_WATER_OBJECT_ID] = CASTLE_WATER_ACTOR_ID;
 	
-	// modify actor spawn table
-	ACTOR_SPAWN_TABLE[CASTLE_WATER_ACTOR_ID] = (u32)&CastleWater::spawnData;
+	ACTOR_SPAWN_TABLE[CASTLE_WATER_ACTOR_ID] = &CastleWater::spawnData;
 	
-	// construct shared file pointers
-	CastleWater::modelFile.Construct(CASTLE_WATER_MODEL_FILE_ID);
-	CastleWater::clsnFile.Construct(CASTLE_WATER_COLLISION_FILE_ID);
+	CastleWater::modelFile.Construct("data/special_obj/mc_water/mc_water.bmd"ov0);
+	CastleWater::clsnFile.Construct("data/special_obj/mc_water/mc_water.kcl"ov0);
 }
 
 void cleanup()

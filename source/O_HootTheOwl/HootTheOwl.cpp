@@ -1,4 +1,5 @@
-#include "HootTheOwl.h"
+#include "SM64DS_2.h"
+#include "Actors/HootTheOwl.h"
 
 extern "C"
 {
@@ -16,25 +17,25 @@ extern "C"
 	void FUN_02135bd4(HootTheOwl* hootTheOwl);
 	void FUN_021359d8(HootTheOwl* hootTheOwl);
 	
-	Vector3 UNK_02136a1c = Vector3{ 0_f, -0x20000_f, 0_f }; // 0x02136a1c
+	Vector3 UNK_02136a1c = Vector3{ 0._f, -32._f, 0._f }; // 0x02136a1c
 	
 	using StateFunc = void(*)(HootTheOwl*);
 	
 	struct State
 	{
 		StateFunc func1;
-		u32 unk04;
+		u32 unk04 = 0;
 		StateFunc func2;
-		u32 unk0c;
+		u32 unk0c = 0;
 	};
 	
 	State states[5] = // 0x02126ffc
 	{
-		{ &FUN_0213598c, 0, &FUN_021358b4, 0 },
-		{ &FUN_02136150, 0, &FUN_02136024, 0 },
-		{ &FUN_02135fe0, 0, &FUN_02135ee0, 0 },
-		{ &FUN_02135e64, 0, &FUN_02135c28, 0 },
-		{ &FUN_02135bd4, 0, &FUN_021359d8, 0 },
+		{ &FUN_0213598c , 0, &FUN_021358b4, 0 },
+		{ &FUN_02136150 , 0, &FUN_02136024, 0 },
+		{ &FUN_02135fe0 , 0, &FUN_02135ee0, 0 },
+		{ &FUN_02135e64 , 0, &FUN_02135c28, 0 },
+		{ &FUN_02135bd4 , 0, &FUN_021359d8, 0 },
 	};
 }
 
@@ -46,11 +47,11 @@ SpawnInfo HootTheOwl::spawnData =
 	&FUN_02136798,
 	0x00ea,
 	0x0059,
-	0x00000000,
-	0x00064000_f,
-	0x000c8000_f,
-	0x01000000_f,
-	0x01000000_f,
+	0,
+	100._f,
+	200._f,
+	4096._f,
+	4096._f,
 };
 
 asm(R"(
@@ -102,7 +103,7 @@ FUN_02135700:
 	add     r0, r4, #0x150
 	bl      _ZN12WithMeshClsnD1Ev
 	add     r0, r4, #0x110
-	bl      _ZN19CylinderClsnWithPosD1Ev
+	bl      _ZN25MovingCylinderClsnWithPosD1Ev
 	mov     r0, r4
 	bl      0x020aed18
 	mov     r0, r4
@@ -123,7 +124,7 @@ FUN_02135748:
 	add     r0, r4, #0x150
 	bl      _ZN12WithMeshClsnD1Ev
 	add     r0, r4, #0x110
-	bl      _ZN19CylinderClsnWithPosD1Ev
+	bl      _ZN25MovingCylinderClsnWithPosD1Ev
 	mov     r0, r4
 	bl      0x020aed18
 	ldr     r1, =_ZN6Memory11gameHeapPtrE
@@ -149,7 +150,7 @@ FUN_021357a4:
 	str     r3, [r13, #0x0c]
 	str     r2, [r13, #0x10]
 	add     r0, r4, #0x110
-	bl      _ZN19CylinderClsnWithPos21SetPosRelativeToActorERK7Vector3
+	bl      _ZN25MovingCylinderClsnWithPos21SetPosRelativeToActorERK7Vector3
 	ldr     r0, [r4, #0x134]
 	cmp     r0, #0x0
 	addeq   r13, r13, #0x18
@@ -277,7 +278,7 @@ FUN_0213598c:
 	ldr     r1, [r1, #0x4]
 	add     r0, r0, #0x30c
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	mov     r0, #0x1
 	add     r13, r13, #0x4
 	pop     { r14 }
@@ -299,7 +300,7 @@ FUN_021359d8:
 	ldr     r1, [r0, #0x4]
 	add     r0, r4, #0x30c
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	mov     r0, #0x1000
 	str     r0, [r4, #0x3f0]
 LAB_02135a18:
@@ -357,7 +358,7 @@ LAB_02135aa8:
 	ldr     r1, [r0, #0x4]
 	add     r0, r4, #0x30c
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 LAB_02135ae8:
 	mov     r12, #0x100
 	add     r0, r4, #0x92
@@ -435,7 +436,7 @@ FUN_02135bd4:
 	ldr     r1, [r0, #0x4]
 	add     r0, r4, #0x30c
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	mov     r0, #0x2000
 	str     r0, [r4, #0x3f0]
 	mov     r0, #0x1
@@ -600,7 +601,7 @@ FUN_02135e64:
 	ldr     r1, [r1, #0x4]
 	add     r0, r4, #0x30c
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	ldr     r0, =RNG_STATE
 	bl      RandomIntInternal
 	mov     r1, r0, lsr #0x8
@@ -704,7 +705,7 @@ FUN_02135fe0:
 	ldr     r1, [r1, #0x4]
 	add     r0, r0, #0x30c
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	mov     r0, #0x1
 	add     r13, r13, #0x4
 	pop     { r14 }
@@ -799,7 +800,7 @@ FUN_02136150:
 	ldr     r1, [r1, #0x4]
 	add     r0, r0, #0x30c
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	mov     r0, #0x1
 	add     r13, r13, #0x4
 	pop     { r14 }
@@ -852,7 +853,7 @@ FUN_021361d8:
 	ldrb    r1, [r4, #0x3e4]
 	add     r0, r4, #0x30c
 	mov     r2, #0x1
-	bl      0x02016a9c
+	bl      _ZN9ModelBase12ApplyOpacityEj
 	ldr     r7, =MATRIX_SCRATCH_PAPER
 	add     r6, r4, #0x328
 	mov     r5, r6
@@ -927,7 +928,7 @@ FUN_021362e0:
 	mov     r1, #0x3000
 	mov     r2, r6
 	mov     r3, r6
-	bl      Matrix4x3_ConcatPos
+	bl      Matrix4x3_ApplyInPlaceToTranslation
 	mov     r1, #0x6000
 	ldr     r0, =MATRIX_SCRATCH_PAPER
 	rsb     r1, r1, #0x0
@@ -1138,7 +1139,7 @@ FUN_02136634:
 	add     r0, r4, #0x30c
 	mov     r2, #0x1
 	mvn     r3, #0x0
-	bl      _ZN9ModelBase7SetFileEPcii
+	bl      _ZN9ModelBase7SetFileEP8BMD_Fileii
 	add     r0, r4, #0x370
 	bl      _ZN11ShadowModel12InitCylinderEv
 	ldr     r0, =_ZN10HootTheOwl9animFilesE + 0x10
@@ -1163,7 +1164,7 @@ FUN_02136634:
 	add     r0, r4, #0x110
 	mov     r1, r4
 	add     r2, r13, #0x0c
-	bl      _ZN19CylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
+	bl      _ZN25MovingCylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
 	mov     r3, #0x0
 	mov     r0, #0x1e000
 	str     r3, [r4, #0x3cc]
@@ -1224,7 +1225,7 @@ FUN_02136798:
 	ldr     r1, =VTable_HootTheOwl
 	add     r0, r4, #0x110
 	str     r1, [r4]
-	bl      _ZN19CylinderClsnWithPosC1Ev
+	bl      _ZN25MovingCylinderClsnWithPosC1Ev
 	add     r0, r4, #0x150
 	bl      _ZN12WithMeshClsnC1Ev
 	add     r0, r4, #0x30c

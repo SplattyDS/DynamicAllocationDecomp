@@ -22,7 +22,7 @@ endef
 #---------------------------------------------------------------------------------
 export PORTLIBS := $(DEVKITPRO)/portlibs/arm
 export PATH     := $(DEVKITARM)/bin:$(PORTLIBS)/bin:$(PATH)
-LIBNDS          := $(DEVKITPRO)/libnds
+# LIBNDS          := $(DEVKITPRO)/libnds
 
 #---------------------------------------------------------------------------------
 # the prefix on the compiler executables
@@ -48,19 +48,17 @@ export LD      := $(PREFIX)ld
 #---------------------------------------------------------------------------------
 TARGET   := newcode
 BUILD    := build
-SOURCES  := source/E_Bowser libfat_source
-# SOURCES  := symbol_tester libfat_source
-# SOURCES  := mangler libfat_source
+SOURCES  := source/E_Goomba
 INCLUDES := include
-DATA     := data  
-GRAPHICS := gfx  
+DATA     := data
+GRAPHICS := gfx
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 ARCH :=
 
-CFLAGS := -Wall -Wextra -Werror -Wno-unused-result -Wno-unused-parameter -Wno-parentheses \
+CFLAGS := -Wall -Wextra -Werror -Wno-unused-result -Wno-unused-parameter -Wno-parentheses -Wno-literal-suffix \
           -Os -march=armv5te -mtune=arm946e-s -fomit-frame-pointer -fwrapv \
           $(ARCH) $(INCLUDE) -DARM9 -nodefaultlibs -I. -fno-builtin -c
 
@@ -78,14 +76,16 @@ endif
 # any extra libraries we wish to link with the project (order is important)
 #---------------------------------------------------------------------------------
 #LIBS :=  -lnds9 -lc -lgcc
-LIBS :=  -lnds9 -lc
- 
- 
+#LIBS :=  -lnds9 -lc
+LIBS :=  -lc
+
+
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS := $(LIBNDS)  $(DEVKITARM) $(DEVKITARM)/arm-none-eabi 
+# LIBDIRS := $(LIBNDS)  $(DEVKITARM) $(DEVKITARM)/arm-none-eabi 
+LIBDIRS := $(DEVKITARM) $(DEVKITARM)/arm-none-eabi 
 
 #---------------------------------------------------------------------------------
 ifneq ($(BUILD),$(notdir $(CURDIR)))
@@ -108,15 +108,15 @@ BINFILES := $(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 export OFILES := $(addsuffix .o,$(BINFILES)) \
                  $(PNGFILES:.png=.o) \
                  $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
- 
+
 export INCLUDE := $(foreach dir,$(INCLUDES),-iquote $(CURDIR)/$(dir)) \
                   $(foreach dir,$(LIBDIRS),-I$(dir)/include) -I$(CURDIR)/$(BUILD)
- 
+
 export LIBPATHS := $(foreach dir,$(LIBDIRS),-L$(dir)/lib) -L$(DEVKITARM)/lib/gcc/arm-none-eabi/4.7.1
 
- 
+
 .PHONY: $(BUILD) clean
-  
+
 #---------------------------------------------------------------------------------
 $(BUILD):
 	@[ -d $@ ] || mkdir -p $@
@@ -129,7 +129,7 @@ clean:
 
 #---------------------------------------------------------------------------------
 else
- 
+
 #---------------------------------------------------------------------------------
 # main targets
 #---------------------------------------------------------------------------------

@@ -1,4 +1,5 @@
-#include "BowserShockwaves.h"
+#include "SM64DS_2.h"
+#include "Actors/BowserShockwaves.h"
 
 extern "C"
 {
@@ -8,7 +9,7 @@ extern "C"
 	// 0x021115e4 (ov48, .bma file)
 	// 0x021115f4 (ov48, .bta file)
 	
-	Fix12i UNK_0211ab20[4] = { 0x787_f, 0x800_f, 0xf0f_f, 0x1000_f }; // 0x0211ab20
+	Fix12i UNK_0211ab20[4] = { 0.4704_f, 0.5_f, 0.9411_f, 1._f }; // 0x0211ab20
 }
 
 SharedFilePtr BowserShockwaves::modelFile;
@@ -20,11 +21,11 @@ SpawnInfo BowserShockwaves::spawnData =
 	&FUN_021191f4,
 	0x0119,
 	0x0094,
-	0x00000000,
-	0x00064000_f,
-	0x00064000_f,
-	0x01000000_f,
-	0x01000000_f,
+	0,
+	100._f,
+	100._f,
+	4096._f,
+	4096._f,
 };
 
 asm(R"(
@@ -285,13 +286,13 @@ FUN_02119004:
 	add     r0, r4, #0x0d4
 	mov     r2, #0x1
 	mov     r3, #0x13
-	bl      _ZN9ModelBase7SetFileEPcii
+	bl      _ZN9ModelBase7SetFileEP8BMD_Fileii
 	ldr     r1, =_ZN16BowserShockwaves9modelFileE
 	add     r0, r4, #0x174
 	ldr     r1, [r1, #0x4]
 	mov     r2, #0x1
 	mov     r3, #0x13
-	bl      _ZN9ModelBase7SetFileEPcii
+	bl      _ZN9ModelBase7SetFileEP8BMD_Fileii
 	ldr     r0, =_ZN16BowserShockwaves8animFileE
 	bl      _ZN9Animation8LoadFileER13SharedFilePtr
 	ldr     r0, =_ZN16BowserShockwaves10texSeqFileE
@@ -309,7 +310,7 @@ FUN_02119004:
 	mov     r2, #0x40000000
 	ldr     r1, [r1, #0x4]
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	mov     r0, #0x0
 	str     r0, [r13]
 	add     r0, r4, #0x174
@@ -317,17 +318,17 @@ FUN_02119004:
 	mov     r2, #0x40000000
 	ldr     r1, [r1, #0x4]
 	mov     r3, #0x1000
-	bl      _ZN9ModelAnim7SetAnimEPci5Fix12IiEj
+	bl      _ZN9ModelAnim7SetAnimEP8BCA_Filei5Fix12IiEj
 	ldr     r0, =_ZN16BowserShockwaves9modelFileE
 	ldr     r1, =_ZN16BowserShockwaves10texSeqFileE
 	ldr     r0, [r0, #0x4]
 	ldr     r1, [r1, #0x4]
-	bl      _ZN15TextureSequence7PrepareEPcS0_
+	bl      _ZN15TextureSequence7PrepareER8BMD_FileR8BTP_File
 	ldr     r0, =_ZN16BowserShockwaves9modelFileE
 	ldr     r1, =_ZN16BowserShockwaves10texSeqFileE
 	ldr     r0, [r0, #0x4]
 	ldr     r1, [r1, #0x4]
-	bl      _ZN15TextureSequence7PrepareEPcS0_
+	bl      _ZN15TextureSequence7PrepareER8BMD_FileR8BTP_File
 	mov     r0, #0x0
 	str     r0, [r13]
 	add     r0, r4, #0x138
@@ -335,7 +336,7 @@ FUN_02119004:
 	mov     r2, #0x40000000
 	ldr     r1, [r1, #0x4]
 	mov     r3, #0x1000
-	bl      _ZN15TextureSequence7SetFileEPci5Fix12IiEj
+	bl      _ZN15TextureSequence7SetFileER8BTP_Filei5Fix12IiEj
 	mov     r0, #0x0
 	str     r0, [r13]
 	add     r0, r4, #0x1d8
@@ -343,51 +344,51 @@ FUN_02119004:
 	mov     r2, #0x40000000
 	ldr     r1, [r1, #0x4]
 	mov     r3, #0x1000
-	bl      _ZN15TextureSequence7SetFileEPci5Fix12IiEj
+	bl      _ZN15TextureSequence7SetFileER8BTP_Filei5Fix12IiEj
 	ldr     r0, =_ZN16BowserShockwaves9modelFileE
 	ldr     r1, =#0x21115e4
 	ldr     r0, [r0, #0x4]
-	bl      _ZN15MaterialChanger7PrepareEPcR11MaterialDef
+	bl      _ZN15MaterialChanger7PrepareER8BMD_FileR8BMA_File
 	ldr     r0, =_ZN16BowserShockwaves9modelFileE
 	ldr     r1, =#0x21115e4
 	ldr     r0, [r0, #0x4]
-	bl      _ZN15MaterialChanger7PrepareEPcR11MaterialDef
+	bl      _ZN15MaterialChanger7PrepareER8BMD_FileR8BMA_File
 	mov     r0, #0x0
 	str     r0, [r13]
 	add     r0, r4, #0x14c
 	ldr     r1, =#0x21115e4
 	mov     r2, #0x40000000
 	mov     r3, #0x1000
-	bl      _ZN15MaterialChanger11SetMaterialER11MaterialDefi5Fix12IiEj
+	bl      _ZN15MaterialChanger7SetFileER8BMA_Filei5Fix12IiEj
 	mov     r0, #0x0
 	str     r0, [r13]
 	add     r0, r4, #0x1ec
 	ldr     r1, =#0x21115e4
 	mov     r2, #0x40000000
 	mov     r3, #0x1000
-	bl      _ZN15MaterialChanger11SetMaterialER11MaterialDefi5Fix12IiEj
+	bl      _ZN15MaterialChanger7SetFileER8BMA_Filei5Fix12IiEj
 	ldr     r0, =_ZN16BowserShockwaves9modelFileE
 	ldr     r1, =#0x21115f4
 	ldr     r0, [r0, #0x4]
-	bl      _ZN18TextureTransformer7PrepareEPcR9TexSRTDef
+	bl      _ZN18TextureTransformer7PrepareER8BMD_FileR8BTA_File
 	ldr     r0, =_ZN16BowserShockwaves9modelFileE
 	ldr     r1, =#0x21115f4
 	ldr     r0, [r0, #0x4]
-	bl      _ZN18TextureTransformer7PrepareEPcR9TexSRTDef
+	bl      _ZN18TextureTransformer7PrepareER8BMD_FileR8BTA_File
 	mov     r0, #0x0
 	str     r0, [r13]
 	add     r0, r4, #0x160
 	ldr     r1, =#0x21115f4
 	mov     r2, #0x40000000
 	mov     r3, #0x1000
-	bl      _ZN18TextureTransformer9SetTexSRTER9TexSRTDefi5Fix12IiEj
+	bl      _ZN18TextureTransformer7SetFileER8BTA_Filei5Fix12IiEj
 	mov     r0, #0x0
 	str     r0, [r13]
 	add     r0, r4, #0x200
 	ldr     r1, =#0x21115f4
 	mov     r2, #0x40000000
 	mov     r3, #0x1000
-	bl      _ZN18TextureTransformer9SetTexSRTER9TexSRTDefi5Fix12IiEj
+	bl      _ZN18TextureTransformer7SetFileER8BTA_Filei5Fix12IiEj
 	add     r0, r4, #0x200
 	mov     r1, #0x0
 	strh    r1, [r0, #0x14]

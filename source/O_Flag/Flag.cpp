@@ -1,33 +1,32 @@
-#include "Flag.h"
+#include "SM64DS_2.h"
+#include "Actors/Flag.h"
 
-SharedFilePtr Flag::modelFile;	// 0x02113eb8
-SharedFilePtr Flag::animFile;	// 0x02113eb0
-
-SpawnInfo Flag::spawnData =		// 0x02113b7c
+SpawnInfo Flag::spawnData =
 {
-	[]() -> ActorBase* { return new Flag; }, // 0x021121f0
+	[]() -> ActorBase* { return new Flag; },
 	0x0156,
 	0x0156,
-	0x20000003,
-	0x000c8000_f,
-	0x000c8000_f,
-	0x03000000_f,
-	0x00000000_f
+	Actor::NO_BEHAVIOR_IF_OFF_SCREEN | Actor::NO_RENDER_IF_OFF_SCREEN | Actor::UPDATE_DURING_CUTSCENE,
+	200._f,
+	200._f,
+	12288._f,
+	0._f,
 };
 
-// 0x02112190
+SharedFilePtr Flag::modelFile;
+SharedFilePtr Flag::animFile;
+
 s32 Flag::InitResources()
 {
 	Model::LoadFile(modelFile);
-	modelAnim.SetFile(modelFile.filePtr, 1, 0);
+	modelAnim.SetFile(modelFile.BMD(), 1, 0);
 	
 	Animation::LoadFile(animFile);
-	modelAnim.SetAnim(animFile.filePtr, 0, 0x1000_f, 0);
+	modelAnim.SetAnim(animFile.BCA(), 0, 1._f, 0);
 	
 	return 1;
 }
 
-// 0x021120ec
 s32 Flag::CleanupResources()
 {
 	modelFile.Release();
@@ -35,7 +34,6 @@ s32 Flag::CleanupResources()
 	return 1;
 }
 
-// 0x02112144
 s32 Flag::Behavior()
 {
 	modelAnim.Advance();
@@ -44,9 +42,11 @@ s32 Flag::Behavior()
 	return 1;
 }
 
-// 0x0211211c
 s32 Flag::Render()
 {
 	modelAnim.Render();
 	return 1;
 }
+
+Flag::Flag() {}
+Flag::~Flag() {}

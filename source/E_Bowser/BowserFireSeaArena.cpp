@@ -1,4 +1,5 @@
-#include "BowserFireSeaArena.h"
+#include "SM64DS_2.h"
+#include "Actors/BowserFireSeaArena.h"
 
 extern "C"
 {
@@ -7,21 +8,21 @@ extern "C"
 	// undocumented globals not in ov60:
 	// 0x0203929c
 	
-	OldFixedSizeCLPS_Block<2> clpsBlock =	// 0x021115bc
+	OldFixedSizeSPLC_Block<2> splcBlock =	// 0x021115bc
 	{
 		{'C', 'L', 'P', 'S'},
 		0x0008,
 		0x0001,
 		{
-			OldCLPS{ 0x00000fc0, 0x000000ff },
-			OldCLPS{ 0x00038fc4, 0x000000ff },
+			OldSPLC{ 0x00000fc0, 0x000000ff },
+			OldSPLC{ 0x00038fc4, 0x000000ff },
         }
 	};
 
 	// 0x021115bc use this for decomp
-	/* using clpsBlock = StaticCLPS_Block<
+	/* using splcBlock = StaticSPLC_Block<
 		{  },
-		{ .textureID = CLPS::TX_ROCK, .camBehavID = CLPS::CA_GO_BEHIND_7, }
+		{ .textureID = SPLC::TX_ROCK, .camBehavID = SPLC::CA_GO_BEHIND_7, }
 	>;*/
 }
 
@@ -33,11 +34,11 @@ SpawnInfo BowserFireSeaArena::spawnData =
 	&FUN_02117cdc,
 	0x00a6,
 	0x0091,
-	0x00000000,
-	0x00000000_f,
-	0x01388000_f,
-	0x01388000_f,
-	0x01388000_f,
+	0,
+	0._f,
+	5000._f,
+	5000._f,
+	5000._f,
 };
 
 asm(".global FUN_02117a3c");
@@ -89,7 +90,7 @@ FUN_02117980:
 	bl      _ZN18MovingMeshColliderD1Ev
 	add     r0, r4, #0x324
 	bl      _ZN5ModelD1Ev
-	ldr     r1, =VTable_Platform
+	ldr     r1, =_ZTV8Platform
 	add     r0, r4, #0x124
 	str     r1, [r4]
 	bl      _ZN18MovingMeshColliderD1Ev
@@ -112,7 +113,7 @@ FUN_021179d4:
 	bl      _ZN18MovingMeshColliderD1Ev
 	add     r0, r4, #0x324
 	bl      _ZN5ModelD1Ev
-	ldr     r1, =VTable_Platform
+	ldr     r1, =_ZTV8Platform
 	add     r0, r4, #0x124
 	str     r1, [r4]
 	bl      _ZN18MovingMeshColliderD1Ev
@@ -286,20 +287,20 @@ FUN_02117c30:
 	add     r0, r4, #0x324
 	mov     r2, #0x1
 	mvn     r3, #0x0
-	bl      _ZN9ModelBase7SetFileEPcii
+	bl      _ZN9ModelBase7SetFileEP8BMD_Fileii
 	mov     r0, r4
 	bl      FUN_02117a64
 	ldr     r0, =_ZN18BowserFireSeaArena8clsnFileE
 	bl      _ZN12MeshCollider8LoadFileER13SharedFilePtr
 	mov     r1, r0
 	ldrsh   r3, [r4, #0x8e]
-	ldr     r2, =clpsBlock
+	ldr     r2, =splcBlock
 	add     r0, r4, #0x374
 	str     r3, [r13]
 	str     r2, [r13, #0x4]
 	add     r2, r4, #0x2ec
 	mov     r3, #0x1000
-	bl      _ZN18MovingMeshCollider7SetFileEPcRK9Matrix4x35Fix12IiEsR10CLPS_Block
+	bl      _ZN18MovingMeshCollider7SetFileEP8KCL_FileRK9Matrix4x35Fix12IiEsR10SPLC_Block
 	add     r0, r4, #0x374
 	ldr     r1, =#0x203929c
 	bl      0x020393d4

@@ -1,17 +1,17 @@
-#include "CastleWater.h"
+#include "SM64DS_2.h"
+#include "Actors/CastleWater.h"
 
 namespace
 {
-	// 0x02112c38
-	using clpsBlock = StaticCLPS_Block<
-		{ .isWater = true }					// low: 0x00000fe0, high: 0x000000ff
+	using splcBlock = StaticSPLC_Block<
+		{ .isWater = true }
 	>;
 	
-	const char waterMatName[] = "water_mat";	// 0x02112b7c
+	char waterMatName[] = "water_mat";
 	
-	Fix12i waterScales[] = {0x1000_f};	// 0x02112234
-	s16 waterRots[] = {0};			// 0x0211222c
-	Fix12i waterTranss[] = {0x00000000_f, 0x0000002e_f, 0x0000005b_f, 0x00000089_f, // 0x021122ec
+	Fix12i waterScales[] = {0x1000_f};
+	s16 waterRots[] = {0};
+	Fix12i waterTranss[] = {0x00000000_f, 0x0000002e_f, 0x0000005b_f, 0x00000089_f,
 							0x000000b6_f, 0x000000e4_f, 0x00000111_f, 0x0000013f_f,
 							0x0000016c_f, 0x0000019a_f, 0x000001c7_f, 0x000001f5_f,
 							0x00000222_f, 0x00000250_f, 0x0000027d_f, 0x000002ab_f,
@@ -35,9 +35,9 @@ namespace
 							0x00000eef_f, 0x00000f1c_f, 0x00000f4a_f, 0x00000f77_f,
 							0x00000fa5_f, 0x00000fd2_f, 0x00001000_f};
 							
-	TexSRTAnim waterAnims[] =	// 0x02112238
+	BTA_File::Animation waterAnims[] =
 	{
-		TexSRTAnim
+		BTA_File::Animation
 		{
 			0,
 			0, //probably just padding
@@ -54,8 +54,8 @@ namespace
 			0  //transYOffset
 		}
 	};
-		
-	TexSRTDef waterSRTDef // 0x02112bc4
+	
+	BTA_File waterSRTDef
 	{
 		0x5b,
 		&waterScales[0],
@@ -67,76 +67,76 @@ namespace
 	
 	constexpr s32 NUM_MIST_PARTICLES = 7;
 	
-	static Vector3 mistPosVS[] =		// 0x02113de0
+	const Vector3 mistPosVS[] =
 	{
-		Vector3{-0x014d2000_f, -0x0042e000_f, -0x00960000_f},
-		Vector3{-0x0140a000_f, -0x0042e000_f, -0x00a32000_f},
-		Vector3{-0x0136a000_f, -0x0042e000_f, -0x00b18000_f},
-		Vector3{-0x012f2000_f, -0x0042e000_f, -0x00c12000_f},
-		Vector3{-0x01284000_f, -0x0042e000_f, -0x00d0c000_f},
-		Vector3{-0x01266000_f, -0x0042e000_f, -0x00e1a000_f},
-		Vector3{-0x0128e000_f, -0x0042e000_f, -0x00f32000_f}
+		{ -5330._f, -1070._f, -2400._f },
+		{ -5130._f, -1070._f, -2610._f },
+		{ -4970._f, -1070._f, -2840._f },
+		{ -4850._f, -1070._f, -3090._f },
+		{ -4740._f, -1070._f, -3340._f },
+		{ -4710._f, -1070._f, -3610._f },
+		{ -4750._f, -1070._f, -3890._f }
 	};
 	
-	static Vector3 mistPosRegular[] =	// 0x02113d8c
+	const Vector3 mistPosRegular[] =
 	{
-		Vector3{-0x016b2000_f, -0x0005a000_f, -0x009f6000_f},
-		Vector3{-0x015e0000_f, -0x0005a000_f, -0x00ad2000_f},
-		Vector3{-0x01540000_f, -0x0005a000_f, -0x00bc2000_f},
-		Vector3{-0x014aa000_f, -0x0005a000_f, -0x00cbc000_f},
-		Vector3{-0x01450000_f, -0x0005a000_f, -0x00dca000_f},
-		Vector3{-0x0141e000_f, -0x0005a000_f, -0x00eec000_f},
-		Vector3{-0x0141e000_f, -0x0005a000_f, -0x0100e000_f}
+		{ -5810._f, -90._f, -2550._f },
+		{ -5600._f, -90._f, -2770._f },
+		{ -5440._f, -90._f, -3010._f },
+		{ -5290._f, -90._f, -3260._f },
+		{ -5200._f, -90._f, -3530._f },
+		{ -5150._f, -90._f, -3820._f },
+		{ -5150._f, -90._f, -4110._f }
 	};
 	
-	static Vector3 mistPosDrained[] =	// 0x02113e34
+	const Vector3 mistPosDrained[] =
 	{
-		Vector3{-0x0152c000_f, -0x00320000_f, -0x0097e000_f},
-		Vector3{-0x01450000_f, -0x00320000_f, -0x00a46000_f},
-		Vector3{-0x013a6000_f, -0x00320000_f, -0x00b2c000_f},
-		Vector3{-0x01324000_f, -0x00320000_f, -0x00c30000_f},
-		Vector3{-0x012ac000_f, -0x00320000_f, -0x00d34000_f},
-		Vector3{-0x012ac000_f, -0x00320000_f, -0x00da2000_f},
-		Vector3{-0x01298000_f, -0x00320000_f, -0x00e56000_f}
+		{ -5420._f, -800._f, -2430._f },
+		{ -5200._f, -800._f, -2630._f },
+		{ -5030._f, -800._f, -2860._f },
+		{ -4900._f, -800._f, -3120._f },
+		{ -4780._f, -800._f, -3380._f },
+		{ -4780._f, -800._f, -3490._f },
+		{ -4760._f, -800._f, -3670._f }
 	};
 }
 
-SharedFilePtr CastleWater::modelFile; // 0x02113c68
-SharedFilePtr CastleWater::clsnFile; // 0x02113c70
-
-SpawnInfo CastleWater::spawnData = // 0x021139f4
+SpawnInfo CastleWater::spawnData =
 {
-	[]() -> ActorBase* { return new CastleWater; }, // 0x02111d8c
+	[]() -> ActorBase* { return new CastleWater; },
 	0x0152,
 	0x0152,
-	0x00000000,
-	0x00000000_f,
-	0x00320000_f,
-	0x01f40000_f,
-	0x00050000_f
+	0,
+	0._f,
+	800._f,
+	8000._f,
+	80._f,
 };
 
-// 0x02111c74
+SharedFilePtr CastleWater::modelFile;
+SharedFilePtr CastleWater::clsnFile;
+
 s32 CastleWater::InitResources()
 {
 	// the moat was drained and the player is not in VS mode
 	if (CURRENT_GAMEMODE != 1 && (SAVE_DATA.miscStates2 & 0x08) != 0)
-		pos.y = -0x2bc000_f;
+		pos.y = -700._f;
 	
 	Model::LoadFile(modelFile);
-	model.SetFile(modelFile.filePtr, 1, 0x14);
+	model.SetFile(modelFile.BMD(), 1, 20);
 	
-	TextureTransformer::Prepare(modelFile.filePtr, waterSRTDef);
-	texSRT.SetTexSRT(waterSRTDef, Animation::LOOP, 0x1000_f, 0);
+	TextureTransformer::Prepare(*modelFile.BMD(), waterSRTDef);
+	texSRT.SetFile(waterSRTDef, Animation::LOOP, 1._f, 0);
 	
 	Platform::UpdateModelPosAndRotY();
 	Platform::UpdateClsnPosAndRot();
 	
 	MovingMeshCollider::LoadFile(clsnFile);
-	clsn.SetFile(clsnFile.filePtr, clsnNextMat, 0x1000_f, ang.y, clpsBlock::instance<>);
-	clsn.Enable();
+	clsn.SetFile(clsnFile.KCL(), clsnNextMat, 1._f, ang.y, splcBlock::instance<>);
+	clsn.range = 13000._f;
+	clsn.Enable(this);
 	
-	Fix12i waterHeight = pos.y - 0x64000_f;
+	Fix12i waterHeight = pos.y - 100._f;
 	if (waterHeight < WATER_HEIGHT)
 		WATER_HEIGHT = waterHeight;
 	
@@ -145,27 +145,21 @@ s32 CastleWater::InitResources()
 	return 1;
 }
 
-// 0x02111bd4
 s32 CastleWater::CleanupResources()
 {
 	modelFile.Release();
 	clsnFile.Release();
-	
-	if (clsn.IsEnabled())
-		clsn.Disable();
-	
+	clsn.DisableIfEnabled();
 	return 1;
 }
 
-// 0x02111c4c
 s32 CastleWater::Behavior()
 {
-	texSRT.speed = 0x1000_f;
+	texSRT.speed = 1._f;
 	texSRT.Advance();
 	return 1;
 }
 
-// 0x02111c18
 s32 CastleWater::Render()
 {
 	texSRT.Update(model.data);
@@ -173,15 +167,14 @@ s32 CastleWater::Render()
 	return 1;
 }
 
-// 0x02111b1c
 void CastleWater::SpawnMistParticles()
 {
-	Vector3* mistPos;
+	const Vector3* mistPos;
 	
 	// VS mode
 	if (CURRENT_GAMEMODE == 1)
 	{
-		if (0 < pos.x)
+		if (pos.x > 0._f)
 			return;
 		
 		mistPos = &mistPosVS[0];
@@ -196,5 +189,8 @@ void CastleWater::SpawnMistParticles()
 	}
 	
 	for (s32 i = 0; i < NUM_MIST_PARTICLES; i++)
-		Actor::Spawn(0xc5, 0, mistPos[i], nullptr, areaID, -1);
+		Actor::Spawn(WATERFALL_MIST_ACTOR_ID, 0, mistPos[i], nullptr, areaID, -1);
 }
+
+CastleWater::CastleWater() {}
+CastleWater::~CastleWater() {}

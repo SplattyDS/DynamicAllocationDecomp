@@ -1,39 +1,38 @@
-#include "MetalNet.h"
+#include "SM64DS_2.h"
+#include "Actors/MetalNet.h"
 
 namespace
 {
-	// 0x02112bf8
-	using clpsBlock = StaticCLPS_Block<
-		{  }								// low: 0x00000fc0, high: 0x000000ff
+	using splcBlock = StaticSPLC_Block<
+		{  }
 	>;
 }
 
-SharedFilePtr MetalNet::modelFile;	// 0x02113e90
-SharedFilePtr MetalNet::clsnFile;	// 0x02113e88
-
-SpawnInfo MetalNet::spawnData = // 0x02113abc
+SpawnInfo MetalNet::spawnData =
 {
-	[]() -> ActorBase* { return new MetalNet; }, // 0x02112048
+	[]() -> ActorBase* { return new MetalNet; },
 	0x0153,
 	0x0153,
-	0x00000002,
-	0x00000000_f,
-	0x00500000_f,
-	0x01000000_f,
-	0x00000000_f
+	Actor::NO_RENDER_IF_OFF_SCREEN,
+	0._f,
+	1280._f,
+	4096._f,
+	0._f,
 };
 
-// 0x02111f40
+SharedFilePtr MetalNet::modelFile;
+SharedFilePtr MetalNet::clsnFile;
+
 s32 MetalNet::InitResources()
 {
 	Model::LoadFile(modelFile);
-	model.SetFile(modelFile.filePtr, 1, 0);
+	model.SetFile(modelFile.BMD(), 1, 0);
 	
 	UpdateModelPosAndRotY();
 	UpdateClsnPosAndRot();
 	
 	MovingMeshCollider::LoadFile(clsnFile);
-	clsn.SetFile(clsnFile.filePtr, clsnNextMat, 0x1000_f, ang.y, clpsBlock::instance<>);
+	clsn.SetFile(clsnFile.KCL(), clsnNextMat, 1._f, ang.y, splcBlock::instance<>);
 	
 	if ((param1 & 0xff) == 0xff)
 	{
@@ -44,53 +43,44 @@ s32 MetalNet::InitResources()
 	else
 	{
 		// above the cannon
-		if (CURRENT_GAMEMODE != 1 && 149 < NumStars())
+		if (CURRENT_GAMEMODE != 1 && NumStars() >+ 150)
 			return 0;
 	}
 	
 	return 1;
 }
 
-// 0x02111e60
 s32 MetalNet::CleanupResources()
 {
-	if (clsn.IsEnabled())
-		clsn.Disable();
-	
+	clsn.DisableIfEnabled();
 	modelFile.Release();
 	clsnFile.Release();
-	
 	return 1;
 }
 
-// 0x02111ed0
 s32 MetalNet::Behavior()
 {
 	UpdateModelPosAndRotY();
 	UpdateClsnPosAndRot();
 	
 	if (CURRENT_GAMEMODE == 1)
-	{
-		if (!clsn.IsEnabled())
-			clsn.Enable();
-	}
+		clsn.EnableIfDisabled(this);
 	else
-	{
-		IsClsnInRange(0x0_f, 0x0_f);
-	}
+		IsClsnInRange(0._f, 0._f);
 	
 	return 1;
 }
 
-// 0x02111ea8
 s32 MetalNet::Render()
 {
 	model.Render();
 	return 1;
 }
 
-// 0x02111ea4
 void MetalNet::OnPendingDestroy()
 {
 	return;
 }
+
+MetalNet::MetalNet() {}
+MetalNet::~MetalNet() {}

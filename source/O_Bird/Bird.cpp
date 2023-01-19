@@ -1,4 +1,5 @@
-#include "Bird.h"
+#include "SM64DS_2.h"
+#include "Actors/Bird.h"
 
 namespace
 {
@@ -9,46 +10,45 @@ namespace
 		FuncPtr main;
 	};
 	
-	const State states[]
+	constexpr State states[]
 	{
-		State{ &Bird::State0_Main }, // makes the leader spawn the other birds
-		State{ &Bird::State1_Main }, // wait for the player to come close
-		State{ &Bird::State2_Main }, // the leader waits for the player to come close, then spawns other birds (unused?)
-		State{ &Bird::State3_Main }  // fly to the destination
+		{ &Bird::State0_Main }, // makes the leader spawn the other birds
+		{ &Bird::State1_Main }, // wait for the player to come close
+		{ &Bird::State2_Main }, // the leader waits for the player to come close, then spawns other birds (unused?)
+		{ &Bird::State3_Main }, // fly to the destination
 	};
 	
-	constexpr Fix12i INITIAL_SPEED_MULTIPLIER = 0x28000_f;
+	constexpr Fix12i INITIAL_SPEED_MULTIPLIER = 40._f;
 }
 
-SharedFilePtr Bird::modelFile;	// 0x02113c20
-SharedFilePtr Bird::animFile;	// 0x02113c28
-
-SpawnInfo Bird::spawnData = // 0x02113934
+SpawnInfo Bird::spawnData =
 {
-	[]() -> ActorBase* { return new Bird; }, // 0x02111a30
+	[]() -> ActorBase* { return new Bird; },
 	0x0157,
 	0x0157,
-	0x00010002,
-	0x00000000_f,
-	0x00028000_f,
-	0x01000000_f,
-	0x00320000_f
+	Actor::NO_RENDER_IF_OFF_SCREEN | Actor::UNK_16,
+	0._f,
+	40._f,
+	4096._f,
+	800._f,
 };
 
-// 0x0211197c
+SharedFilePtr Bird::modelFile;
+SharedFilePtr Bird::animFile;
+
 s32 Bird::InitResources()
 {
 	Model::LoadFile(modelFile);
-	modelAnim.SetFile(modelFile.filePtr, 1, 1);
+	modelAnim.SetFile(modelFile.BMD(), 1, 1);
 	
 	Animation::LoadFile(animFile);
-	modelAnim.SetAnim(animFile.filePtr, 0, 0x1000_f, 0);
+	modelAnim.SetAnim(animFile.BCA(), 0, 1._f, 0);
 	
 	shadow.InitCylinder();
 	
-	pos.y += 0xa000_f;
+	pos.y += 10._f;
 	vertAccel = 0;
-	termVel = -0x32000_f;
+	termVel = -50._f;
 	
 	isLeader = true;
 	leaderID = uniqueID;
@@ -58,7 +58,6 @@ s32 Bird::InitResources()
 	return 1;
 }
 
-// 0x0211183c
 s32 Bird::CleanupResources()
 {
 	modelFile.Release();
@@ -66,7 +65,6 @@ s32 Bird::CleanupResources()
 	return 1;
 }
 
-// 0x02111898
 s32 Bird::Behavior()
 {
 	(this->*states[state].main)();
@@ -77,32 +75,35 @@ s32 Bird::Behavior()
 	modelAnim.mat4x3 = modelAnim.mat4x3.RotationY(ang.y);
 	modelAnim.mat4x3.c3 = pos >> 3;
 	
-	DropShadowRadHeight(shadow, modelAnim.mat4x3, 0x1e000_f, 0x7d0000_f, 0xf);
+	DropShadowRadHeight(shadow, modelAnim.mat4x3, 30._f, 2000._f, 0xf);
 	
 	modelAnim.Advance();
 	
 	return 1;
 }
 
-// 0x02111870
 s32 Bird::Render()
 {
 	modelAnim.Render();
 	return 1;
 }
 
-// 0x0211186c
 void Bird::OnPendingDestroy()
 {
 	return;
 }
 
-// 0x021116ec
+void Bird::SetLeader(u32 newLeaderID)
+{
+	isLeader = false;
+	leaderID = newLeaderID;
+}
+
 void Bird::State0_Main()
 {
 	if (isLeader)
 	{
-		if (1 < param1 & 0xf)
+		if (param1 & 0xf > 1)
 		{
 			Vector3_16 birdAng = motionAng;
 			s32 numBirdsToSpawn = (param1 & 0xf) - 1;
@@ -113,13 +114,13 @@ void Bird::State0_Main()
 				do
 				{
 					Vector3 birdPos;
-					birdPos.x = pos.x + (RandomIntInternal(&RNG_STATE) % 400 - 0xa0);
+					birdPos.x = pos.x + (RandomInt() % 400 - 160);
 					birdPos.y = pos.y;
-					birdPos.z = pos.z + (RandomIntInternal(&RNG_STATE) % 400 - 0xa0);
+					birdPos.z = pos.z + (RandomInt() % 400 - 160);
 					
-					birdAng.y += RandomIntInternal(&RNG_STATE);
+					birdAng.y += RandomInt();
 					
-					Bird* spawnedBird = (Bird*)Actor::Spawn(0x157, 0, birdPos, &birdAng, areaID, -1);
+					Bird* spawnedBird = (Bird*)Actor::Spawn(BIRD_ACTOR_ID, 0x0000, birdPos, &birdAng, areaID, -1);
 					if (spawnedBird != nullptr)
 						spawnedBird->SetLeader(uniqueID);
 					
@@ -128,14 +129,13 @@ void Bird::State0_Main()
 			}
 		}
 		
-		destination.x = -0x014000_f;
-		destination.z = -0xf96000_f;
+		destination.x = -20._f;
+		destination.z = -3990._f;
 	}
 	
 	state = 1;
 }
 
-// 0x021115d8
 void Bird::State1_Main()
 {
 	if (!isLeader)
@@ -155,21 +155,20 @@ void Bird::State1_Main()
 		if (player != nullptr)
 		{
 			// bird not in range
-			if (0x7d0000_f < Vec3_HorzLen(pos - player->pos))
+			if (Vec3_HorzLen(pos - player->pos) > 2000._f)
 				return;
 		}
-		Sound::Play(3, 0x6a, camSpacePos);
+		Sound::Play("NCS_SE_SCT_BIRD_FLY"sfx, camSpacePos);
 	}
 	
-	u32 random = RandomIntInternal(&RNG_STATE);
-	motionAng.x = 5000 - ((s16)random + (s16)((u64)random * 0x10624dd3 >> 0x28) * -4000);
+	u32 random = RandomInt();
+	motionAng.x = 5000 - ((s16)random + (s16)((u64)random * 0x10624dd3 >> 40) * -4000);
 	
 	speedMult = INITIAL_SPEED_MULTIPLIER;
 	state = 3;
-	flags &= 0xfffeffff;
+	flags &= ~Actor::UNK_16;
 }
 
-// 0x0211145c
 void Bird::State2_Main()
 {
 	if (isLeader)
@@ -179,7 +178,7 @@ void Bird::State2_Main()
 			return;
 		
 		Vector3 playerDist = pos - player->pos;
-		if (0x7d0000_f < playerDist.HorzLen())
+		if (playerDist.HorzLen() > 2000._f)
 			return;
 		
 		if (1 < (param1 & 0xf))
@@ -191,7 +190,7 @@ void Bird::State2_Main()
 			{
 				do
 				{
-					Bird* spawnedBrd = (Bird*)Actor::Spawn(0x157, 0x10, pos, nullptr, areaID,-1);
+					Bird* spawnedBrd = (Bird*)Actor::Spawn(BIRD_ACTOR_ID, 0x0010, pos, nullptr, areaID,-1);
 					if (spawnedBrd != nullptr)
 						spawnedBrd->SetLeader(uniqueID);
 					
@@ -200,27 +199,26 @@ void Bird::State2_Main()
 			}
 		}
 		
-		destination.x = -0x014000_f;
-		destination.z = -0xf96000_f;
-		Sound::Play(3, 0x6a, camSpacePos);
+		destination.x = -20._f;
+		destination.z = -3990._f;
+		Sound::Play("NCS_SE_SCT_BIRD_FLY"sfx, camSpacePos);
 	}
 	
-	u32 random = RandomIntInternal(&RNG_STATE);
+	u32 random = RandomInt();
 	motionAng.x = 5000 - ((s16)random + (s16)(random / 4000) * -4000);
-	motionAng.y = RandomIntInternal(&RNG_STATE);
+	motionAng.y = RandomInt();
 	
 	speedMult = INITIAL_SPEED_MULTIPLIER;
 	state = 3;
-	flags &= 0xfffeffff;
+	flags &= ~Actor::UNK_16;
 }
 
-// 0x02111234
 void Bird::State3_Main()
 {
 	UpdatePos(nullptr);
 	
 	Bird* leaderBird = (Bird*)Actor::FindWithID(leaderID);
-	if (leaderBird != nullptr && pos.y < 0xbb8001_f)
+	if (leaderBird != nullptr && pos.y <= 3000._f)
 	{
 		if (!isLeader)
 		{
@@ -230,27 +228,29 @@ void Bird::State3_Main()
 			targetAng.x = cstd::atan2(difference.HorzLen(), -difference.y);
 			targetAng.y = cstd::atan2(difference.z, difference.x);
 			
-			speedMult = (LenVec3(difference) / 0x19) + 0x14000_f;
+			speedMult = (LenVec3(difference) / 25) + 20._f;
 		}
 		else
 		{
 			Vector3 difference = destination - pos;
 			
-			targetAng.x = cstd::atan2(difference.HorzLen(), -0x02710000_f + pos.y);
+			targetAng.x = cstd::atan2(difference.HorzLen(), pos.y - 10000._f);
 			targetAng.y = cstd::atan2(difference.z, difference.x);
 		}
 		
-		ApproachLinear(motionAng.x, targetAng.x, 0x8c);
-		ApproachLinear(motionAng.y, targetAng.y, 800);
+		ApproachLinear(motionAng.x, targetAng.x, 0.769_deg);
+		ApproachLinear(motionAng.y, targetAng.y, 4.3945_deg);
 		
-		s16 newTargetAngZ = (s16)((((s32)motionAng.y - (s32)targetAng.y) * 0x10000) >> 0x10);
-		if (newTargetAngZ < -0x3000)
-			newTargetAngZ = -0x3000;
-		else if (0x3000 < newTargetAngZ)
-			newTargetAngZ = 0x3000;
+		s16 newTargetAngZ = (s16)((((s32)motionAng.y - (s32)targetAng.y) * 0x10000) >> 16);
+		
+		if (newTargetAngZ < -67.5_deg)
+			newTargetAngZ = -67.5_deg;
+		else if (newTargetAngZ > 67.5_deg)
+			newTargetAngZ = 67.5_deg;
+		
 		targetAng.z = newTargetAngZ;
 		
-		ApproachLinear(ang.z, targetAng.z, 600);
+		ApproachLinear(ang.z, targetAng.z, 3.2959_deg);
 		
 		horzSpeed = speedMult * Sin(motionAng.x + 1);
 		speed.y = speedMult * Sin(motionAng.x);
@@ -261,9 +261,5 @@ void Bird::State3_Main()
 	MarkForDestruction();
 }
 
-// 0x02111224
-void Bird::SetLeader(u32 newLeaderID)
-{
-	isLeader = false;
-	leaderID = newLeaderID;
-}
+Bird::Bird() {}
+Bird::~Bird() {}

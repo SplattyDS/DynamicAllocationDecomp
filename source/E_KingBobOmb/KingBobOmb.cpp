@@ -1,4 +1,5 @@
-#include "KingBobOmb.h"
+#include "SM64DS_2.h"
+#include "Actors/KingBobOmb.h"
 
 extern "C"
 {
@@ -46,8 +47,12 @@ extern "C"
 	// 0x0200d8c8
 	// 0x02092138
 	
+	// undocumented functions not in ov78:
+	// 0x0214ae1c (ov102)
+	// 0x0214ad14 (ov102)
+	
 	// 0x02126e00
-	Vector3 UNK_02126e00 = Vector3{ 0_f, 0x3c000_f, 0_f };
+	Vector3 UNK_02126e00 = Vector3{ 0._f, 60._f, 0._f };
 	
 	using StateFunc = void(*)(KingBobOmb*);
 	
@@ -81,8 +86,8 @@ extern "C"
 	
 	Vector3 CARRY_POSITION_OFFSET[2] = // 0x0212711c (relative to player)
 	{
-		Vector3{ 0x2c000_f, -0x19000_f, 0x34000_f }, // anyone else
-		Vector3{ 0x44000_f, -0x19000_f, 0x34000_f }, // wario
+		Vector3{ 44._f, -25._f, 52._f }, // anyone else
+		Vector3{ 68._f, -25._f, 52._f }, // wario
 	};
 }
 
@@ -94,11 +99,11 @@ SpawnInfo KingBobOmb::spawnData =
 	&FUN_021265fc,
 	0x00bd,
 	0x002c,
-	0x10000003,
-	0x00000000_f,
-	0x00190000_f,
-	0x01fa0000_f,
-	0x01fa0000_f,
+	Actor::NO_BEHAVIOR_IF_OFF_SCREEN | Actor::NO_RENDER_IF_OFF_SCREEN | Actor::AIMABLE_BY_EGG,
+	0._f,
+	400._f,
+	8096._f,
+	8096._f,
 };
 
 asm(R"(
@@ -148,9 +153,9 @@ FUN_02123740:
 	add     r0, r4, #0x3bc
 	bl      _ZN11CommonModelD1Ev
 	add     r0, r4, #0x37c
-	bl      _ZN19CylinderClsnWithPosD1Ev
+	bl      _ZN25MovingCylinderClsnWithPosD1Ev
 	add     r0, r4, #0x33c
-	bl      _ZN19CylinderClsnWithPosD1Ev
+	bl      _ZN25MovingCylinderClsnWithPosD1Ev
 	add     r0, r4, #0x2cc
 	bl      _ZN14BlendModelAnimD1Ev
 	add     r0, r4, #0x110
@@ -173,9 +178,9 @@ FUN_02123798:
 	add     r0, r4, #0x3bc
 	bl      _ZN11CommonModelD1Ev
 	add     r0, r4, #0x37c
-	bl      _ZN19CylinderClsnWithPosD1Ev
+	bl      _ZN25MovingCylinderClsnWithPosD1Ev
 	add     r0, r4, #0x33c
-	bl      _ZN19CylinderClsnWithPosD1Ev
+	bl      _ZN25MovingCylinderClsnWithPosD1Ev
 	add     r0, r4, #0x2cc
 	bl      _ZN14BlendModelAnimD1Ev
 	add     r0, r4, #0x110
@@ -309,7 +314,7 @@ LAB_021238ec:
 	mov     r0, r4
 	add     r1, r4, r1
 	add     r3, r13, #0x4
-	bl      _ZN5Actor19UntrackAndSpawnStarEjjRK7Vector3j
+	bl      _ZN5Actor19UntrackAndSpawnStarERajRK7Vector3j
 	ldr     r1, [r13, #0x4]
 	ldr     r2, [r13, #0x8]
 	ldr     r3, [r13, #0x0c]
@@ -500,7 +505,7 @@ LAB_02123c68:
 LAB_02123c74:
 	add     r0, r4, #0x31c
 	mov     r1, #0x14
-	bl      _ZN9Animation13Func_02015A98Ei
+	bl      _ZNK9Animation12WillHitFrameEi
 	cmp     r0, #0x0
 	beq     LAB_02123cc0
 	ldr     r0, [r4, #0x494]
@@ -1110,7 +1115,7 @@ FUN_02124520:
 	add     r0, r6, #0x31c
 	mov     r1, #0x46
 	ldr     r5, [r2]
-	bl      _ZN9Animation13Func_02015A98Ei
+	bl      _ZNK9Animation12WillHitFrameEi
 	cmp     r0, #0x0
 	beq     LAB_02124608
 	mov     r0, r6
@@ -1944,7 +1949,7 @@ LAB_02125128:
 	bl      0x0214b384
 	add     r0, r5, #0x31c
 	mov     r1, #0x13
-	bl      _ZN9Animation13Func_02015A98Ei
+	bl      _ZNK9Animation12WillHitFrameEi
 	cmp     r0, #0x0
 	bne     LAB_021251c4
 	mov     r0, r5
@@ -2369,7 +2374,7 @@ FUN_02125790:
 	add     r0, r4, #0x31c
 	mov     r1, #0x46
 	strh    r2, [r4, #0x8e]
-	bl      _ZN9Animation13Func_02015A98Ei
+	bl      _ZNK9Animation12WillHitFrameEi
 	cmp     r0, #0x0
 	beq     LAB_021258b0
 	mov     r0, r4
@@ -2864,7 +2869,7 @@ LAB_02125ec4:
 	mov     r1, r6
 	mov     r2, r5
 	mov     r3, r4
-	bl      Matrix4x3_ConcatPos
+	bl      Matrix4x3_ApplyInPlaceToTranslation
 	ldr     r2, [r13]
 	ldr     r3, [r13, #0x4]
 	mov     r0, r10
@@ -3116,7 +3121,7 @@ LAB_021262b4:
 	str     r12, [r13]
 	str     r3, [r13, #0x4]
 	str     r2, [r13, #0x8]
-	bl      _ZN19CylinderClsnWithPos21SetPosRelativeToActorERK7Vector3
+	bl      _ZN25MovingCylinderClsnWithPos21SetPosRelativeToActorERK7Vector3
 	ldr     r0, =UNK_02126e00
 	add     r1, r13, #0x0c
 	ldr     r12, [r0]
@@ -3126,7 +3131,7 @@ LAB_021262b4:
 	str     r12, [r13, #0x0c]
 	str     r3, [r13, #0x10]
 	str     r2, [r13, #0x14]
-	bl      _ZN19CylinderClsnWithPos21SetPosRelativeToActorERK7Vector3
+	bl      _ZN25MovingCylinderClsnWithPos21SetPosRelativeToActorERK7Vector3
 	add     r0, r4, #0x33c
 	bl      _ZN12CylinderClsn5ClearEv
 	add     r0, r4, #0x33c
@@ -3156,7 +3161,7 @@ FUN_02126368:
 	mov     r1, r0
 	mov     r3, r2
 	add     r0, r4, #0x2cc
-	bl      _ZN9ModelBase7SetFileEPcii
+	bl      _ZN9ModelBase7SetFileEP8BMD_Fileii
 	add     r0, r4, #0x3f8
 	bl      _ZN11ShadowModel12InitCylinderEv
 	ldr     r0, =_ZN10KingBobOmb9animFilesE + 0x20
@@ -3206,7 +3211,7 @@ FUN_02126368:
 	mov     r1, r4
 	add     r2, r13, #0x0c
 	mov     r3, #0x78000
-	bl      _ZN19CylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
+	bl      _ZN25MovingCylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
 	ldr     r0, =UNK_02126e00
 	mov     r3, #0x0c8000
 	ldr     r1, [r0, #0x4]
@@ -3223,7 +3228,7 @@ FUN_02126368:
 	str     r1, [r13, #0x8]
 	mov     r1, r4
 	add     r2, r13, #0x18
-	bl      _ZN19CylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
+	bl      _ZN25MovingCylinderClsnWithPos4InitEP5ActorRK7Vector35Fix12IiES6_jj
 	mov     r0, #0x1f
 	strb    r0, [r4, #0x498]
 	ldr     r0, [r4, #0x5c]
@@ -3312,9 +3317,9 @@ FUN_021265fc:
 	add     r0, r4, #0x2cc
 	bl      _ZN14BlendModelAnimC1Ev
 	add     r0, r4, #0x33c
-	bl      _ZN19CylinderClsnWithPosC1Ev
+	bl      _ZN25MovingCylinderClsnWithPosC1Ev
 	add     r0, r4, #0x37c
-	bl      _ZN19CylinderClsnWithPosC1Ev
+	bl      _ZN25MovingCylinderClsnWithPosC1Ev
 	add     r0, r4, #0x3bc
 	bl      _ZN11CommonModelC1Ev
 	add     r0, r4, #0x3f8
