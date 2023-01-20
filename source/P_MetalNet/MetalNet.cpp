@@ -3,7 +3,7 @@
 
 namespace
 {
-	using splcBlock = StaticSPLC_Block<
+	using clpsBlock = StaticCLPS_Block<
 		{  }
 	>;
 }
@@ -32,7 +32,7 @@ s32 MetalNet::InitResources()
 	UpdateClsnPosAndRot();
 	
 	MovingMeshCollider::LoadFile(clsnFile);
-	clsn.SetFile(clsnFile.KCL(), clsnNextMat, 1._f, ang.y, splcBlock::instance<>);
+	clsn.SetFile(clsnFile.KCL(), clsnNextMat, 1._f, ang.y, clpsBlock::instance<>);
 	
 	if ((param1 & 0xff) == 0xff)
 	{

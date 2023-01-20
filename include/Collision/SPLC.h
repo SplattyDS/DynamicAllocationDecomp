@@ -1,6 +1,6 @@
 #pragma once
 
-struct SPLC
+struct CLPS
 {
 	enum _TextureID
 	{
@@ -93,68 +93,68 @@ struct SPLC
 	u32  padding2        : 24 = 0;
 };
 	
-struct SPLC_Header
+struct CLPS_Header
 {
 	char magic[4] = {'C', 'L', 'P', 'S'};
 	u16 unk04 = 8;
-	u16 size; // number of SPLCes
+	u16 size; // number of CLPSes
 	
-	constexpr SPLC_Header(u16 size) : size(size) {}
+	constexpr CLPS_Header(u16 size) : size(size) {}
 	
-	SPLC_Header(const SPLC_Header&) = delete;
-	SPLC_Header(SPLC_Header&&) = delete;
+	CLPS_Header(const CLPS_Header&) = delete;
+	CLPS_Header(CLPS_Header&&) = delete;
 	
-	SPLC_Header& operator=(const SPLC_Header&) = delete;
-	SPLC_Header& operator=(SPLC_Header&&) = delete;
+	CLPS_Header& operator=(const CLPS_Header&) = delete;
+	CLPS_Header& operator=(CLPS_Header&&) = delete;
 };
 
-struct SPLC_Block : SPLC_Header
+struct CLPS_Block : CLPS_Header
 {
-	SPLC splces[]; // flexible arrays CAN be static-initialized
+	CLPS clpses[]; // flexible arrays CAN be static-initialized
 	
-	constexpr       SPLC* begin()       { return &splces[0]; }
-	constexpr const SPLC* begin() const { return &splces[0]; }
-	constexpr       SPLC* end  ()       { return &splces[size]; }
-	constexpr const SPLC* end  () const { return &splces[size]; }
+	constexpr       CLPS* begin()       { return &clpses[0]; }
+	constexpr const CLPS* begin() const { return &clpses[0]; }
+	constexpr       CLPS* end  ()       { return &clpses[size]; }
+	constexpr const CLPS* end  () const { return &clpses[size]; }
 	
-	constexpr       SPLC& operator[](std::size_t i)       { return splces[i]; }
-	constexpr const SPLC& operator[](std::size_t i) const { return splces[i]; }
+	constexpr       CLPS& operator[](std::size_t i)       { return clpses[i]; }
+	constexpr const CLPS& operator[](std::size_t i) const { return clpses[i]; }
 };
 
-template<SPLC... splces>
-struct StaticSPLC_Block
+template<CLPS... clpses>
+struct StaticCLPS_Block
 {
 	template<auto...>
-	static constinit inline SPLC_Block instance
+	static constinit inline CLPS_Block instance
 	{
-		sizeof...(splces),
-		{splces...}
+		sizeof...(clpses),
+		{clpses...}
 	};
 };
 
-struct OldSPLC
+struct OldCLPS
 {
 	u32 low;
 	u32 high;
 };
 
-template<s32 Size> struct OldFixedSizeSPLC_Block // flexible arrays SOMETIMES be static-initialized.
+template<s32 Size> struct OldFixedSizeCLPS_Block // flexible arrays SOMETIMES be static-initialized.
 {
 	char magic[4]; // = {'C', 'L', 'P', 'S'};
 	u16 unk04;
 	u16 num; // = Size;
-	OldSPLC splces[Size];
+	OldCLPS clpses[Size];
 };
 
 // delete this later
 namespace LevelFile
 {
-	extern "C" SPLC_Block* SPLC_BLOCK_PTR;
+	extern "C" CLPS_Block* CLPS_BLOCK_PTR;
 }
 
 struct SurfaceInfo
 {
-	SPLC splc;
+	CLPS clps;
 	Vector3 normal;
 	
 	void CopyNormalTo(Vector3& vec) const;

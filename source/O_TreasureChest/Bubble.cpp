@@ -62,7 +62,7 @@ bool Bubble::IsCloseToWaterSurface()
 	raycaster.SetFlag_2();
 	raycaster.SetObjAndPos(Vector3{pos.x, pos.y + 500._f, pos.z}, this);
 	
-	if (raycaster.DetectClsn() && raycaster.result.surfaceInfo.splc.isWater)
+	if (raycaster.DetectClsn() && raycaster.result.surfaceInfo.clps.isWater)
 		return true;
 	
 	return false;

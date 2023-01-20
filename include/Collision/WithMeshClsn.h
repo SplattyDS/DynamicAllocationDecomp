@@ -43,12 +43,12 @@ struct BgCh //That's the internal name, and I didn't know what else to call it s
 	void ClearFlag_1();
 	
 	// Actually a member function of MeshColliderBase but the this-parameter is unused
-	static bool ShouldPassThroughImpl(void* unused, const SPLC& splc, const BgCh& bgch, bool isWall);
+	static bool ShouldPassThroughImpl(void* unused, const CLPS& clps, const BgCh& bgch, bool isWall);
 	
 	[[gnu::always_inline]]
-	bool ShouldPassThrough(const SPLC& splc, bool isWall)
+	bool ShouldPassThrough(const CLPS& clps, bool isWall)
 	{
-		return ShouldPassThroughImpl(this, splc, *this, isWall);
+		return ShouldPassThroughImpl(this, clps, *this, isWall);
 	}
 };
 

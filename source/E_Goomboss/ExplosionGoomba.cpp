@@ -82,7 +82,7 @@ s32 ExplosionGoomba::Behavior()
 		raycaster.ClearFlag_1();
 		raycaster.SetObjAndPos(Vector3{ pos.x, pos.y + 400._f, pos.z }, this);
 		
-		if (raycaster.DetectClsn() && raycaster.result.surfaceInfo.splc.isToxic
+		if (raycaster.DetectClsn() && raycaster.result.surfaceInfo.clps.isToxic
 			&& raycaster.clsnPosY != Fix12i::min && pos.y < raycaster.clsnPosY)
 		{
 			PoofDust();

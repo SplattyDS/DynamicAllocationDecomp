@@ -56,7 +56,7 @@ extern "C"
 		Vector3{ -0x00000302, -0x000003e8,  0x00007c00 },
 	};
 	
-	OldFixedSizeSPLC_Block<2> splcBlock1 =	// 0x021115bc
+	OldFixedSizeCLPS_Block<2> clpsBlock1 =	// 0x021115bc
 	{
 		{'C', 'L', 'P', 'S'},
 		0x0008,
@@ -64,12 +64,12 @@ extern "C"
 		{
 			// low: 0x00000fc0, high: 0x000000ff
 			// low: 0x00038fc4, high: 0x000000ff
-			OldSPLC{ 0x00000fc0, 0x000000ff },
-			OldSPLC{ 0x00038fc4, 0x000000ff },
+			OldCLPS{ 0x00000fc0, 0x000000ff },
+			OldCLPS{ 0x00038fc4, 0x000000ff },
         }
 	};
 	
-	OldFixedSizeSPLC_Block<2> splcBlock2 =	// 0x021115bc
+	OldFixedSizeCLPS_Block<2> clpsBlock2 =	// 0x021115bc
 	{
 		{'C', 'L', 'P', 'S'},
 		0x0008,
@@ -77,32 +77,32 @@ extern "C"
 		{
 			// low: 0x00038fc4, high: 0x000000ff
 			// low: 0x00000fc0, high: 0x000000ff
-			OldSPLC{ 0x00000fc0, 0x000000ff },
-			OldSPLC{ 0x00038fc4, 0x000000ff },
+			OldCLPS{ 0x00000fc0, 0x000000ff },
+			OldCLPS{ 0x00038fc4, 0x000000ff },
         }
 	};
 	
-	SPLC_Block* splcBlocks[10] = // 0x0211a980
+	CLPS_Block* clpsBlocks[10] = // 0x0211a980
 	{
-		(SPLC_Block*)&splcBlock1,
-		(SPLC_Block*)&splcBlock2,
-		(SPLC_Block*)&splcBlock1,
-		(SPLC_Block*)&splcBlock2,
-		(SPLC_Block*)&splcBlock1,
-		(SPLC_Block*)&splcBlock2,
-		(SPLC_Block*)&splcBlock1,
-		(SPLC_Block*)&splcBlock1,
-		(SPLC_Block*)&splcBlock1,
-		(SPLC_Block*)&splcBlock2,
+		(CLPS_Block*)&clpsBlock1,
+		(CLPS_Block*)&clpsBlock2,
+		(CLPS_Block*)&clpsBlock1,
+		(CLPS_Block*)&clpsBlock2,
+		(CLPS_Block*)&clpsBlock1,
+		(CLPS_Block*)&clpsBlock2,
+		(CLPS_Block*)&clpsBlock1,
+		(CLPS_Block*)&clpsBlock1,
+		(CLPS_Block*)&clpsBlock1,
+		(CLPS_Block*)&clpsBlock2,
 	};
 	
-	/*using splcBlock1 = StaticSPLC_Block<
+	/*using clpsBlock1 = StaticCLPS_Block<
 		{  },
-		{ .textureID = SPLC::TX_ROCK, .camBehavID = SPLC::CA_GO_BEHIND_7, }
+		{ .textureID = CLPS::TX_ROCK, .camBehavID = CLPS::CA_GO_BEHIND_7, }
 	>;
 	
-	using splcBlock2 = StaticSPLC_Block<
-		{ .textureID = SPLC::TX_ROCK, .camBehavID = SPLC::CA_GO_BEHIND_7, }, 
+	using clpsBlock2 = StaticCLPS_Block<
+		{ .textureID = CLPS::TX_ROCK, .camBehavID = CLPS::CA_GO_BEHIND_7, }, 
 		{  } 
 	>;*/
 	
@@ -585,14 +585,14 @@ FUN_021182b0:
 	bl      _ZN12MeshCollider8LoadFileER13SharedFilePtr
 	mov     r1, r0
 	ldrsh   r3, [r4, #0x8e]
-	ldr     r2, =splcBlocks
+	ldr     r2, =clpsBlocks
 	add     r0, r4, #0x124
 	str     r3, [r13]
 	ldr     r3, [r2, r5, lsl #0x2]
 	add     r2, r4, #0x2ec
 	str     r3, [r13, #0x4]
 	mov     r3, #0x1000
-	bl      _ZN18MovingMeshCollider7SetFileEP8KCL_FileRK9Matrix4x35Fix12IiEsR10SPLC_Block
+	bl      _ZN18MovingMeshCollider7SetFileEP8KCL_FileRK9Matrix4x35Fix12IiEsR10CLPS_Block
 	add     r0, r4, #0x124
 	ldr     r1, =#0x2039348
 	bl      0x020393d4

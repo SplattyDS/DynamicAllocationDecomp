@@ -3,7 +3,7 @@
 
 namespace
 {
-	using splcBlock = StaticSPLC_Block<
+	using clpsBlock = StaticCLPS_Block<
 		{ .isWater = true }
 	>;
 	
@@ -132,7 +132,7 @@ s32 CastleWater::InitResources()
 	Platform::UpdateClsnPosAndRot();
 	
 	MovingMeshCollider::LoadFile(clsnFile);
-	clsn.SetFile(clsnFile.KCL(), clsnNextMat, 1._f, ang.y, splcBlock::instance<>);
+	clsn.SetFile(clsnFile.KCL(), clsnNextMat, 1._f, ang.y, clpsBlock::instance<>);
 	clsn.range = 13000._f;
 	clsn.Enable(this);
 	

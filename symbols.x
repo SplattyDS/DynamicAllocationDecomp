@@ -608,8 +608,8 @@ _ZN9FaderWipe11AdvanceFadeEv                                                    
 
 GLOBAL_FADER                                                                      = 0x0209b294;
 
-/* Collision/SPLC.h */
-SPLC_BLOCK_PTR                                                                    = 0x0214eb00;
+/* Collision/CLPS.h */
+CLPS_BLOCK_PTR                                                                    = 0x0214eb00;
 
 _ZNK11SurfaceInfo12CopyNormalToER7Vector3                                         = 0x02037dcc;
 
@@ -647,7 +647,7 @@ _ZN12MeshCollider17GetTriangleOriginEsR7Vector3                                 
 _ZN12MeshCollider10DetectClsnER13RaycastGround                                    = 0x01ffd3f8;
 _ZN12MeshCollider10DetectClsnER11RaycastLine                                      = 0x01ffb0fc;
 _ZN12MeshCollider10DetectClsnER10SphereClsn                                       = 0x01ffb830;
-_ZN12MeshCollider7SetFileEP8KCL_FileR10SPLC_Block                                 = 0x020396f0;
+_ZN12MeshCollider7SetFileEP8KCL_FileR10CLPS_Block                                 = 0x020396f0;
 _ZNK12MeshCollider13GetUnkOctreeYEv                                               = 0x01ffb0d0;
 _ZNK12MeshCollider16GetOctreeOriginYEv                                            = 0x01ffb0ec;
 _ZN12MeshCollider8LoadFileER13SharedFilePtr                                       = 0x02017afc;
@@ -668,7 +668,7 @@ _ZN18MovingMeshCollider10DetectClsnER10SphereClsn                               
 _ZN18MovingMeshCollider12TransformPosERK7Vector3RS0_                              = 0x02039930;
 _ZN18MovingMeshCollider14GetAngularVelYEv                                         = 0x02039924;
 _ZN18MovingMeshCollider11GetVelocityER7Vector3                                    = 0x02039908;
-_ZN18MovingMeshCollider7SetFileEP8KCL_FileRK9Matrix4x35Fix12IiEsR10SPLC_Block     = 0x0203a1e0;
+_ZN18MovingMeshCollider7SetFileEP8KCL_FileRK9Matrix4x35Fix12IiEsR10CLPS_Block     = 0x0203a1e0;
 _ZN18MovingMeshCollider9TransformERK9Matrix4x3s                                   = 0x02039f20;
 
 ACTIVE_MESH_COLLIDERS                                                             = 0x020a0c80;
@@ -721,7 +721,7 @@ _ZNK10ClsnResult9GetClsnIDEv                                                    
 _ZN4BgCh9SetFlag_8Ev                                                              = 0x02035448;
 _ZN4BgCh9SetFlag_2Ev                                                              = 0x0203549c;
 _ZN4BgCh11ClearFlag_1Ev                                                           = 0x020354bc;
-_ZN4BgCh21ShouldPassThroughImplEPvRK4SPLCRKS_b                                    = 0x02039488;
+_ZN4BgCh21ShouldPassThroughImplEPvRK4CLPSRKS_b                                    = 0x02039488;
 
 _ZN13RaycastGroundC1Ev                                                            = 0x02037570;
 _ZN13RaycastGroundD1Ev                                                            = 0x02037534;

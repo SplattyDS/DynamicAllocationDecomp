@@ -619,7 +619,7 @@ void Goomba::KillIfTouchedBadSurface()
 	if (wmClsn.IsOnGround())
 		return;
 	
-	if (wmClsn.sphere.floorResult.surfaceInfo.splc.isWater)
+	if (wmClsn.sphere.floorResult.surfaceInfo.clps.isWater)
 	{
 		SpawnStarIfNecessary();
 		SpawnCoin();
@@ -631,12 +631,12 @@ void Goomba::KillIfTouchedBadSurface()
 	}
 	
 	ClsnResult& clsnRes = wmClsn.sphere.floorResult;
-	SPLC& splc = clsnRes.surfaceInfo.splc;
-	u32 behav = splc.behaviorID;
+	CLPS& clps = clsnRes.surfaceInfo.clps;
+	u32 behav = clps.behaviorID;
 	
-	if ((splc.textureID == SPLC::TX_SAND &&
-		(behav == SPLC::BH_LOW_JUMPS || behav == SPLC::BH_SLOW_SHALLOW_QUICKSAND || behav == SPLC::BH_SLOW_DEEP_QUICKSAND || behav == SPLC::BH_INSTANT_QUICKSAND)) ||
-		behav == SPLC::BH_WIND_GUST || behav == SPLC::BH_LAVA || behav == SPLC::BH_DEATH || behav == SPLC::BH_DEATH_2)
+	if ((clps.textureID == CLPS::TX_SAND &&
+		(behav == CLPS::BH_LOW_JUMPS || behav == CLPS::BH_SLOW_SHALLOW_QUICKSAND || behav == CLPS::BH_SLOW_DEEP_QUICKSAND || behav == CLPS::BH_INSTANT_QUICKSAND)) ||
+		behav == CLPS::BH_WIND_GUST || behav == CLPS::BH_LAVA || behav == CLPS::BH_DEATH || behav == CLPS::BH_DEATH_2)
 	{
 		SpawnCoin();
 		Kill();
@@ -916,7 +916,7 @@ void Goomba::KillIfIntoxicated()
 	raycaster.ClearFlag_1();
 	
 	raycaster.SetObjAndPos(Vector3{ pos.x, pos.y + 400._f, pos.z }, this);
-	if (raycaster.DetectClsn() && raycaster.result.surfaceInfo.splc.isToxic &&
+	if (raycaster.DetectClsn() && raycaster.result.surfaceInfo.clps.isToxic &&
 	   raycaster.clsnPosY != Fix12i::min && pos.y < raycaster.clsnPosY)
 	{
 		SpawnCoin();

@@ -9,7 +9,7 @@ struct RaycastLine;
 struct SphereClsn;
 struct ClsnResult;
 
-#include "Collision/SPLC.h"
+#include "Collision/CLPS.h"
 #include "Collision/MeshCollider.h"
 #include "Collision/CylinderClsn.h"
 #include "Collision/WithMeshClsn.h"

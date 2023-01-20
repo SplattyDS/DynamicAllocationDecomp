@@ -23,7 +23,7 @@ struct PlatformRes
 {
 	SharedFilePtr* modelFile;
 	SharedFilePtr* clsnFile;
-	SPLC_Block* splcBlock;
+	CLPS_Block* clpsBlock;
 };
 
 static_assert(sizeof(Platform) == 0x320);

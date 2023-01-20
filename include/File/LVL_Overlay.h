@@ -1,6 +1,6 @@
 #pragma once
 
-struct SPLC_Block;
+struct CLPS_Block;
 
 struct LVL_Overlay
 {
@@ -147,7 +147,7 @@ struct LVL_Overlay
 	};
 	
 	// static (de)initializer code
-	SPLC_Block* splc;
+	CLPS_Block* clps;
 	ObjTable* miscObjs;
 	u16 modelFileID;
 	u16 clsnFileID;

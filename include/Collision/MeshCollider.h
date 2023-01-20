@@ -96,7 +96,7 @@ struct MeshColliderBase // vtable at 0x02099388
 struct MeshCollider : MeshColliderBase
 {
 	KCL_File* clsnFile;
-	SPLC_Block* splcBlock;
+	CLPS_Block* clpsBlock;
 	u32 unk28;
 	u32 unk2c;
 	u32 unk30;
@@ -118,7 +118,7 @@ struct MeshCollider : MeshColliderBase
 	virtual bool DetectClsn(RaycastLine&   ray) override;
 	virtual bool DetectClsn(SphereClsn& sphere) override;
 	
-	void SetFile(KCL_File* clsnFile, SPLC_Block& splc);
+	void SetFile(KCL_File* clsnFile, CLPS_Block& clps);
 	Fix12i GetOctreeOriginY() const;
 	Fix12i GetUnkOctreeY() const;
 	
@@ -158,7 +158,7 @@ struct MovingMeshCollider : public MeshCollider
 	virtual u16 GetAngularVelY() override;
 	virtual void GetVelocity(Vector3& res) override;
 	
-	void SetFile(KCL_File* clsnFile, const Matrix4x3& mat, Fix12i scale, s16 angleY, SPLC_Block& splc);
+	void SetFile(KCL_File* clsnFile, const Matrix4x3& mat, Fix12i scale, s16 angleY, CLPS_Block& clps);
 	void Transform(const Matrix4x3& mat, s16 rotY);
 };
 
