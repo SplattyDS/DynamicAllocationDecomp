@@ -48,7 +48,7 @@ export LD      := $(PREFIX)ld
 #---------------------------------------------------------------------------------
 TARGET   := newcode
 BUILD    := build
-SOURCES  := source/E_Goomba
+SOURCES  := source/E_ChainChomp
 INCLUDES := include
 DATA     := data
 GRAPHICS := gfx
