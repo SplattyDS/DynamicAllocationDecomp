@@ -48,7 +48,7 @@ export LD      := $(PREFIX)ld
 #---------------------------------------------------------------------------------
 TARGET   := newcode
 BUILD    := build
-SOURCES  := source/E_ChainChomp
+SOURCES  := source/N_BobOmbBuddy
 INCLUDES := include
 DATA     := data
 GRAPHICS := gfx
