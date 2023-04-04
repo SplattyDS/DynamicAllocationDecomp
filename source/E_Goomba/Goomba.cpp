@@ -343,7 +343,7 @@ s32 Goomba::Behavior()
 	UpdateModelTransform();
 	KillIfIntoxicated();
 	
-	if (state == 0 && (flags & OFF_SCREEN) == 0)
+	if (state == 0 && !(flags & OFF_SCREEN))
 	{
 		if (pos.Dist(backupPos) < 10._f)
 		{
@@ -979,7 +979,9 @@ void Goomba::State0()
 void Goomba::State0_NormalGoomba()
 {
 	s16 angAccel = 2.8125_deg;
+	
 	UpdateTargetDirAndDist(1000._f);
+	
 	horzSpeed.ApproachLinear(targetSpeed, 0.3125_f);
 	
 	if (flags468 & 1)
@@ -990,86 +992,79 @@ void Goomba::State0_NormalGoomba()
 		return;
 	}
 	
-	if (noChargeTimer == 0)
+	if (noChargeTimer != 0)
 	{
-		if (distToPlayer > 25000._f)
+		if (capID < 6)
 		{
-			targetDir2 = targetDir;
-			movementTimer = 25;
-		}
-		
-		bool redirected = AngleAwayFromWallOrCliff(wmClsn, targetDir2);
-		flags468 = (flags468 & ~1) | ((u8)redirected & 1);
-		
-		if (!redirected)
-		{
-			if (distToPlayer < maxDist || (capID < 6 && pos.Dist(originalPos) > 1000._f))
-			{
-				if (WALK_SPEEDS[type] < targetSpeed)
-					modelAnim.SetAnim(animFiles[RUN].BCA(), Animation::LOOP, 1._f, 0);
-				else
-					Jump();
-				
-				if (capID < 6 && noChargeTimer == 0)
-					angAccel = 8.4375_deg;
-				
-				targetDir2 = targetDir;
-				targetSpeed = RUN_SPEEDS[type];
-			}
+			if (WALK_SPEEDS[type] < targetSpeed)
+				modelAnim.SetAnim(animFiles[RUN].BCA(), Animation::LOOP, 1._f, 0);
 			else
-			{
-				targetSpeed = WALK_SPEEDS[type];
-				modelAnim.SetAnim(animFiles[WALK].BCA(), Animation::LOOP, 1._f, 0);
-				
-				if (movementTimer == 0)
-				{
-					if (((RandomInt() >> 16) & 3) == 0)
-					{
-						targetDir2 = RandomInt();
-						Jump();
-					}
-					else
-					{
-						RandomInt();
-						targetDir2 = motionAng.y + RandomInt();
-						movementTimer = 100;
-					}
-				}
-				else
-				{
-					--movementTimer;
-				}
-			}
+				Jump();
+			
+			angAccel = 11.25_deg;
+			targetSpeed = RUN_SPEEDS[type];
+			targetDir2 = targetDir;
 		}
-		
-		if (capID > 5 && stuckInSpotTimer > 30)
-			noChargeTimer = stuckInSpotTimer;
+		else
+		{
+			targetSpeed = WALK_SPEEDS[type];
+			modelAnim.SetAnim(animFiles[WALK].BCA(), Animation::LOOP, 1._f, 0);
+			targetDir2 = pos.HorzAngle(originalPos);
+			angAccel = 5.625_deg;
+		}
 		
 		ApproachLinear(motionAng.y, targetDir2, angAccel);
 		return;
 	}
 	
-	if (capID < 6)
+	if (distToPlayer >= 25000._f)
 	{
-		if (WALK_SPEEDS[type] < targetSpeed)
-			modelAnim.SetAnim(animFiles[RUN].BCA(), Animation::LOOP, 1._f, 0);
-		else
-			Jump();
-		
-		angAccel = 11.25_deg;
-		targetSpeed = RUN_SPEEDS[type];
 		targetDir2 = targetDir;
-	}
-	else
-	{
-		targetSpeed = WALK_SPEEDS[type];
-		modelAnim.SetAnim(animFiles[WALK].BCA(), Animation::LOOP, 1._f, 0);
-		targetDir2 = pos.HorzAngle(originalPos);
-		angAccel = 5.625_deg;
+		movementTimer = 25;
 	}
 	
+	bool redirected = AngleAwayFromWallOrCliff(wmClsn, targetDir2);
+	flags468 = (flags468 & ~1) | ((u8)redirected & 1);
+	
+	if (!redirected)
+	{
+		if (distToPlayer < maxDist || (capID < 6 && pos.Dist(originalPos) > 1000._f))
+		{
+			if (WALK_SPEEDS[type] < targetSpeed)
+				modelAnim.SetAnim(animFiles[RUN].BCA(), Animation::LOOP, 1._f, 0);
+			else
+				Jump();
+			
+			if (capID < 6 && noChargeTimer == 0)
+				angAccel = 8.4375_deg;
+			
+			targetDir2 = targetDir;
+			targetSpeed = RUN_SPEEDS[type];
+		}
+		else
+		{
+			targetSpeed = WALK_SPEEDS[type];
+			modelAnim.SetAnim(animFiles[WALK].BCA(), Animation::LOOP, 1._f, 0);
+			
+			if (movementTimer != 0)
+				--movementTimer;
+			else if (RandomInt() & 0x30000)
+			{
+				targetDir2 = motionAng.y + (RandomInt() >> 16);
+				movementTimer = 100;
+			}
+			else
+			{
+				targetDir2 = RandomInt() >> 16;
+				Jump();
+			}
+		}
+	}
+	
+	if (capID > 5 && stuckInSpotTimer > 30)
+		noChargeTimer = stuckInSpotTimer;
+	
 	ApproachLinear(motionAng.y, targetDir2, angAccel);
-	return;
 }
 
 void Goomba::State0_GoombossGoomba()
@@ -1154,6 +1149,7 @@ void Goomba::State0_GoombossGoomba()
 void Goomba::State1()
 {
 	Jump();
+	
 	if (actorID == GOOMBA_LARGE_ACTOR_ID)
 		speed.y *= 1.5_f;
 	
