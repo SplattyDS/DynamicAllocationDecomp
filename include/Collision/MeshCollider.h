@@ -106,7 +106,9 @@ struct MeshCollider : MeshColliderBase
 	Vector3 unkVec38;
 	Fix12i unk44;
 	u32 unk48;
-	u32 unk4c;
+	u8 unk4c;
+	u8 unk4d;
+	u16 unk4e;
 	
 	MeshCollider();
 	virtual ~MeshCollider() override;
@@ -129,7 +131,7 @@ struct MeshCollider : MeshColliderBase
 	static inline KCL_File* LoadFile(GloballySharedFilePtr& filePtr) { return LoadFile(filePtr.Get()); }
 };
 
-struct MovingMeshCollider : public MeshCollider
+struct MovingMeshCollider : MeshCollider
 {
 	u32 unk50;                  // 0x50
 	Matrix4x3 newTransform;     // 0x54
@@ -162,8 +164,26 @@ struct MovingMeshCollider : public MeshCollider
 	void Transform(const Matrix4x3& mat, s16 rotY);
 };
 
+struct ExtendingMeshCollider : MovingMeshCollider
+{
+	Fix12i scaleY;    // 0x1c8
+	Fix12i invScaleY; // 0x1cc
+	
+	ExtendingMeshCollider();
+	virtual ~ExtendingMeshCollider() override;
+	virtual void Virtual08() override;
+	virtual void GetNormal(s16 triangleID, Vector3& res) override;
+	virtual bool DetectClsn(RaycastGround& ray) override;
+	virtual bool DetectClsn(RaycastLine&   ray) override;
+	virtual bool DetectClsn(SphereClsn& sphere) override;
+	
+	void SetFile(KCL_File* clsnFile, const Matrix4x3& mat, Fix12i scale, s16 angleY, CLPS_Block& clps);
+	void SetScaleY(Fix12i newScaleY); // also updates invScaleY
+};
+
 extern MeshColliderBase* ACTIVE_MESH_COLLIDERS[0x18];
 
 static_assert(sizeof(MeshColliderBase) == 0x20);
 static_assert(sizeof(MeshCollider) == 0x50);
 static_assert(sizeof(MovingMeshCollider) == 0x1c8);
+static_assert(sizeof(ExtendingMeshCollider) == 0x1d0);

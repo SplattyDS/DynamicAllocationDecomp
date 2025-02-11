@@ -42,7 +42,7 @@ struct ActorBase //internal name: fBase
 	
 	//vTable;
 	u32 uniqueID;					// 0x4
-	s32 param1;						// 0x8
+	u32 param1;						// 0x8
 	u16 actorID;					// 0xc
 	u8 aliveState;					// 0xe
 	bool shouldBeKilled;			// 0xf
@@ -58,6 +58,7 @@ struct ActorBase //internal name: fBase
 	u16 unk4a;						// 0x4a
 	u32 unk4c;						// 0x4c
 	
+	ActorBase();
 	virtual s32  InitResources();
 	virtual bool BeforeInitResources();
 	virtual void AfterInitResources(u32 vfSuccess);

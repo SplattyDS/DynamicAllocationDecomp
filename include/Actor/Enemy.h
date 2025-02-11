@@ -65,7 +65,7 @@ struct Enemy : Actor
 	bool AngleAwayFromWallOrCliff(WithMeshClsn& wmClsn, s16& ang); // returns whether the angle was redirected (if hitting wall, reflect angle; if at cliff, set angle to the opposite one)
 	bool UpdateDeath(WithMeshClsn& wmClsn); //returns whether the object is actually dying and the death function returned true
 	bool IsGoingOffCliff(WithMeshClsn& wmClsn, Fix12i maxFallDist, s16 unkAngle, bool setRaycastFlag2, bool arg5, Fix12i raycastOffsetY);
-	void KillByAttack(Actor& other, WithMeshClsn& wmc);
+	void KillByAttack(Actor& other);
 	void SpawnCoin();
 	void UpdateWMClsn(WithMeshClsn& wmClsn, u32 arg2);
 };

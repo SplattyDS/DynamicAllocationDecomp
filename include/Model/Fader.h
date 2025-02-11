@@ -45,6 +45,11 @@ struct FaderWipe : FaderColor		//internal name: dFdWipe
 	FaderWipe();
 	virtual ~FaderWipe();
 	virtual void AdvanceFade() override;
+	
+	void LoadAndSetFile(u16 ov0ID);
 };
 
-extern "C" FaderColor GLOBAL_FADER;
+extern "C"
+{
+	extern FaderColor* GLOBAL_FADER;
+}

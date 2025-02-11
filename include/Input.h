@@ -21,17 +21,19 @@ struct Input
 		L = 1 << 14,
 		X = 1 << 15,
 		
-		NUM_BUTTONS
+		NUM_BUTTONS,
+		
+		BOTH_CAMS = CAM_RIGHT | CAM_LEFT,
 	};
 	
-	Fix12s magRelated0;        // 0x00
-	Fix12s magRelated1;        // 0x02
+	Fix12s touchOffsetX;       // 0x00, sometimes used as a Fix12s, sometimes used as an s16
+	Fix12s touchOffsetY;       // 0x02, ^
 	u16 buttonsHeld;           // 0x04
 	u16 buttonsPressed;        // 0x06
 	Fix12s magnitude;          // 0x08
 	Fix12s dirX;               // 0x0a
 	Fix12s dirZ;               // 0x0c
-	s16 angle;                 // 0x0e, 0x0000 is toward the camera, 0x4000 is right
+	s16 angle;                 // 0x0e, 0._deg is toward the camera, 90._deg is right
 	u8 touchscreenX;           // 0x10, 0 is at the left
 	u8 touchscreenY;           // 0x11, 0 is at the top
 	u8 touchscreenDelay;       // 0x12
@@ -60,7 +62,7 @@ struct InputRelated
 struct TouchInput
 {
 	bool touching;
-	u8 unk01;
+	bool tapped;
 	u8 x; // from 0x01 to 0xfe (254)
 	u8 y; // from 0x01 to 0xbe (190)
 	
@@ -135,11 +137,23 @@ struct ButtonInput
 		R      = 1 << 8,
 		L      = 1 << 9,
 		X      = 1 << 10,
-		Y      = 1 << 11
+		Y      = 1 << 11,
+		
+		D_PAD = RIGHT | LEFT | UP | DOWN,
 	};
 	
 	u16 buttonsHeld;
 	u16 buttonsPressed;
+	
+	inline bool ButtonsHeld(u16 buttons)
+	{
+		return buttonsHeld & buttons;
+	}
+	
+	inline bool ButtonsPressed(u16 buttons)
+	{
+		return buttonsPressed & buttons;
+	}
 };
 
 static_assert(sizeof(InputRelated) == 0x24);
@@ -147,6 +161,7 @@ static_assert(sizeof(InputRelated) == 0x24);
 extern "C"
 {
 	extern Input INPUT_ARR[4];
+	extern u16 CAMERA_INPUT_ARR[4];
 	extern InputRelated INPUT_RELATED_ARR[4];
 	extern TouchInput TOUCH_INPUT_ARR[4]; // 0x020a0de8
 	extern ButtonInput BUTTON_INPUT_ARR[4]; // 0x020a0e58

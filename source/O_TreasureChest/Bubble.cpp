@@ -59,7 +59,7 @@ void Bubble::Kill()
 bool Bubble::IsCloseToWaterSurface()
 {
 	RaycastGround raycaster;
-	raycaster.SetFlag_2();
+	raycaster.StartDetectingWater();
 	raycaster.SetObjAndPos(Vector3{pos.x, pos.y + 500._f, pos.z}, this);
 	
 	if (raycaster.DetectClsn() && raycaster.result.surfaceInfo.clps.isWater)

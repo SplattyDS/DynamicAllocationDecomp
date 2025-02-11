@@ -477,7 +477,7 @@ FUN_02135c28:
 	mov     r1, r4
 	add     r3, r4, #0x5c
 	mov     r2, #0x0a2
-	bl      _ZN6Player11ShowMessageER9ActorBasejRK7Vector3jj
+	bl      _ZN6Player11ShowMessageER9ActorBasejPK7Vector3jj
 	cmp     r0, #0x1
 	bne     LAB_02135cdc
 	ldr     r0, =#0x176
@@ -1197,7 +1197,7 @@ FUN_02136634:
 	cmp     r0, #0x1
 	beq     LAB_0213674c
 	mov     r0, #0x1
-	bl      StarCollectedInCurrLevel
+	bl      IsStarCollectedInCurLevel
 	cmp     r0, #0x0
 	bne     LAB_02136764
 LAB_0213674c:

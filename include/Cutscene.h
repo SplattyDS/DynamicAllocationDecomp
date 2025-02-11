@@ -33,16 +33,29 @@ enum InstructionType
 extern "C"
 {
 	bool RunKuppaScript(char* address);
+	void ProcessKuppaScript();
 	void EndKuppaScript();
+	void ResetKuppaScript();
 	bool ContinueKuppaScriptIfNecessary();
+	
+	void StartIntroCutscene();
+	void DisableSoundPlayersForCredits();
 	
 	using KS_CameraFunction = s32(Camera::*)(char* params, s16 minFrame, s16 maxFrame);
 	
 	extern KS_CameraFunction KS_CAMERA_FUNCTIONS[39];
+	extern u32 KS_PLAYER_IDS[4];
+	extern u32 CUTSCENE_OBJECT_IDS[16];
 	extern u32 KS_FRAME_COUNTER;
+	extern u8 KS_NUM_PLAYERS;
+	extern FaderWipe* KS_FADER;
+	
 	extern char* RUNNING_KUPPA_SCRIPT; // nullptr if no script is running
 	extern char* SAVED_KUPPA_SCRIPT;
-	extern FaderWipe* KS_FADER;
+	
+	extern char INTRO_CUTSCENE;
+	extern char FALL_IN_FRONT_OF_CASTLE_CUTSCENE;
+	extern char BOB_CREDITS_CUTSCENE;
 }
 
 enum class CharacterID

@@ -21,7 +21,7 @@ struct PowerStar : Enemy
 	u32 unk428;
 	u32 unk42c;
 	u32 unk430;
-	u32 unk434;
+	u32 unk434; // 0x434
 	u32 unk438;
 	u32 unk43c;
 	u32 unk440;
@@ -47,7 +47,8 @@ struct PowerStar : Enemy
 	u8 unk49c;
 	u8 starID;
 	u16 unk49e;
-	u32 unk4a0;
+	u16 unk4a0;
+	u16 unk4a2; // 0x4a2
 	u32 unk4a4;
 	u32 unk4a8;
 	u32 unk4ac;
@@ -56,6 +57,8 @@ struct PowerStar : Enemy
 	u32 unk4b8;
 	u32 unk4bc;
 	u32 unk4c0;
+	
+	void AddStarMarker();
 };
 
 static_assert(sizeof(PowerStar) == 0x4c4, "sizeof(PowerStar) is incorrect!");

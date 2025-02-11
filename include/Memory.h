@@ -283,7 +283,6 @@ struct ExpandingHeap : public Heap		//internal name: mHeap::ExpHeap_t
 	virtual u32 VSetNodeID(u32 id) override;
 	virtual u32 VGetNodeID() override;
 	virtual u32 VResizeToFit() override;								//Always fails (forbidden operation)
-
 };
 
 

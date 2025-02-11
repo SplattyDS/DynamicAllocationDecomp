@@ -3578,7 +3578,7 @@ LAB_02119204:
 	add     r3, r13, #0x2c
 	mov     r1, r5
 	mov     r2, r4
-	bl      _ZN6Player11ShowMessageER9ActorBasejRK7Vector3jj
+	bl      _ZN6Player11ShowMessageER9ActorBasejPK7Vector3jj
 	cmp     r0, #0x1
 	bne     LAB_02119308
 	ldr     r0, =#0x145

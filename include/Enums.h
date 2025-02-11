@@ -1,6 +1,6 @@
 #pragma once
 
-// to do: generate from rom to SoundList.h
+// to do: generate from SM64DSe in SoundList.h
 enum MusicID
 {
 	MU_STAR_SELECT          = 0x16,

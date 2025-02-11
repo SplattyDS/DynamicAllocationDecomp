@@ -16,10 +16,12 @@ struct KCL_File
 	Vector3* vertices;
 	Vector3_16f* vectors;
 	Triangle* triangles;
-	void* octree;
+	u32* octree;
 	u32 unk10;
 	Vector3 octreeOrigin;
-	Vector3 octreeNegativeDimensions;
+	u32 maskX;
+	u32 maskY;
+	u32 maskZ;
 	u32 octreeBaseWidthLog2;
 	u32 unk30;
 	u32 unk34;

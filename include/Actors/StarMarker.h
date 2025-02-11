@@ -1,6 +1,6 @@
 #pragma once
 
-struct StarMarker : public Actor
+struct StarMarker : Actor
 {
 	MovingCylinderClsnWithPos cylClsn;
 	Model model;
@@ -24,10 +24,12 @@ struct StarMarker : public Actor
 	u32 unk1cc;
 	u32 unk1d0;
 	u32 unk1d4;
-	u8  unk1d8;
-	s8  starID;
-	u8  unk1da;
-	u8  unk1db;
+	u8 unk1d8; // 0x1d8
+	u8 starID; // 0x1d9
+	u8 unk1da;
+	u8 unk1db; // 0x1db
+	
+	void SpawnRedCoinStarIfNecessary();
 };
 
 static_assert(sizeof(StarMarker) == 0x1dc, "sizeof(StarMarker) is incorrect!");

@@ -28,6 +28,21 @@ struct Material
 		return (polygonAttr & ALPHA) == (alpha << 16);
 	}
 	
+	inline void SetPolygonID(u32 polygonID)
+	{
+		polygonAttr = (polygonAttr & ~POLYGON_ID) | (polygonID << 24);
+	}
+	
+	inline void Show()
+	{
+		polygonAttr &= ~0x80000000;
+	}
+	
+	inline void Hide()
+	{
+		polygonAttr |= 0x80000000;
+	}
+	
 	u32 unk00;
 	u32 unk04;
 	Fix12i texScaleX;
@@ -79,4 +94,6 @@ extern "C"
 {
 	extern u32 numCommonModelData;
 	extern CommonModelData* commonModelDataArr;
+	
+	void CleanCommonModelDataArr();
 }

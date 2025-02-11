@@ -77,9 +77,9 @@ s32 ExplosionGoomba::Behavior()
 		}
 		
 		RaycastGround raycaster;
-		raycaster.SetFlag_2();
-		raycaster.SetFlag_8();
-		raycaster.ClearFlag_1();
+		raycaster.StartDetectingWater();
+		raycaster.StartDetectingToxic();
+		raycaster.StopDetectingOrdinary();
 		raycaster.SetObjAndPos(Vector3{ pos.x, pos.y + 400._f, pos.z }, this);
 		
 		if (raycaster.DetectClsn() && raycaster.result.surfaceInfo.clps.isToxic

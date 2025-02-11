@@ -41,3 +41,15 @@ struct PathPtr
 	inline operator const LVL_Overlay::PathObj*      &()       { return ptr; }
 	inline operator const LVL_Overlay::PathObj* const&() const { return ptr; }
 };
+
+struct BezierPathIter
+{
+	PathPtr pathPtr;
+	uint16_t currSplineX3;
+	Fix12s tinyStep;
+	Fix12i step;
+	Fix12i currTime;
+	Vector3 pos;
+	
+	bool Advance();
+};

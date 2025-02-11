@@ -29,7 +29,9 @@ struct Model : ModelBase		// internal: SimpleModel
 	virtual void Virtual10(Matrix4x3& arg0);
 	virtual void Render(const Vector3* scale = nullptr);
 	
+	void LoadAndSetFile(u16 ov0ID, s32 arg1, s32 arg2);
 	void SetPolygonID(s32 polygonID);
+	void SetPolygonMode(s32 polygonAttr);
 	void ShowMaterial(s32 boneID, s32 materialID);
 	void HideMaterial(s32 boneID, s32 materialID);
 	
@@ -96,26 +98,27 @@ struct ShadowModel : ModelBase	// internal: ShadowModel; done
 	void InitModel(Matrix4x3* transform, Fix12i scaleX, Fix12i scaleY, Fix12i scaleZ, u32 opacity); // opacity is from 0 to 30
 	
 	static void RenderAll();
-	static void Func_02015E14();
+	static void CleanAll();
 };
 
 struct CommonModel : ModelBase	// internal: CommonModel; done
 {
-	u32 unkPtr;
+	ModelComponents* data;
+	Matrix4x3 mat4x3;
 	
 	CommonModel();
 	virtual ~CommonModel() override;
 	virtual bool DoSetFile(BMD_File* file, s32 arg1, s32 arg2) override;
 	
+	void Render(const Vector3* scale = nullptr);
 	void Func_0201609C(u32 arg0);
 	void Func_020160AC(u32 arg0);
-	void Func_02016104(u32 arg0);
 };
 
 struct BlendModelAnim : ModelAnim	// internal: BlendAnmModel
 {
-	u32 unk64;
-	u32 unk68;
+	Fix12i unk64;
+	Fix12i unk68;
 	u32 unk6C;
 	
 	// 0x0208E94C vtable, 0x020166D4 ctor
@@ -127,5 +130,7 @@ struct BlendModelAnim : ModelAnim	// internal: BlendAnmModel
 	virtual void Render(const Vector3* scale = nullptr) override;
 	virtual void Virtual18(u32 arg0, const Vector3* scale) override;		// Calls Virtual10 and then Model::Render
 	
-	// 2 funcs missing
+	// 1 func missing(?)
+	void Advance();
+	void SetAnim(BCA_File& animFile, s32 arg2, s32 flags, Fix12i speed, u16 startFrame);
 };

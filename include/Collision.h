@@ -2,7 +2,6 @@
 
 #include "SM64DS_Common.h"
 #include "File.h"
-#include <array>
 
 struct RaycastGround;
 struct RaycastLine;

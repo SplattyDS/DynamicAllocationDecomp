@@ -846,7 +846,7 @@ FUN_02111a64:
 	ldrsh   r2, [r0, r1]
 	mov     r0, r4
 	mov     r1, r5
-	bl      _ZN6Player11ShowMessageER9ActorBasejRK7Vector3jj
+	bl      _ZN6Player11ShowMessageER9ActorBasejPK7Vector3jj
 	cmp     r0, #0x0
 	addeq   r13, r13, #0x14
 	popeq   { r4, r5, r14 }
@@ -1356,7 +1356,7 @@ FUN_02112284:
 	ldrsh   r2, [r1]
 	add     r3, r13, #0x8
 	mov     r1, r4
-	bl      _ZN6Player11ShowMessageER9ActorBasejRK7Vector3jj
+	bl      _ZN6Player11ShowMessageER9ActorBasejPK7Vector3jj
 	cmp     r0, #0x0
 	addeq   r13, r13, #0x18
 	popeq   { r4, r14 }

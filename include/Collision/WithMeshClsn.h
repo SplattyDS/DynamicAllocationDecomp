@@ -21,26 +21,27 @@ struct ClsnResult
 
 struct BgCh //That's the internal name, and I didn't know what else to call it since I already used WithMeshClsn
 {	
-	enum Flags : u32
+	enum Flags : u8
 	{
 		DETECT_ORDINARY   = 1 << 0, // Detect all faces with no special gimmicks related to their detectionability
 		DETECT_WATER      = 1 << 1,
 		BELONGS_TO_CAMERA = 1 << 2,
 		DETECT_TOXIC      = 1 << 3,
 		NO_DETECT_GRATE   = 1 << 5,
-		IS_CRAWLING       = 1 << 6
+		IS_CRAWLING       = 1 << 6,
 	};
 	
 	// offset (<value on construction>, notes)
 	u32* vTable;       // 0x0  (0x02099264)
-	u32 flags;         // 0x4  (1,  probably a flag field)
+	u8 flags;          // 0x4  (1,  probably a flag field)
 	u32 objID;         // 0x8  (-1, id of game object)
 	Actor* objPtr;     // 0xc  (0,  pointer to game object)
 	ClsnResult result; // 0x10
 	
-	void SetFlag_8();
-	void SetFlag_2();
-	void ClearFlag_1();
+	void StartDetectingToxic();
+	void StartDetectingWater();
+	void StopDetectingOrdinary();
+	void StopDetectingWater();
 	
 	// Actually a member function of MeshColliderBase but the this-parameter is unused
 	static bool ShouldPassThroughImpl(void* unused, const CLPS& clps, const BgCh& bgch, bool isWall);
@@ -187,9 +188,11 @@ struct WithMeshClsn
 	s32  JustHitGround() const;
 	void ClearJustHitGroundFlag();
 	void ClearAllGroundFlags();
-	void SetFlag_2();
+	void StartDetectingWater();
+	void StopDetectingWater();
 	void Unk_0203589c();
 	s32  TouchesWater() const;
+	s32 GetResultFlag1() const;
 	ClsnResult& GetFloorResult() const;
 	ClsnResult& GetWallResult() const;
 	void Init(Actor* owner, Fix12i radius, Fix12i vertOffset, Vector3_16* motionDirPtr, Vector3_16* angPtr);

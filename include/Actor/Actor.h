@@ -54,6 +54,7 @@ struct Actor : public ActorBase				//internal name: dActor
 		YE_SWALLOW					= 4,
 		YE_GAIN_FIRE_BREATH			= 5,
 		YE_KEEP_AND_CAN_MAKE_EGG	= 6,
+		YE_UNK_7                    = 7,
 	};
 	
 	ListNode listNode;		// 0x50
@@ -108,6 +109,7 @@ struct Actor : public ActorBase				//internal name: dActor
 	void SpawnSoundObj(u32 soundObjParam);
 	
 	void KillAndTrackInDeathTable();
+	void TrackInDeathTable();
 	void UntrackInDeathTable();
 	bool GetBitInDeathTable();
 	
@@ -133,14 +135,15 @@ struct Actor : public ActorBase				//internal name: dActor
 	
 	bool BumpedUnderneathByPlayer(Player& player); //assumes there is a collision in the first place
 	bool JumpedOnByPlayer(CylinderClsn& cylClsn, Player& player);
-	void Unk_0201061c(Player& player, u32 numCoins, u32 coinType);
+	void GivePlayerCoins(Player& player, u8 numCoins, u32 coinType);
 	
 	Fix12i DistToCPlayer();
 	Player* ClosestPlayer();
+	Player* ClosestNonVanishPlayer();
 	s16 HorzAngleToCPlayer();
-	s16 HorzAngleToCPlayerOrAng(s16 ang);
+	s16 HorzAngleToCPlayerOrAng();
 	Player* FarthestPlayer();
-	Fix12i DistToFPlayer();
+	s16 HorzAngleToFPlayer();
 	bool IsPlayerInRange(s32 maxDist); // yes it uses an int
 	bool IsPlayerInRange(const Vector3& pos, s32 maxDist); // uses pos instead of this->pos
 	bool IsPlayerInRange(Fix12i posX, Fix12i posY, Fix12i posZ, s32 maxDist); // uses params instead of this->pos
@@ -152,13 +155,22 @@ struct Actor : public ActorBase				//internal name: dActor
 	void UpdatePos(CylinderClsn* clsn); // applies motion direction, vertical acceleration, and terminal velocity.
 	void UpdatePosWithOnlySpeed(CylinderClsn* clsn);
 	void UpdatePosWithHorzSpeedAndAng();
+	bool DetectRaycastClsn(Vector3& raycastPos, Vector3& pos, bool updatePos);
+	
+	Matrix4x3& UpdateCarry(Player& player, const Vector3& offset); // returns a reference to the transform mat (MATRIX_SCRATCH_PAPER)
 	
 	void SetRanges(Fix12i newRangeOffsetY, Fix12i newRange, Fix12i newDrawDist, Fix12i newUnkc0);
 	
 	s16 GetSubtraction(s16 arg1, s16 arg2); // returns arg2 - arg1 without overflow
 	Fix12i GetWaterHeightWDW(); // if in WDW, returns the height of the water, else it returns pos.y
 	
+	void SpawnCoins(const Vector3& coinPos, u32 numCoins, Fix12i prevSpeed, s16 baseAng);
 	Number* SpawnNumber(const Vector3& pos, u32 number, bool isSilver, u16 unk14c, Actor* unkActor = nullptr);
+	void SpawnFireball(const Vector3& pos, const Vector3_16* rot, Fix12i horzSpeed, Fix12i unk35c, u32 param1);
+	
+	Actor* FindEgg(CylinderClsn& cylClsn);
+	Actor* FindExplosionActor(CylinderClsn& cylClsn);
+	
 	static Actor* Spawn(u32 actorID, u32 param1, const Vector3& pos, const Vector3_16* rot, s32 areaID, s32 deathTableID);
 	
 	static Actor* Next(const Actor* actor); // next in the linked list, returns the 1st object if given a nullptr, returns a nullptr if given the last actor
@@ -168,6 +180,25 @@ struct Actor : public ActorBase				//internal name: dActor
 	static Actor* FindWithActorID(u32 actorID, Actor* searchStart); //searchStart is not included.
 	static Actor* First() { return Next(nullptr); }
 	static Actor* FirstWithActorID(u32 actorID) { return FindWithActorID(actorID, nullptr); }
+	
+	[[gnu::always_inline]]
+	inline void UpdateVertSpeed()
+	{
+		if (speed.y + vertAccel >= termVel)
+			speed.y += vertAccel;
+		else
+			speed.y = termVel;
+	}
+	
+	[[gnu::always_inline]]
+	inline void UpdateVertSpeedWithNormal(Vector3& normal)
+	{
+		if (normal.y != 0._f)
+		{
+			Fix12i surfaceSpeed = (normal.x * speed.x + normal.z * speed.z) / normal.y;
+			speed.y = -(surfaceSpeed + 8._f);
+		}
+	}
 };
 
 static_assert(sizeof(Actor) == 0xd4);

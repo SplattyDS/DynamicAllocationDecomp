@@ -37,7 +37,7 @@ s32 MetalNet::InitResources()
 	if ((param1 & 0xff) == 0xff)
 	{
 		// in the moat
-		if (CURRENT_GAMEMODE != 1 && (SAVE_DATA.miscStates2 & 0x08) != 0)
+		if (CURRENT_GAMEMODE != 1 && (SAVE_DATA.flags2 & 0x00080000) != 0)
 			return 0;
 	}
 	else

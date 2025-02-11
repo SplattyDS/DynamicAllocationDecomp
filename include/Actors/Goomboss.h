@@ -35,7 +35,21 @@ struct Goomboss : Enemy
 		SPAWN,
 		WAIT_NO_LOOP,
 		
-		NUM_ANIMS = WAIT_NO_LOOP
+		NUM_ANIMS = WAIT_NO_LOOP,
+		NUM_ANIM_INFOS,
+	};
+	
+	enum TextureAnimations
+	{
+		TA_ANGER_SPAWN,
+		TA_DAMAGE,
+		TA_UNUSED,
+		TA_DOWN,
+		TA_DOWN_START,
+		TA_SERCH_WAIT,
+		TA_DEFAULT,
+		
+		NUM_TEX_ANIMS,
 	};
 	
 	MovingCylinderClsnWithPos cylClsns[4]; // 0x110, 0x150, 0x190, 0x1d0 (0: ???, 1: face 2: left foot, 3: right foot)

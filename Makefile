@@ -48,7 +48,7 @@ export LD      := $(PREFIX)ld
 #---------------------------------------------------------------------------------
 TARGET   := newcode
 BUILD    := build
-SOURCES  := source/E_Goomba
+SOURCES  := source/N_BobOmbBuddy
 INCLUDES := include
 DATA     := data
 GRAPHICS := gfx
@@ -58,7 +58,7 @@ GRAPHICS := gfx
 #---------------------------------------------------------------------------------
 ARCH :=
 
-CFLAGS := -Wall -Wextra -Werror -Wno-unused-result -Wno-unused-parameter -Wno-parentheses -Wno-literal-suffix \
+CFLAGS := -Wall -Wextra -Werror -Wno-unused-result -Wno-unused-parameter -Wno-parentheses -Wno-literal-suffix -Wno-deprecated-enum-enum-conversion \
           -Os -march=armv5te -mtune=arm946e-s -fomit-frame-pointer -fwrapv \
           $(ARCH) $(INCLUDE) -DARM9 -nodefaultlibs -I. -fno-builtin -c
 

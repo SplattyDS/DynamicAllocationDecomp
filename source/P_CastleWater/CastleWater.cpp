@@ -119,7 +119,7 @@ SharedFilePtr CastleWater::clsnFile;
 s32 CastleWater::InitResources()
 {
 	// the moat was drained and the player is not in VS mode
-	if (CURRENT_GAMEMODE != 1 && (SAVE_DATA.miscStates2 & 0x08) != 0)
+	if (CURRENT_GAMEMODE != 1 && (SAVE_DATA.flags2 & 0x00080000) != 0)
 		pos.y = -700._f;
 	
 	Model::LoadFile(modelFile);
@@ -182,7 +182,7 @@ void CastleWater::SpawnMistParticles()
 	else
 	{
 		// moat not drained
-		if ((SAVE_DATA.miscStates2 & 0x08) == 0)
+		if ((SAVE_DATA.flags2 & 0x00080000) == 0)
 			mistPos = &mistPosRegular[0];
 		else
 			mistPos = &mistPosDrained[0];

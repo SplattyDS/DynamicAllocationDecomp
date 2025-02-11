@@ -200,6 +200,8 @@ namespace Sound
 		char* unk10;
 		u32 unk14;
 		u32 unk18;
+		
+		static void SetPlayableSeqCount(s32 playerID, s32 maxSequences);
 	};
 	
 	extern Player PLAYERS[]; //size not known, but greater than 9.
@@ -216,12 +218,15 @@ namespace Sound
 	// void PlayBank3_2D(u32 soundID); // deprecated, use Sound::Play2D
 	
 	//volume goes up to 0x7f
-	bool PlayMsgSound(u32 soundID, u32 musicVolume, u32 volume, Fix12i timeInv, bool starting); //return value: did it finish?
+	bool PlaySub(u32 soundID, u32 musicVolume, u32 volume, Fix12i timeInv, bool starting); //return value: did it finish?
 	
 	bool PlaySmallSecretSound(Actor* actor, u16* timer); // returns whether finished playing sound
 	bool PlaySecretSound(Actor* actor, u16* timer); // returns whether finished playing sound
 	
+	void LoadGroupAndSetBank(s32 groupID, s32 bankID);
 	void LoadInitialGroup(s32 groupID);
+	void UnsetPlayerVoiceGroup(); // only sets a variable to 0
+	void ResetPlayerVoiceGroup(); // actually unloads the group
 	
 	void LoadAndSetMusic_Layer1(s32 musicID);
 	void StopLoadedMusic_Layer1(u32 fade);
@@ -231,16 +236,21 @@ namespace Sound
 	void StopLoadedMusic_Layer3();
 	void SetMusic(u32 arg0, u32 musicID);
 	void EndMusic(u32 arg0, u32 musicID);
-	void UnkPlaySoundFunc(u32 soundID);
+	void PauseMusic();
+	void UnpauseMusic();
 	
 	bool ChangeMusicVolume(u32 newVolume, Fix12i changeSpeed);
 	
-	void Func_02048ee4();
 	void Func_02048eb4();
+	void Func_02048ec4();
+	void Func_02048ee4();
 }
 
 extern "C"
 {
+	extern s32 MUSIC_VOLUME_LSL_12;
+	extern s32 MESSAGE_SOUND_VOLUME_LSL_12;
+	
 	extern s32 JRB_SOUND_SPECIFICS; // copied to SOUND_SPECIFICS if (JRB_SOUND_SPECIFICS > 0 && JRB_SOUND_SPECIFICS != SOUND_SPECIFICS)
 	extern s32 SOUND_SPECIFICS;
 }

@@ -7,9 +7,12 @@
 #include <utility>
 #include <numeric>
 #include <limits>
+#include <array>
 
 // Note: vector and matrix structures defined in this file use
 // attributes on lambda expressions as in proposal P2173R0
+
+#define fallthrough [[fallthrough]]
 
 using s8  = int8_t;  using u8  = uint8_t;
 using s16 = short;   using u16 = uint16_t;
@@ -34,8 +37,14 @@ namespace cstd
 
 extern "C"
 {
+	void nds_print(void* target, const char* text);
+	void nds_printf(void* target, const char* text, ...);
+	void nds_printt(void* target, const char* text, u32 time);
+	
 	u16 DecIfAbove0_Short(u16& counter); // returns the counter's new value
 	u8 DecIfAbove0_Byte(u8& counter);    // returns the counter's new value
+	
+	void MultiStore16(u16 value, void* target, s32 size);
 }
 
 // returns whether the counter reached its destination
@@ -43,6 +52,36 @@ bool ApproachLinear(s16& counter, s16 dest, s16 step);
 bool ApproachLinear(s32& counter, s32 dest, s32 step);
 bool ApproachLinear2(s16& counter, s16 dest, s16 step);
 bool ApproachLinear2(s32& counter, s32 dest, s32 step);
+
+void UpdateAngle(s16& ang, s16 target, s32 numFrames, s16 maxStep);
+
+// x1 < x2
+// x1 inclusive, x2 exclusive
+inline bool IsBetween(u8 x, u8 x1, u8 x2)
+{
+	return (u8)(x - x1) < (x2 - x1);
+	// return IsInRangeX(x1, x2 - x1);
+}
+
+// x1 < x2
+// if x is equal to x1 / x2, returns false (aka counts as between)
+inline bool NotBetween(u8 x, u8 x1, u8 x2)
+{
+	return (u8)(x - x1) > (x2 - x1);
+}
+
+// x1 inclusive
+inline bool IsInRange(u8 x, u8 x1, u8 len)
+{
+	return (u8)(x - x1) < len;
+	// return IsBetweenX(x1, x1 + len);
+}
+
+template <typename T>
+[[gnu::always_inline]] inline T Abs(T val)
+{
+    return val >= 0 ? val : -val;
+}
 
 struct AsRaw {} constexpr as_raw;
 
@@ -96,8 +135,10 @@ struct Fix
 	friend constexpr Promoted operator* (s32 i,  CRTP<T> f) { return {i * f.val, as_raw}; }
 	friend constexpr Promoted operator* (CRTP<T>  f, s32 i) { return {f.val * i, as_raw}; }
 	friend constexpr Promoted operator/ (CRTP<T>  f, s32 i) { return {f.val / i, as_raw}; }
+	friend constexpr Promoted operator% (CRTP<T>  f, s32 i) { return {f.val % i, as_raw}; }
 	friend constexpr CRTP<T>& operator*=(CRTP<T>& f, s32 i) { f.val *= i; return f; }
 	friend constexpr CRTP<T>& operator/=(CRTP<T>& f, s32 i) { f.val /= i; return f; }
+	friend constexpr CRTP<T>& operator%=(CRTP<T>& f, s32 i) { f.val %= i; return f; }
 
 	friend constexpr Promoted operator<< (CRTP<T>  f, s32 i) { return {f.val << i, as_raw}; }
 	friend constexpr Promoted operator>> (CRTP<T>  f, s32 i) { return {f.val >> i, as_raw}; }
@@ -107,6 +148,7 @@ struct Fix
 	friend constexpr CRTP<T>& operator&= (CRTP<T>& f, s32 i) { f.val &=  i; return f; }
 	friend constexpr Promoted operator|  (CRTP<T>  f, s32 i) { return {f.val |  i, as_raw}; }
 	friend constexpr CRTP<T>& operator|= (CRTP<T>& f, s32 i) { f.val |=  i; return f; }
+	friend constexpr Promoted operator^  (CRTP<T> f0, CRTP<T> f1) { return {f0.val ^ f1.val, as_raw}; }
 
 	template<FixUR U> [[gnu::always_inline, nodiscard]] friend
 	Promoted operator*(CRTP<T> f0, CRTP<U> f1)
@@ -159,8 +201,10 @@ struct Fix
 		
 		return CRTP<T> {raw >> shift, as_raw};
 	}();
-
+	
+	[[gnu::always_inline]]
 	constexpr Promoted friend Abs(CRTP<T> f) { return f.val >= 0 ? f : -f; }
+	
 	constexpr explicit operator T() const { return val >> q; }
 	constexpr explicit operator bool() const { return val != 0; }
 
@@ -236,8 +280,7 @@ extern "C"
 {	
 	extern u16 POWERS_OF_TEN[3]; //100, 10, 1
 	extern char DIGIT_ENC_ARR[10];
-
-	extern u16 HEALTH_ARR[4];
+	
 	extern s32 UNUSED_RAM[0xec00];
 	
 	extern s32 RNG_STATE; //x => x * 0x0019660d + 0x3c6ef35f
@@ -250,10 +293,13 @@ extern "C"
 	
 	void UnloadOverlay(s32 ovID);
 	void LoadOverlay(s32 ovID);
-	char* LoadFile(s32 ov0FileID);
+	char* LoadFile(u16 ovID);
+	void LoadFileAt(u16 ovID, void* target);
+	void LoadCompressedFileAt(u16 ovID, void* target);
 	void LoadTextNarcs();
 	bool LoadArchive(u32 archiveID);
 	void UnloadArchive(s32 archiveID);
+	void UnloadArchives();
 	
 	[[noreturn]] void Crash();
 	
@@ -262,6 +308,7 @@ extern "C"
 	void Vec3_RotateYAndTranslate(Vector3& res, const Vector3& translation, s16 angY, const Vector3& v); //res and v cannot alias.
 	s16 Vec3_VertAngle(const Vector3& v1, const Vector3& v0) __attribute__((pure));
 	s16 Vec3_HorzAngle(const Vector3& v0, const Vector3& v1) __attribute__((pure));
+	bool Vec3_ApproachHorz(Vector3& pos, const Vector3& targetPos, Fix12i step);
 	s32 RandomIntInternal(s32* randomIntStatePtr);
 	void Matrix3x3_FromQuaternion(const Quaternion& q, Matrix3x3& mF);
 	void Matrix4x3_FromTranslation(Matrix4x3& mF, Fix12i x, Fix12i y, Fix12i z);
@@ -301,7 +348,7 @@ extern "C"
 	void MulVec3Mat3x3(const Vector3& v, const Matrix3x3& m, Vector3& res);
 	void MulMat3x3Mat3x3(const Matrix3x3& m1, const Matrix3x3& m0, Matrix3x3& mF); //m0 is applied to m1, so it's m0*m1=mF
 	void Matrix4x3_LoadIdentity(Matrix4x3& mF);
-	 // long call to force gcc to actually call the off-by-one address and therefore set the mode to thumb.
+	// long call to force gcc to actually call the off-by-one address and therefore set the mode to thumb.
 	void Matrix4x3_FromScale(Matrix4x3& mF, Fix12i x, Fix12i y, Fix12i z) __attribute__((long_call, target("thumb")));
 	void MulVec3Mat4x3(const Vector3& v, const Matrix4x3& m, Vector3& res);
 	void MulMat4x3Mat4x3(const Matrix4x3& m1, const Matrix4x3& m0, Matrix4x3& mF); //m0 is applied to m1, so it's m0*m1=mF
@@ -325,10 +372,15 @@ extern "C"
 	
 	Fix12i Math_Function_0203b14c(Fix12i& arg1, Fix12i arg2, Fix12i arg3, Fix12i arg4, Fix12i arg5);
 	void Math_Function_0203b0fc(Fix12i& arg1, Fix12i arg2, Fix12i arg3, Fix12i arg4);
+	
+	void Vec3_InterpCubic(Vector3& vF, const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& v3, Fix12i t);
 }
 
 [[gnu::always_inline]]
 inline s32 RandomInt() { return RandomIntInternal(&RNG_STATE); }
+
+[[gnu::always_inline]]
+inline u32 RandomUint() { return (u32)RandomInt(); }
 
 [[gnu::always_inline]]
 inline bool RandomBit(s32 bit)
@@ -354,10 +406,37 @@ consteval s32 CountSetBits(u32 num)
 	return setBits;
 }
 
-struct Vector2     { Fix12i x, y; };
-struct Vector2_16  { s16  x, y; };
-struct Vector3_16  { s16  x, y, z; };
-struct Vector3_16f { Fix12s x, y, z; };
+struct Vector2
+{
+	Fix12i x, y;
+	
+	constexpr Vector2() = default;
+	constexpr Vector2(auto x, auto y) : x(x), y(y) {}
+};
+
+struct Vector2_16
+{
+	s16  x, y;
+	
+	constexpr Vector2_16() = default;
+	constexpr Vector2_16(s16 x, s16 y) : x(x), y(y) {}
+};
+
+struct Vector3_16
+{
+	s16  x, y, z;
+	
+	constexpr Vector3_16() = default;
+	constexpr Vector3_16(s16 x, s16 y, s16 z) : x(x), y(y), z(z) {}
+};
+
+struct Vector3_16f
+{
+	Fix12s x, y, z;
+	
+	constexpr Vector3_16f() = default;
+	constexpr Vector3_16f(auto x, auto y, auto z) : x(x), y(y), z(z) {}
+};
 
 template<class T>
 struct UnaliasedRef
@@ -400,6 +479,8 @@ constexpr s32 Lerp(s32 a, s32 b, Fix12i t)
 
 struct Vector3
 {
+	static const Vector3 IDENTITY;
+	
 	template<class F>
 	class Proxy
 	{
@@ -636,19 +717,20 @@ struct Vector3
 		});
 	}
 
-	Vector3& operator+= (const Vector3& v) &     { AddVec3(*this, v, *this); return *this; }
-	Vector3& operator-= (const Vector3& v) &     { SubVec3(*this, v, *this); return *this; }
-	Vector3& operator*= (Fix12i scalar)    &     { Vec3_MulScalarInPlace(*this, scalar); return *this; }
-	Vector3& operator/= (Fix12i scalar)    &     { Vec3_DivScalarInPlace(*this, scalar); return *this; }
-	Vector3& operator<<=(s32 shift)        &     { Vec3_LslInPlace(*this, shift); return *this; }
-	Vector3& operator>>=(s32 shift)        &     { Vec3_AsrInPlace(*this, shift); return *this; }
-	Fix12i   Dist       (const Vector3& v) const { return Vec3_Dist(*this, v); }
-	Fix12i   HorzDist   (const Vector3& v) const { return Vec3_HorzDist(*this, v); }
-	Fix12i   Len        ()                 const { return LenVec3(*this); }
-	Fix12i   HorzLen    ()                 const { return Vec3_HorzLen(*this); }
-	Fix12i   Dot        (const Vector3& v) const { return DotVec3(*this, v); }
-	s16      HorzAngle  (const Vector3& v) const { return Vec3_HorzAngle(*this, v); }
-	s16      VertAngle  (const Vector3& v) const { return Vec3_VertAngle(*this, v); }
+	Vector3& operator+=  (const Vector3& v) &     { AddVec3(*this, v, *this); return *this; }
+	Vector3& operator-=  (const Vector3& v) &     { SubVec3(*this, v, *this); return *this; }
+	Vector3& operator*=  (Fix12i scalar)    &     { Vec3_MulScalarInPlace(*this, scalar); return *this; }
+	Vector3& operator/=  (Fix12i scalar)    &     { Vec3_DivScalarInPlace(*this, scalar); return *this; }
+	Vector3& operator<<= (s32 shift)        &     { Vec3_LslInPlace(*this, shift); return *this; }
+	Vector3& operator>>= (s32 shift)        &     { Vec3_AsrInPlace(*this, shift); return *this; }
+	Fix12i   Dist        (const Vector3& v) const { return Vec3_Dist(*this, v); }
+	Fix12i   HorzDist    (const Vector3& v) const { return Vec3_HorzDist(*this, v); }
+	Fix12i   Len         ()                 const { return LenVec3(*this); }
+	Fix12i   HorzLen     ()                 const { return Vec3_HorzLen(*this); }
+	Fix12i   Dot         (const Vector3& v) const { return DotVec3(*this, v); }
+	s16      HorzAngle   (const Vector3& v) const { return Vec3_HorzAngle(*this, v); }
+	s16      VertAngle   (const Vector3& v) const { return Vec3_VertAngle(*this, v); }
+	bool     ApproachHorz(const Vector3& targetPos, Fix12i step) { return Vec3_ApproachHorz(*this, targetPos, step); }
 
 	Vector3& operator*=(const auto& m) & { return *this = m * *this; }
 
@@ -891,6 +973,9 @@ struct Matrix2x2 // Matrix is column-major!
 {
 	Vector2 c0;
 	Vector2 c1;
+	
+	constexpr Matrix2x2() = default;
+	constexpr Matrix2x2(const Vector2& c0, const Vector2& c1) : c0(c0), c1(c1) {}
 };
 
 struct Matrix3x3 // Matrix is column-major!
@@ -1210,7 +1295,7 @@ struct Matrix4x3 : private Matrix3x3 // Matrix is column-major!
 		void Eval(Matrix4x3& res) { eval.template operator()<resMayAlias>(res); }
 
 		[[gnu::always_inline, nodiscard]]
-		auto Inverse() const
+		auto Inversed() const
 		{
 			return NewProxy([this]<bool resMayAlias> [[gnu::always_inline]] (Matrix4x3& res)
 			{
@@ -1358,9 +1443,15 @@ struct Matrix4x3 : private Matrix3x3 // Matrix is column-major!
 	Matrix4x3& RotateXYZ(s16 angX, s16 angY, s16 angZ) & { Matrix4x3_ApplyInPlaceToRotationXYZExt(*this, angX, angY, angZ); return *this; }
 	Matrix4x3& Translate(Fix12i x, Fix12i y, Fix12i z) & { Matrix4x3_ApplyInPlaceToTranslation(*this, x, y, z); return *this; }
 	Matrix4x3& ApplyScale(Fix12i x, Fix12i y, Fix12i z) & { Matrix4x3_ApplyInPlaceToScale(*this, x, y, z); return *this; }
+	Matrix4x3& Inverse() & { InvMat4x3(*this, *this); return *this; }
+	
+	Matrix4x3& RotateZXY(Vector3_16& ang) & { Matrix4x3_ApplyInPlaceToRotationZXYExt(*this, ang.x, ang.y, ang.z); return *this; }
+	Matrix4x3& RotateXYZ(Vector3_16& ang) & { Matrix4x3_ApplyInPlaceToRotationXYZExt(*this, ang.x, ang.y, ang.z); return *this; }
+	Matrix4x3& Translate(Vector3& v) & { Matrix4x3_ApplyInPlaceToTranslation(*this, v.x, v.y, v.z); return *this; }
+	Matrix4x3& ApplyScale(Vector3& v) & { Matrix4x3_ApplyInPlaceToScale(*this, v.x, v.y, v.z); return *this; }
 	
 	[[gnu::always_inline, nodiscard]]
-	auto Inverse() const
+	auto Inversed() const
 	{
 		return Proxy([this]<bool resMayAlias> [[gnu::always_inline]] (Matrix4x3& res)
 		{
@@ -1706,7 +1797,14 @@ inline const ostream& operator<<(const ostream& os, const Matrix3x3& m)
 }
 
 [[gnu::always_inline]]
-inline void AddPointers(void** p1, void* p2)
+inline void AddPointers(void* p1, void* p2)
 {
-	*p1 = (void*)((u32)*p1 + (u32)p2);
+	void** p = (void**)p1;
+	*p = (void*)((u32)*p + (u32)p2);
+}
+
+[[gnu::always_inline]]
+inline void BREAK()
+{
+	asm("mov r11, r11");
 }

@@ -34,14 +34,36 @@ struct Message
 	s16 textBoxWidth;
 	s16 textBoxHeight; // in lines
 	
+	static void LoadTextVS();
+	static void SetTextGlobalsVS();
+	
 	static void PrepareTalk();
 	static void EndTalk();
 	
 	static void AddChar(char charInFontEncoding);
-	static void Display(u32 msgID);
+	static void Display(u32 msgID); // calls DisplayText
+	static void DisplayText(u16 msgID);
 	
-	static void DisplayCourseNameForStarSelect(u32 actSelectorID);
+	static void DisplaySaving(u16 savingMessageID);
+	
+	// for menus
+	static void DisplaySaveStatusText(u16 msgID);
+	static void DisplayLevelClearText(u16 firstButtonMsgID, s8 clearedLevelID);
+	static void DisplayVsExitText(u16 vsMsgID);
+	static void DisplayPauseText(u16 firstButtonMsgID, u8 levelID);
+	static void DisplayPauseTextVS(u16 vsMsgID);
+	static void DisplayControllerModeText(u16 firstButtonMsgID);
+	static void DisplayOptionsMenuText(u16 firstButtonMsgID);
+	static void DisplaySaveMenuText(u16 firstButtonMsgID);
+	static void DisplayDontSaveText(u16 firstButtonMsgID);
+	
+	static void DisplayCourseNameForStarSelect(u32 courseID);
 	static void DisplayStarNameForStarSelect(u32 starID);
+	
+	static bool UpdateWindow();
+	static void Update();
+	
+	static void ResetAllGlobals();
 };
 
 struct MESG_File;
@@ -60,9 +82,16 @@ extern "C"
 	extern char* CURR_MSG_TEXT_CHAR;
 	extern Message* MSG_ARR_PTR;
 	extern MESG_File* MSG_FILE_PTR;
+	extern MESG_File* VS_MSG_FILE_PTR;
 	extern MsgIDCharEntry MSG_ID_CHAR_MAP[0x62];
 	extern u16 UTF16_TO_FONT_TABLE[0x100];
 	extern u8 TALK_FONT_CHAR_WIDTHS[0x100];
+	
+	extern u8 MESSAGE_RESULT;
+	extern bool BOUNCING_MSG_ARROWS_VISIBLE;
+	extern bool IS_SAVING_MESSAGE_DISPLAYED;
+	extern u8 SAVE_MESSAGE_TIMER;
+	extern bool IS_MESSAGE_DISAPPEARING;
 }
 
 using MsgGenTextFunc = void(*)();

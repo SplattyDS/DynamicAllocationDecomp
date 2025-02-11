@@ -17,31 +17,6 @@ struct BTA_File;
 
 extern "C"
 {
-	// temporary as these are static member variables
-	extern SharedFilePtr LUIGI_CAP_MODEL_PTR;
-	extern SharedFilePtr RED_NUMBER_MODEL_PTR;
-	extern SharedFilePtr POWER_FLOWER_OPEN_MODEL_PTR;
-	extern SharedFilePtr COIN_YELLOW_POLY32_MODEL_PTR;
-	extern SharedFilePtr WARIO_CAP_MODEL_PTR;
-	extern SharedFilePtr COIN_BLUE_POLY32_MODEL_PTR;
-	extern SharedFilePtr POWER_FLOWER_CLOSED_MODEL_PTR;
-	extern SharedFilePtr ONE_UP_MUSHROOM_MODEL_PTR;
-	extern SharedFilePtr BOB_OMB_MODEL_PTR;
-	extern SharedFilePtr NUMBER_TEXSEQ_PTR;
-	extern SharedFilePtr SNUFIT_BULLET_MODEL_PTR;
-	extern SharedFilePtr COIN_RED_POLY32_MODEL_PTR;
-	extern SharedFilePtr COIN_BLUE_POLY4_MODEL_PTR;
-	extern SharedFilePtr SILVER_NUMBER_TEXSEQ_PTR;
-	extern SharedFilePtr WATER_RING_MODEL_PTR;
-	extern SharedFilePtr SHELL_MODEL_PTRS[2];
-	extern SharedFilePtr SILVER_NUMBER_MODEL_PTR;
-	extern SharedFilePtr SUPER_MUSHROOM_MODEL_PTR;
-	extern SharedFilePtr BUBBLE_MODEL_PTR;
-	extern SharedFilePtr MARIO_CAP_MODEL_PTR;
-	extern SharedFilePtr COIN_YELLOW_POLY4_MODEL_PTR;
-	extern SharedFilePtr COIN_RED_POLY4_MODEL_PTR;
-	extern SharedFilePtr FEATHER_MODEL_PTR;
-	
 	extern u16 CHANGE_CAP_TOON_COLORS[0x20];
 }
 

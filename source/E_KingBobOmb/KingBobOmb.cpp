@@ -880,7 +880,7 @@ LAB_021241a0:
 	mov     r2, r6
 	add     r3, r5, #0x5c
 	str     r12, [r13, #0x4]
-	bl      _ZN6Player11ShowMessageER9ActorBasejRK7Vector3jj
+	bl      _ZN6Player11ShowMessageER9ActorBasejPK7Vector3jj
 	cmp     r0, #0x0
 	beq     LAB_021241ec
 	ldr     r0, =#0x12a
@@ -1489,7 +1489,7 @@ LAB_02124a80:
 	mov     r1, r4
 	mov     r2, #0x94
 	str     r12, [r13, #0x4]
-	bl      _ZN6Player11ShowMessageER9ActorBasejRK7Vector3jj
+	bl      _ZN6Player11ShowMessageER9ActorBasejPK7Vector3jj
 	cmp     r0, #0x0
 	beq     LAB_02124b14
 	ldr     r0, =CAMERA
@@ -1720,7 +1720,7 @@ LAB_02124e30:
 	mov     r2, r4
 	add     r3, r6, #0x5c
 	str     r12, [r13, #0x4]
-	bl      _ZN6Player11ShowMessageER9ActorBasejRK7Vector3jj
+	bl      _ZN6Player11ShowMessageER9ActorBasejPK7Vector3jj
 	cmp     r0, #0x0
 	beq     LAB_02124e70
 	ldr     r0, =#0x12a
@@ -2605,7 +2605,7 @@ LAB_02125a50:
 	str     r12, [r13]
 	mov     r0, r4
 	str     r12, [r13, #0x4]
-	bl      _ZN6Player11ShowMessageER9ActorBasejRK7Vector3jj
+	bl      _ZN6Player11ShowMessageER9ActorBasejPK7Vector3jj
 	cmp     r0, #0x0
 	beq     LAB_02125ba4
 	ldr     r0, =#0x12a

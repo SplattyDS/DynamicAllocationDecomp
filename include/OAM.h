@@ -39,7 +39,7 @@ struct OamAttr
 	
 	enum Attr2 : u16
 	{
-		TILE_NUMBER    = 0x1ff << 0,
+		TILE_NUMBER    = 0x3ff << 0,
 		PRIORITY       = 0x3   << 10, // relative to BG (0 = highest)
 		PALETTE_NUMBER = 0xf   << 12, // not used in 256/1 mode
 	};
@@ -80,8 +80,7 @@ namespace OAM
 	void Reset(); // Resets the internal buffer
 	void Flush(); // Flushes the cache on the internal buffer
 	void Load();  // Loads the internal buffer to the OAM
-	void Render(OamAttr* data, s32 x, s32 y); // Inserts an object in the internal buffer
-	void Render(OamAttr* data, s32 x, s32 y, s32 palette, s32 priority); // Inserts an object in the internal buffer
+	void RenderSub(OamAttr* data, s32 x, s32 y);
 	void RenderSub(OamAttr* data, s32 x, s32 y, s32 palette, s32 priority);
 	void EnableSubOAM(); // Enables the sub engine OAM
 	
@@ -92,8 +91,192 @@ namespace OAM
 		subOAMDisabled = true;
 	}
 	
-	extern OamAttr COIN;
-	extern OamAttr* NUMBER_PTRS[20]; //first 10 are gold versions of 0-9, last 10 are red versions of 0-9
-	extern OamAttr TIMES;
-	extern OamAttr BOUNCING_ARROW;
+	extern OamAttr COIN[];
+	extern OamAttr POWER_STAR[];
+	extern OamAttr TIMES[];
+	
+	extern OamAttr* NUMBERS[20]; //first 10 are gold versions of 0-9, last 10 are red versions of 0-9
+	extern OamAttr* LIFE_ICONS[4];
+	
+	// Stage and HUD icons
+	extern OamAttr RED_COIN[];
+	extern OamAttr SILVER_STAR[];
+	extern OamAttr BOUNCING_ARROW[];
+	extern OamAttr TIME[];
+	extern OamAttr MINUTES[];
+	extern OamAttr SECONDS[];
+	extern OamAttr HEALTH_METER_BG[];
+	
+	// camera buttons
+	extern OamAttr CAM_BUTTON_L[];
+	extern OamAttr CAM_BUTTON_L_PRESSED[];
+	extern OamAttr CAM_BUTTON_R[];
+	extern OamAttr CAM_BUTTON_R_PRESSED[];
+	extern OamAttr CAM_ZOOM_BUTTON[];
+	extern OamAttr CAM_ZOOM_BUTTON_PRESSED[];
+	extern OamAttr S_CAM_BUTTON_L[];
+	extern OamAttr S_CAM_BUTTON_L_PRESSED[];
+	extern OamAttr S_CAM_BUTTON_R[];
+	extern OamAttr S_CAM_BUTTON_R_PRESSED[];
+	extern OamAttr S_CAM_ZOOM_BUTTON[];
+	extern OamAttr S_CAM_ZOOM_BUTTON_PRESSED[];
+	
+	extern OamAttr* HEALTH_METERS[9];
+	extern OamAttr HEALTH_METER_0[];
+	extern OamAttr HEALTH_METER_1[];
+	extern OamAttr HEALTH_METER_2[];
+	extern OamAttr HEALTH_METER_3[];
+	extern OamAttr HEALTH_METER_4[];
+	extern OamAttr HEALTH_METER_5[];
+	extern OamAttr HEALTH_METER_6[];
+	extern OamAttr HEALTH_METER_7[];
+	extern OamAttr HEALTH_METER_8[];
+	
+	// Minimap icons
+	extern OamAttr MM_ARROW[];
+	extern OamAttr MM_RED_COIN[];
+	extern OamAttr MM_SPIKE_BOMB[];
+	
+	extern OamAttr* MM_VS_PLAYER_ICONS[16];
+	extern OamAttr MM_VS_YOSHI_M_CAP_ICON[];
+	extern OamAttr MM_VS_YOSHI_L_CAP_ICON[];
+	extern OamAttr MM_VS_YOSHI_W_CAP_ICON[];
+	extern OamAttr MM_VS_YOSHI_ICON[];
+	extern OamAttr MM_VS_RED_YOSHI_M_CAP_ICON[];
+	extern OamAttr MM_VS_RED_YOSHI_L_CAP_ICON[];
+	extern OamAttr MM_VS_RED_YOSHI_W_CAP_ICON[];
+	extern OamAttr MM_VS_RED_YOSHI_ICON[];
+	extern OamAttr MM_VS_BLUE_YOSHI_M_CAP_ICON[];
+	extern OamAttr MM_VS_BLUE_YOSHI_L_CAP_ICON[];
+	extern OamAttr MM_VS_BLUE_YOSHI_W_CAP_ICON[];
+	extern OamAttr MM_VS_BLUE_YOSHI_ICON[];
+	extern OamAttr MM_VS_YELLOW_YOSHI_M_CAP_ICON[];
+	extern OamAttr MM_VS_YELLOW_YOSHI_L_CAP_ICON[];
+	extern OamAttr MM_VS_YELLOW_YOSHI_W_CAP_ICON[];
+	extern OamAttr MM_VS_YELLOW_YOSHI_ICON[];
+	
+	extern OamAttr* MM_VS_PLAYER_ICONS_S[16];
+	extern OamAttr MM_VS_YOSHI_M_CAP_ICON_S[];
+	extern OamAttr MM_VS_YOSHI_L_CAP_ICON_S[];
+	extern OamAttr MM_VS_YOSHI_W_CAP_ICON_S[];
+	extern OamAttr MM_VS_YOSHI_ICON_S[];
+	extern OamAttr MM_VS_RED_YOSHI_M_CAP_ICON_S[];
+	extern OamAttr MM_VS_RED_YOSHI_L_CAP_ICON_S[];
+	extern OamAttr MM_VS_RED_YOSHI_W_CAP_ICON_S[];
+	extern OamAttr MM_VS_RED_YOSHI_ICON_S[];
+	extern OamAttr MM_VS_BLUE_YOSHI_M_CAP_ICON_S[];
+	extern OamAttr MM_VS_BLUE_YOSHI_L_CAP_ICON_S[];
+	extern OamAttr MM_VS_BLUE_YOSHI_W_CAP_ICON_S[];
+	extern OamAttr MM_VS_BLUE_YOSHI_ICON_S[];
+	extern OamAttr MM_VS_YELLOW_YOSHI_M_CAP_ICON_S[];
+	extern OamAttr MM_VS_YELLOW_YOSHI_L_CAP_ICON_S[];
+	extern OamAttr MM_VS_YELLOW_YOSHI_W_CAP_ICON_S[];
+	extern OamAttr MM_VS_YELLOW_YOSHI_ICON_S[];
+	
+	extern OamAttr* MM_PLAYER_ICONS[16];
+	extern OamAttr MM_MARIO_ICON[];
+	extern OamAttr MM_MARIO_L_CAP_ICON[];
+	extern OamAttr MM_MARIO_W_CAP_ICON[];
+	extern OamAttr MM_MARIO_NO_CAP_ICON[];
+	extern OamAttr MM_LUIGI_M_CAP_ICON[];
+	extern OamAttr MM_LUIGI_ICON[];
+	extern OamAttr MM_LUIGI_W_CAP_ICON[];
+	extern OamAttr MM_LUIGI_NO_CAP_ICON[];
+	extern OamAttr MM_WARIO_M_CAP_ICON[];
+	extern OamAttr MM_WARIO_L_CAP_ICON[];
+	extern OamAttr MM_WARIO_ICON[];
+	extern OamAttr MM_WARIO_NO_CAP_ICON[];
+	extern OamAttr MM_YOSHI_M_CAP_ICON[];
+	extern OamAttr MM_YOSHI_L_CAP_ICON[];
+	extern OamAttr MM_YOSHI_W_CAP_ICON[];
+	extern OamAttr MM_YOSHI_ICON[];
+	
+	extern OamAttr* MM_STAR_MARKERS[8];
+	extern OamAttr MM_SMALL_STAR[];
+	extern OamAttr MM_SMALL_STAR_FADED[];
+	extern OamAttr MM_SILVER_STAR[];
+	extern OamAttr MM_SILVER_STAR_FADED[];
+	extern OamAttr MM_STAR[];
+	extern OamAttr MM_STAR_FADED[];
+	extern OamAttr MM_TRANSPARENT_STAR[];
+	extern OamAttr MM_TRANSPARENT_STAR_BRIGHT[];
+	
+	extern OamAttr* MM_STAR_KEYS[2];
+	extern OamAttr MM_STAR_KEY[];
+	extern OamAttr MM_STAR_KEY_BRIGHT[];
+	
+	// Stage icons (LevelClearScreen)
+	extern OamAttr LC_CONGRATULATIONS[];
+	extern OamAttr LC_HIGH_SCORE[];
+	
+	// Stage icons (PauseScreen)
+	extern OamAttr PAUSE[];
+	extern OamAttr VS_PAUSE[];
+	extern OamAttr ARROW_POINTING_LEFT[];
+	extern OamAttr ARROW_POINTING_RIGHT[];
+	extern OamAttr SMALL_STAR_EMPTY[];
+	extern OamAttr TINY_STAR[];
+	extern OamAttr SMALL_ARROW_POINTING_LEFT[];
+	extern OamAttr SMALL_ARROW_POINTING_RIGHT[];
+	
+	extern OamAttr* CONTROLLER_MODE_TEXTS[3];
+	extern OamAttr STANDARD_MODE_TEXT[];
+	extern OamAttr TOUCH_MODE_TEXT[];
+	extern OamAttr DUAL_HAND_MODE_TEXT[];
+	
+	// Stage and HUD icons (VS mode)
+	extern OamAttr VS_GET_THE_STAR[];
+	extern OamAttr VS_GO[];
+	extern OamAttr VS_NEW_STAR_APPEARED[];
+	extern OamAttr VS_TIME[];
+	extern OamAttr VS_TIME_UP[];
+	
+	extern OamAttr* VS_YELLOW_NUMBERS[10];
+	extern OamAttr VS_YELLOW_NUMBER_0[];
+	extern OamAttr VS_YELLOW_NUMBER_1[];
+	extern OamAttr VS_YELLOW_NUMBER_2[];
+	extern OamAttr VS_YELLOW_NUMBER_3[];
+	extern OamAttr VS_YELLOW_NUMBER_4[];
+	extern OamAttr VS_YELLOW_NUMBER_5[];
+	extern OamAttr VS_YELLOW_NUMBER_6[];
+	extern OamAttr VS_YELLOW_NUMBER_7[];
+	extern OamAttr VS_YELLOW_NUMBER_8[];
+	extern OamAttr VS_YELLOW_NUMBER_9[];
+	
+	extern OamAttr* VS_RED_NUMBERS[3];
+	extern OamAttr VS_RED_NUMBER_3[];
+	extern OamAttr VS_RED_NUMBER_2[];
+	extern OamAttr VS_RED_NUMBER_1[];
+	
+	// StarSelect icons
+	extern OamAttr SS_BIG_GRAY_STAR[];
+	extern OamAttr SS_SMALL_GRAY_STAR[];
+	extern OamAttr SS_YELLOW_ARROW_DOWN[];
+	extern OamAttr SS_YELLOW_ARROW_RIGHT[];
+	extern OamAttr SS_MARIO_HEAD[];
+	extern OamAttr SS_LUIGI_HEAD[];
+	extern OamAttr SS_WARIO_HEAD[];
+	extern OamAttr SS_YOSHI_HEAD[];
+	extern OamAttr SS_TOUCH_ME[];
+	extern OamAttr SS_TOUCH_ME_UNUSED[];
+	
+	extern OamAttr* SS_CAP_ICONS[6];
+	extern OamAttr SS_SPEECH_BUBBLE_UP[];
+	extern OamAttr SS_SPEECH_BUBBLE_LEFT[];
+	extern OamAttr SS_SPEECH_BUBBLE_RIGHT[];
+	extern OamAttr SS_MARIO_CAP[];
+	extern OamAttr SS_LUIGI_CAP[];
+	extern OamAttr SS_WARIO_CAP[];
+	// extern OamAttr SS_SPEECH_BUBBLE_M_CAP[]; // unused
+	// extern OamAttr SS_SPEECH_BUBBLE_L_W_CAP[]; // unused
+	// extern OamAttr SS_SPEECH_BUBBLE_M_L_W_CAP[]; // unused
+	
+	extern OamAttr* SS_STAR_NUMBERS[7];
+	extern OamAttr SS_STAR_NUMBER_1[];
+	extern OamAttr SS_STAR_NUMBER_2[];
+	extern OamAttr SS_STAR_NUMBER_3[];
+	extern OamAttr SS_STAR_NUMBER_4[];
+	extern OamAttr SS_STAR_NUMBER_5[];
+	extern OamAttr SS_STAR_NUMBER_6[];
+	extern OamAttr SS_STAR_NUMBER_7[];
 }

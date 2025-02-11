@@ -1797,7 +1797,7 @@ LAB_02112f70:
 	moveq   r2, #0x0d2
 	mov     r1, r5
 	add     r3, r5, #0x5c
-	bl      _ZN6Player11ShowMessageER9ActorBasejRK7Vector3jj
+	bl      _ZN6Player11ShowMessageER9ActorBasejPK7Vector3jj
 	cmp     r0, #0x0
 	beq     LAB_021130a4
 	ldr     r0, =#0x424
@@ -1928,7 +1928,7 @@ LAB_0211315c:
 	str     r0, [r13, #0x4]
 	ldr     r0, [r5, #0x3a0]
 	movne   r2, #0x0cf
-	bl      _ZN6Player11ShowMessageER9ActorBasejRK7Vector3jj
+	bl      _ZN6Player11ShowMessageER9ActorBasejPK7Vector3jj
 	cmp     r0, #0x0
 	beq     LAB_02113240
 	ldr     r0, =#0x424
@@ -4452,7 +4452,7 @@ LAB_021155a4:
 	ldr     r0, [r4, #0x3a0]
 	mov     r2, r2, lsl #0x1
 	ldrsh   r2, [r5, r2]
-	bl      _ZN6Player11ShowMessageER9ActorBasejRK7Vector3jj
+	bl      _ZN6Player11ShowMessageER9ActorBasejPK7Vector3jj
 	cmp     r0, #0x0
 	addeq   r13, r13, #0x18
 	popeq   { r4-r8, r14 }

@@ -198,7 +198,7 @@ s32 Goomba::InitResources()
 		cylClsn.vulnerableFlags &= ~CylinderClsn::HIT_BY_KNOCK_PLAYER_DIZZY;
 		
 	wmClsn.Init(this, scale.x * 60, scale.x * 60, nullptr, nullptr);
-	wmClsn.SetFlag_2();
+	wmClsn.StartDetectingWater();
 	
 	flags468 = state = 0;
 	defeatMethod = Enemy::DF_NOT;
@@ -451,14 +451,14 @@ void Goomba::OnTurnIntoEgg(Player& player)
 		else
 		{
 			if (coinType == 1)
-				Unk_0201061c(player, 1, 0);
+				GivePlayerCoins(player, 1, 0);
 			
 			SpawnStarIfNecessary();
 		}
 	}
 	else if (res == Actor::YE_SWALLOW && coinType == 1)
 	{
-		Unk_0201061c(player, 1, 0);
+		GivePlayerCoins(player, 1, 0);
 	}
 	
 	Kill();
@@ -691,7 +691,7 @@ bool Goomba::UpdateIfEaten()
 	{
 		Actor* other = Actor::FindWithID(cylClsn.otherObjID); // guaranteed to exist by condition
 		defeatMethod = Enemy::DF_HIT_REGURG;
-		KillByAttack(*other, wmClsn);
+		KillByAttack(*other);
 		modelAnim.SetAnim(animFiles[ROLLING].BCA(), Animation::NO_LOOP, 1._f, 0);
 		cylClsn.flags1 |= CylinderClsn::DISABLED;
 		return true;
@@ -887,7 +887,7 @@ void Goomba::GetHurtOrHurtPlayer()
 	if (defeatMethod != Enemy::DF_NOT)
 		ReleaseCap(CAP_OFFSET);
 	
-	KillByAttack(*player, wmClsn);
+	KillByAttack(*player);
 	
 	if (rotate)
 		ang.y = motionAng.y + 180._deg;
@@ -911,9 +911,9 @@ void Goomba::KillIfIntoxicated()
 		return;
 		
 	RaycastGround raycaster;
-	raycaster.SetFlag_2();
-	raycaster.SetFlag_8();
-	raycaster.ClearFlag_1();
+	raycaster.StartDetectingWater();
+	raycaster.StartDetectingToxic();
+	raycaster.StopDetectingOrdinary();
 	
 	raycaster.SetObjAndPos(Vector3{ pos.x, pos.y + 400._f, pos.z }, this);
 	if (raycaster.DetectClsn() && raycaster.result.surfaceInfo.clps.isToxic &&
@@ -1253,7 +1253,7 @@ void Goomba::State3()
 	if (SpawnParticlesIfHitOtherObj(cylClsn))
 	{
 		defeatMethod = Enemy::DF_HIT_REGURG;
-		KillByAttack(*Actor::FindWithID(cylClsn.otherObjID), wmClsn);
+		KillByAttack(*Actor::FindWithID(cylClsn.otherObjID));
 		modelAnim.SetAnim(animFiles[ROLLING].BCA(), Animation::NO_LOOP, 1._f, 0);
 		cylClsn.flags1 |= 1;
 	}

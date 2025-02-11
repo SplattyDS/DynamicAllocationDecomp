@@ -96,8 +96,8 @@ struct LVL_Overlay
 		u8 r;
 		u8 g;
 		u8 b;
-		Fix12s startDist;
-		Fix12s endDist;
+		u16 startDist;
+		u16 endDist;
 	};
 	
 	struct DoorObj
@@ -118,8 +118,8 @@ struct LVL_Overlay
 		short angY;
 		u8 destLevelID;
 		u8 destEntranceID;
-		u8 param1; // unknown
-		u8 param2; // unknown
+		u8 returnEntranceID;
+		u8 widthHeight; // unknown
 	};
 	
 	struct MinimapScreenObj
@@ -131,7 +131,7 @@ struct LVL_Overlay
 	struct MinimapScaleObj
 	{
 		// 2 bytes
-		u16 scale;
+		Fix12s scale;
 	};
 	
 	// this type of object is in none of the overlays, the only thing it does is set 0x0209f338 to a pointer to these objects, this pointer never gets read

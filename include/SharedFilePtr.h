@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SM64DS_Common.h"
+
 struct SharedFilePtr
 {
 	u16 fileID;
@@ -10,6 +12,7 @@ struct SharedFilePtr
 	char* Load();
 	char* LoadFile(); // calls Load() and updates numRefs
 	void Release();
+	u32 ReallocateModelFile();
 	
 	[[gnu::always_inline]]
 	SharedFilePtr& Get()
@@ -34,9 +37,6 @@ struct SharedFilePtr
 	
 	[[gnu::always_inline]]
 	BTP_File* BTP() const { return (BTP_File*)GetFilePtr(); }
-	
-	[[gnu::always_inline]]
-	BTX_File* BTX() const { return (BTX_File*)GetFilePtr(); }
 	
 	[[gnu::always_inline]]
 	DYLB_File* DYLB() const { return (DYLB_File*)GetFilePtr(); }
@@ -134,9 +134,6 @@ struct GloballySharedFilePtr
 	
 	[[gnu::always_inline]]
 	BTP_File* BTP() { return (BTP_File*)GetFilePtr(); }
-	
-	[[gnu::always_inline]]
-	BTX_File* BTX() { return (BTX_File*)GetFilePtr(); }
 	
 	[[gnu::always_inline]]
 	DYLB_File* DYLB() { return (DYLB_File*)GetFilePtr(); }
@@ -260,9 +257,6 @@ public:
 	BTP_File* BTP() { return (BTP_File*)GetFilePtr(); }
 	
 	[[gnu::always_inline]]
-	BTX_File* BTX() { return (BTX_File*)GetFilePtr(); }
-	
-	[[gnu::always_inline]]
 	DYLB_File* DYLB() { return (DYLB_File*)GetFilePtr(); }
 	
 	[[gnu::always_inline]]
@@ -285,3 +279,56 @@ asm(R"(
 .weak _ZN21GloballySharedFilePtr7controlE
 _ZN21GloballySharedFilePtr7controlE = 0x023feff4
 )");*/
+
+extern "C"
+{
+	// temporary as these are static member variables
+	extern SharedFilePtr LUIGI_CAP_MODEL_PTR;
+	extern SharedFilePtr RED_NUMBER_MODEL_PTR;
+	extern SharedFilePtr POWER_FLOWER_OPEN_MODEL_PTR;
+	extern SharedFilePtr COIN_YELLOW_POLY32_MODEL_PTR;
+	extern SharedFilePtr WARIO_CAP_MODEL_PTR;
+	extern SharedFilePtr COIN_BLUE_POLY32_MODEL_PTR;
+	extern SharedFilePtr POWER_FLOWER_CLOSED_MODEL_PTR;
+	extern SharedFilePtr ONE_UP_MUSHROOM_MODEL_PTR;
+	extern SharedFilePtr BOB_OMB_MODEL_PTR;
+	extern SharedFilePtr NUMBER_TEXSEQ_PTR;
+	extern SharedFilePtr SNUFIT_BULLET_MODEL_PTR;
+	extern SharedFilePtr COIN_RED_POLY32_MODEL_PTR;
+	extern SharedFilePtr COIN_BLUE_POLY4_MODEL_PTR;
+	extern SharedFilePtr SILVER_NUMBER_TEXSEQ_PTR;
+	extern SharedFilePtr WATER_RING_MODEL_PTR;
+	extern SharedFilePtr SHELL_MODEL_PTRS[2];
+	extern SharedFilePtr SILVER_NUMBER_MODEL_PTR;
+	extern SharedFilePtr SUPER_MUSHROOM_MODEL_PTR;
+	extern SharedFilePtr BUBBLE_MODEL_PTR;
+	extern SharedFilePtr MARIO_CAP_MODEL_PTR;
+	extern SharedFilePtr COIN_YELLOW_POLY4_MODEL_PTR;
+	extern SharedFilePtr COIN_RED_POLY4_MODEL_PTR;
+	extern SharedFilePtr FEATHER_MODEL_PTR;
+	extern SharedFilePtr YOSHI_EGG_MODEL_PTR;
+	extern SharedFilePtr YOSHI_CUBE_EGG_MODEL_PTR;
+	extern SharedFilePtr POWER_STAR_MODEL_PTR;
+	extern SharedFilePtr TRANSPARENT_STAR_MODEL_PTR;
+	
+	extern SharedFilePtr* COIN_POLY4_MODEL_PTRS[3];
+	extern SharedFilePtr* COIN_POLY32_MODEL_PTRS[3];
+	
+	extern SharedFilePtr BOWSER_KEY_MODEL_PTR;
+	extern SharedFilePtr* KEY_MODEL_PTRS[];
+	
+	extern SharedFilePtr DOOR_OPEN_ANIM_PTR;
+	extern SharedFilePtr REGULAR_DOOR_MODEL_PTR;
+	extern SharedFilePtr REGULAR_DOOR_1_MODEL_PTR;
+	extern SharedFilePtr OLD_WOOD_DOOR_MODEL_PTR;
+	extern SharedFilePtr RUSTED_METAL_DOOR_MODEL_PTR;
+	extern SharedFilePtr HMC_STONE_DOOR_MODEL_PTR;
+	extern SharedFilePtr BBH_HAUNTED_DOOR_MODEL_PTR;
+	extern SharedFilePtr DOOR_STAR_0_MODEL_PTR;
+	extern SharedFilePtr DOOR_STAR_1_MODEL_PTR;
+	extern SharedFilePtr DOOR_STAR_3_MODEL_PTR;
+	extern SharedFilePtr DOOR_STAR_8_MODEL_PTR;
+	extern SharedFilePtr DOOR_KEY_HOLE_MODEL_PTR;
+	
+	extern SharedFilePtr STAR_DOOR_MODEL_PTR;
+}

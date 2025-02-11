@@ -380,7 +380,7 @@ namespace Particle
 	
 	struct MainInfo
 	{
-		enum Flags
+		enum Flags : u32
 		{
 			MODE = 0x7 << 0,
 				FROM_POINT = 0,
@@ -416,7 +416,7 @@ namespace Particle
 			HAS_EFFECT_CONVERGE        = 1 << 26,
 			HAS_EFFECT_TURN            = 1 << 27,
 			HAS_EFFECT_LIMIT_PLANE     = 1 << 28,
-			HAS_EFFECT_RADIUS_CONVERGE = 1 << 29
+			HAS_EFFECT_RADIUS_CONVERGE = 1 << 29,
 		};
 		
 		u32 flags; //0x0c004345 for particle 0x00bc
@@ -515,7 +515,7 @@ namespace Particle
 	struct EffectData {};
 	using EffectFuncPtr = void(*)(EffectData& data, char*, Vector3& velAsr4);
 	
-	struct Acceleration : public EffectData
+	struct Acceleration : EffectData
 	{
 		Vector3_16f acceleration;
 		
@@ -523,7 +523,7 @@ namespace Particle
 		constexpr Acceleration(const Vector3_16f& acceleration) : acceleration(acceleration) {}
 	};
 	
-	struct Jitter : public EffectData
+	struct Jitter : EffectData
 	{
 		Vector3_16f magnitude;
 		u16 period; //number of frames between velocity changes (WARNING: DENOMINATOR)
@@ -532,7 +532,7 @@ namespace Particle
 		constexpr Jitter(const Vector3_16f& magnitude, const u16 period) : magnitude(magnitude), period(period) {}
 	};
 	
-	struct Converge : public EffectData
+	struct Converge : EffectData
 	{
 		Vector3 offset;
 		Fix12s magnitude;
@@ -541,7 +541,7 @@ namespace Particle
 		constexpr Converge(const Vector3& offset, const Fix12s magnitude) : offset(offset), magnitude(magnitude) {}
 	};
 	
-	struct Turn : public EffectData
+	struct Turn : EffectData
 	{
 		s16 angleSpeed;
 		s16 axis;
@@ -550,7 +550,7 @@ namespace Particle
 		constexpr Turn(const s16 angleSpeed, const s16 axis) : angleSpeed(angleSpeed), axis(axis) {}
 	};
 	
-	struct LimitPlane : public EffectData
+	struct LimitPlane : EffectData
 	{
 		Fix12i posY;
 		Fix12s reverseSpeedMult;
@@ -560,7 +560,7 @@ namespace Particle
 		constexpr LimitPlane(const Fix12i posY, const Fix12s reverseSpeedMult, const u8 behavior) : posY(posY), reverseSpeedMult(reverseSpeedMult), behavior(behavior) {}
 	};
 	
-	struct RadiusConverge : public EffectData
+	struct RadiusConverge : EffectData
 	{
 		Vector3 offset;
 		Fix12s magnitude;
@@ -691,18 +691,72 @@ namespace Particle
 		u16 unk04;
 		u16 id;
 		
+		Callback();
 		virtual void SpawnParticles(System&);
 		virtual bool OnUpdate(System&, bool active);
 	};
 	
-	struct SimpleCallback : public Callback
+	struct SimpleCallback : Callback
 	{
 		SimpleCallback();
 		virtual void SpawnParticles(System&) override;
 		virtual bool OnUpdate(System&, bool active) override;
 	};
 	
-	struct SplashCallback : public SimpleCallback
+	struct EndingStarGlitterCallback : SimpleCallback
+	{
+		virtual void SpawnParticles(System&) override;
+		virtual bool OnUpdate(System&, bool active) override;
+	};
+	
+	struct BubbleCallback : SimpleCallback
+	{
+		virtual bool OnUpdate(System&, bool active) override;
+	};
+	
+	struct SplashCallback : SimpleCallback
+	{
+		virtual bool OnUpdate(System&, bool active) override;
+	};
+	
+	struct CheckWaterCallback : SimpleCallback
+	{
+		virtual bool OnUpdate(System&, bool active) override;
+	};
+	
+	struct CheckLavaCallback : SimpleCallback
+	{
+		virtual void SpawnParticles(System&) override;
+		virtual bool OnUpdate(System&, bool active) override;
+	};
+	
+	struct ScaleCallback : SimpleCallback
+	{
+		virtual void SpawnParticles(System&) override;
+		virtual bool OnUpdate(System&, bool active) override;
+	};
+	
+	struct CheckWaterRippleCallback : SimpleCallback
+	{
+		virtual bool OnUpdate(System&, bool active) override;
+	};
+	
+	struct ClipCallback : SimpleCallback
+	{
+		virtual bool OnUpdate(System&, bool active) override;
+	};
+	
+	struct FitWaterSimpleCallback : SimpleCallback
+	{
+		virtual bool OnUpdate(System&, bool active) override;
+	};
+	
+	struct FitWaterCallback : SimpleCallback
+	{
+		virtual bool OnUpdate(System&, bool active) override;
+	};
+	
+	struct CleanParticleCallback : SimpleCallback
 	{
 		virtual bool OnUpdate(System&, bool active) override;
 	};
@@ -746,13 +800,27 @@ namespace Particle
 		u32 unk70;
 		u32 unk74;
 		
-		static u32 NewWeather(u32 uniqueID, u32 effectID, Fix12i x, Fix12i y, Fix12i z, const Vector3_16f* dir, u32 numWeatherEffectsNow);
-		static u32 NewRipple(Fix12i x, Fix12i y, Fix12i z);
 		static u32 New(u32 uniqueID, u32 effectID, Fix12i x, Fix12i y, Fix12i z, const Vector3_16f* dir, Callback* callback);
-		static u32 NewUnkCallback818(u32 uniqueID, u32 effectID, Fix12i x, Fix12i y, Fix12i z, const Vector3_16f* dir);
 		static void NewSimple(u32 effectID, Fix12i x, Fix12i y, Fix12i z);
 		
+		static u32 NewWeather(u32 uniqueID, u32 effectID, Fix12i x, Fix12i y, Fix12i z, const Vector3_16f* dir, u32 numWeatherEffectsNow);
+		static u32 NewRipple(Fix12i x, Fix12i y, Fix12i z);
+		static void NewBigSplash(Fix12i x, Fix12i y, Fix12i z);
+		static u32 NewUnkCallback818(u32 uniqueID, u32 effectID, Fix12i x, Fix12i y, Fix12i z, const Vector3_16f* dir); // uses CleanParticleCallback
+		
 		static System* FromUniqueID(u32 uniqueID);
+		
+		[[gnu::always_inline]]
+		static u32 New(u32 uniqueID, u32 effectID, Vector3& pos, const Vector3_16f* dir, Callback* callback)
+		{
+			return New(uniqueID, effectID, pos.x, pos.y, pos.z, dir, callback);
+		}
+		
+		[[gnu::always_inline]]
+		static void NewSimple(u32 effectID, Vector3& pos)
+		{
+			NewSimple(effectID, pos.x, pos.y, pos.z);
+		}
 	};
 	
 	struct ROMEmbeddedFile
@@ -767,25 +835,6 @@ namespace Particle
 		u32 textureSectionOffset;
 		u32 unk1c;
 		MainInfo firstSysDef;
-		
-		static MainInfo& NextSysDef(MainInfo& sysDef)
-		{
-			char* ptr = reinterpret_cast<char*>(&sysDef + 1);
-
-			if (sysDef.flags & MainInfo::HAS_SCALE_TRANS)            ptr += sizeof(ScaleTransition);
-			if (sysDef.flags & MainInfo::HAS_COLOR_TRANS)            ptr += sizeof(ColorTransition);
-			if (sysDef.flags & MainInfo::HAS_ALPHA_TRANS)            ptr += sizeof(AlphaTransition);
-			if (sysDef.flags & MainInfo::HAS_TEX_SEQ)                ptr += sizeof(TexSeq);
-			if (sysDef.flags & MainInfo::HAS_GLITTER)                ptr += sizeof(Glitter);
-			if (sysDef.flags & MainInfo::HAS_EFFECT_ACCELERATION)    ptr += sizeof(Acceleration);
-			if (sysDef.flags & MainInfo::HAS_EFFECT_JITTER)          ptr += sizeof(Jitter);
-			if (sysDef.flags & MainInfo::HAS_EFFECT_CONVERGE)        ptr += sizeof(Converge);
-			if (sysDef.flags & MainInfo::HAS_EFFECT_TURN)            ptr += sizeof(Turn);
-			if (sysDef.flags & MainInfo::HAS_EFFECT_LIMIT_PLANE)     ptr += sizeof(LimitPlane);
-			if (sysDef.flags & MainInfo::HAS_EFFECT_RADIUS_CONVERGE) ptr += sizeof(RadiusConverge);
-			
-			return *reinterpret_cast<MainInfo*>(ptr);
-		}
 	};
 	
 	struct Manager
@@ -844,8 +893,16 @@ namespace Particle
 			Data data[0x40];
 			Data* usedSystems[0x10];
 			u32 unk750;
-			Callback callbacks[0x08];
-			UnkStr2 unkStr2s[0x04];
+			Callback callbacks[8];
+			UnkStr2 unkStr2s[4];
+			u32 unk7d4; // added because size was incorrect
+			u32 unk7d8; // ^
+			u32 unk7dc; // ^
+			u32 unk7e0; // ^
+			u32 unk7e4; // ^
+			u32 unk7e8; // ^
+			u32 unk7ec; // ^
+			u32 unk7f0; // ^
 			u32* unk7f4;
 			u32* unk7f8;
 			Fix12i unk7fc;
@@ -863,15 +920,30 @@ namespace Particle
 		ROMEmbeddedFile* romFile;
 		Manager* manager;
 		Contents contents;
+		
+		SysTracker();
+		~SysTracker();
+		
+		void Initialise();
+		void Update();
 	};
 	
 	void RunningSlidingDustAt(Fix12i x, Fix12i y, Fix12i z);
 	void SetSelfDestructFlag(u32 sysDefID);
+	void RenderAll();
+	
+	[[gnu::always_inline]]
+	inline void RunningSlidingDustAt(Vector3& pos)
+	{
+		RunningSlidingDustAt(pos.x, pos.y, pos.z);
+	}
 }
 
 extern "C"
 {
 	extern Particle::ROMEmbeddedFile PARTICLE_ROM_EMBEDDED_FILE;
+	
+	extern Particle::ROMEmbeddedFile* PARTICLE_SPA_FILE;
 	extern Particle::SysTracker* PARTICLE_SYS_TRACKER;
 	extern u32 PARTICLE_RNG_STATE; //x => x * 0x5eedf715 + 0x1b0cb173
 }

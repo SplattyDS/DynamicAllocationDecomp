@@ -587,7 +587,7 @@ LAB_0212c814:
 	cmp     r0, #0x0
 	beq     LAB_0212c838
 	mov     r0, #0x24
-	bl      _ZN5Sound16UnkPlaySoundFuncEj
+	bl      0x02012790
 LAB_0212c838:
 	ldr     r0, =#0x209f284
 	ldr     r1, =#0x209d6bc
@@ -729,7 +729,7 @@ FUN_0212c9f0:
 	mov     r4, #0x0
 	mov     r2, r2, asr #0x10
 	str     r4, [r13, #0x4]
-	bl      _ZN6Player11ShowMessageER9ActorBasejRK7Vector3jj
+	bl      _ZN6Player11ShowMessageER9ActorBasejPK7Vector3jj
 	add     r13, r13, #0x14
 	pop     { r4-r7, r14 }
 	bx      r14

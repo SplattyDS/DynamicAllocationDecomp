@@ -1519,7 +1519,9 @@ void Goomboss::State0_Talk_Main()
 		musicLoaded = true;
 	}
 	
-	if (player->ShowMessage(*this, (s16)player->param1 + 0xd3, Vector3{ pos.x, pos.y + 120._f, pos.z }, 0, 2))
+	Vector3 msgPos = { pos.x, pos.y + 120._f, pos.z };
+	
+	if (player->ShowMessage(*this, (s16)player->param1 + 0xd3, &msgPos, 0, 2))
 	{
 		Sound::Play("NCS_SE_SCT_KRK_MESSAGE"sfx, camSpacePos);
 		ChangeState(ST_STOP_TALK);
@@ -1821,7 +1823,9 @@ void Goomboss::State7_Defeat_Main()
 	SetBossCamera();
 	if (listener->GetTalkState() == Player::TK_START)
 	{
-		if (listener->ShowMessage(*this, (s16)listener->param1 + 0xd7, Vector3{ pos.x, pos.y + 120._f, pos.z }, 1, 2))
+		Vector3 msgPos = { pos.x, pos.y + 120._f, pos.z };
+		
+		if (listener->ShowMessage(*this, (s16)listener->param1 + 0xd7, &msgPos, 1, 2))
 			Sound::Play2D("NCS_SE_SCT_KRK_MESSAGE"sfx);
 	}
 	else if (listener->GetTalkState() == Player::TK_UNK2)

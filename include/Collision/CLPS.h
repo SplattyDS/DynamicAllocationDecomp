@@ -138,7 +138,7 @@ struct OldCLPS
 	u32 high;
 };
 
-template<s32 Size> struct OldFixedSizeCLPS_Block // flexible arrays SOMETIMES be static-initialized.
+template<s32 Size> struct OldFixedSizeCLPS_Block
 {
 	char magic[4]; // = {'C', 'L', 'P', 'S'};
 	u16 unk04;
@@ -146,7 +146,6 @@ template<s32 Size> struct OldFixedSizeCLPS_Block // flexible arrays SOMETIMES be
 	OldCLPS clpses[Size];
 };
 
-// delete this later
 namespace LevelFile
 {
 	extern "C" CLPS_Block* CLPS_BLOCK_PTR;

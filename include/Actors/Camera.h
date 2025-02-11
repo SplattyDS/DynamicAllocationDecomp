@@ -27,10 +27,7 @@ struct View : ActorDerived		//internal name: dView; done
 //vtable at 0x0208E730
 struct Clipper
 {
-	Vector3 unk04;
-	Vector3 unk10;
-	Vector3 unk1c;
-	Vector3 unk28;
+	Vector3 unk04[4]; // 0x4, 0x10, 0x1c, 0x28
 	u32 unk34;
 	u32 unk38;
 	u32 unk3c;
@@ -38,15 +35,15 @@ struct Clipper
 	u32 unk44;
 	u32 unk48;
 	Fix12i aspectRatio;					//Aspect ratio
-	u32 unk50;
-	u32 unk54;
+	Fix12i unk50;
+	Fix12i unk54;
 	u16 unk58;
 	
 	Clipper();
 	virtual ~Clipper();
 	
-	void Func_020150E8();
-	void Func_02015560();
+	Fix12i Func_020150E8(Vector3& arg1, Fix12i arg2, u8* arg3);
+	Fix12i Func_02015560(Matrix4x3& arg1, Vector3& arg2, Fix12i arg3, Vector3& arg4);
 	void Func_0201559C();	//noargs
 	void Func_020156DC();
 };
@@ -80,14 +77,14 @@ struct Camera : View				//internal name: dCamera
 		
 		ZOOMED_OUT         = 1 << 2,
 		BOSS_TALK          = 1 << 3,
-		
+		STATE_LOCKED       = 1 << 4,
 		ROTATING_LEFT      = 1 << 5,
 		ROTATING_RIGHT     = 1 << 6,
 		
 		
 		
-		
-		
+		UNK_10             = 1 << 10,
+		UNK_11             = 1 << 11,
 		ARROWS_ALLOWED     = 1 << 12,
 		
 		TALK               = 1 << 14,
@@ -126,7 +123,7 @@ struct Camera : View				//internal name: dCamera
 	Actor* owner;           // The player stalked by the camera
 	Actor* unk114;          // Set at special camera scene? Set to King Bomb-Omb for example
 	Actor* unk118;          // Another unknown actor
-	u32 unk11c;        // Related to unk118, set to 0xDFE60 at 0x02009F3C
+	Vector3* unk11c;        // Related to unk118, set to 0xDFE60 at 0x02009F3C
 	Vector3 unk120;         // unk118's or (if unk118 == 0) unk114's position vector
 	Fix12i unk12c;          // Distance to unk114?
 	Fix12i unk130;          // Linear camera movement interpolator (only for unk114?) that (when entering a different camera view like at the top of BoB) interpolates from 0x0 to 0x100 and backwards when leaving. As a result, it also indicates whether the owner is in a special camera scene. unk114 is linked later during interpolation.
@@ -164,7 +161,8 @@ struct Camera : View				//internal name: dCamera
 	u32 unk19c;
 	u32 unk1a0;
 	u16 unk1a4;
-	u16 unk1a6;
+	u8 unk1a6;
+	u8 unk1a7;
 	
 	Camera();
 	virtual ~Camera() override;
@@ -179,6 +177,9 @@ struct Camera : View				//internal name: dCamera
 	void SetLookAt(const Vector3& lookAt);
 	void SetPos(const Vector3& pos);
 	bool IsUnderwater() const;
+	s32 ChangeState(State* newState);
+	void LookAtExit(Actor& exit);
+	void GoBehindPlayer(u32 playerID);
 	
 	//Func_0200D954
 	//Func_0200D8C8

@@ -92,6 +92,8 @@ struct CylinderClsn
 	void Update();
 	void Clear();
 	
+	static void Process();
+	
 	static CylinderClsn* last;
 };
 
@@ -127,7 +129,7 @@ struct MovingCylinderClsnWithPos : public MovingCylinderClsn
 	virtual ~MovingCylinderClsnWithPos();
 	virtual Vector3& GetPos() override;
 	
-	void Init(Actor* actor, const Vector3& pos, Fix12i radius, Fix12i height, u32 flags, u32 vulnFlags); // calls SetPosRelativeToActor
+	void Init(Actor* actor, const Vector3& offset, Fix12i radius, Fix12i height, u32 flags, u32 vulnFlags); // calls SetPosRelativeToActor
 	void SetPosRelativeToActor(const Vector3& pos); // pos is transformed by the object's Y angle
 };
 
