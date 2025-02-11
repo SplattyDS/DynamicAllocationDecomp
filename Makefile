@@ -48,7 +48,7 @@ export LD      := $(PREFIX)ld
 #---------------------------------------------------------------------------------
 TARGET   := newcode
 BUILD    := build
-SOURCES  := source/N_BobOmbBuddy
+SOURCES  := source/E_Goomba
 INCLUDES := include
 DATA     := data
 GRAPHICS := gfx

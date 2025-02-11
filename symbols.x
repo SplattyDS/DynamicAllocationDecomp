@@ -1255,7 +1255,7 @@ _ZN8PathLift9AfterClsnEv                                                        
 _ZN8PathLift17BaseInitResourcesEv                                                 = 0x020efaf0;
 _ZN8PathLift12BaseBehaviorEv                                                      = 0x020efaa0;
 
-/* Actor/Camera.h */
+/* Actors/Camera.h */
 _ZTV4View                                                                         = 0x02092720;
 _ZN4ViewD0Ev                                                                      = 0x0202FCC8;
 _ZN4ViewD1Ev                                                                      = 0x0202FC98;
@@ -1290,7 +1290,55 @@ _ZN6Camera14GoBehindPlayerEj                                                    
 
 GLOBAL_CLIPPER                                                                    = 0x0209F43C;
 
-/* Actor/Player.h */
+/* Actors/HUD.h */
+_ZTV3HUD                                                                          = 0x0210c2c8;
+_ZN3HUD9spawnDataE                                                                = 0x0210c210;
+_ZN3HUDC1Ev                                                                       = 0x020fe154;
+_ZN3HUDC2Ev                                                                       = 0x020fe154;
+_ZN3HUDD0Ev                                                                       = 0x020fb928;
+_ZN3HUDD1Ev                                                                       = 0x020fb8f8;
+_ZN3HUDD2Ev                                                                       = 0x020fb8f8;
+_ZN3HUD13InitResourcesEv                                                          = 0x020fda04;
+_ZN3HUD16CleanupResourcesEv                                                       = 0x020fd5d4;
+_ZN3HUD8BehaviorEv                                                                = 0x020fd7a4;
+_ZN3HUD6RenderEv                                                                  = 0x020fd5e0;
+_ZN3HUD16OnPendingDestroyEv                                                       = 0x020fd5dc;
+
+_ZN3HUD13UpdateVsTimerEv                                                          = 0x020fce9c;
+_ZN3HUD17UpdateHealthMeterEv                                                      = 0x020fd218;
+
+_ZN3HUD13RenderVsTimerEv                                                          = 0x020fca18;
+_ZN3HUD15RenderStarCountEv                                                        = 0x020fc458;
+_ZN3HUD15RenderCoinCountEv                                                        = 0x020fc81c;
+_ZN3HUD19RenderCameraButtonsEv                                                    = 0x020fc04c;
+_ZN3HUD17RenderHealthMeterEv                                                      = 0x020fcfec;
+_ZN3HUD14RenderRedCoinsEv                                                         = 0x020fc77c;
+_ZN3HUD17RenderSilverStarsEv                                                      = 0x020fc3c4;
+_ZN3HUD15RenderTimeTimerEv                                                        = 0x020fb96c;
+_ZN3HUD15RenderLifeCountEv                                                        = 0x020fbe38;
+
+_ZN3HUD15CalculateDigitsEt                                                        = 0x020fbdac;
+
+/* Actors/Minimap.h */
+_ZTV7Minimap                                                                      = 0x0210c1c0;
+_ZN7Minimap9spawnDataE                                                            = 0x0210c160;
+_ZN7MinimapC1Ev                                                                   = 0x020fb8bc;
+_ZN7MinimapC2Ev                                                                   = 0x020fb8bc;
+_ZN7MinimapD0Ev                                                                   = 0x020f978c;
+_ZN7MinimapD1Ev                                                                   = 0x020f975c;
+_ZN7MinimapD2Ev                                                                   = 0x020f975c;
+_ZN7Minimap13InitResourcesEv                                                      = 0x020fb38c;
+_ZN7Minimap16CleanupResourcesEv                                                   = 0x020f9e8c;
+_ZN7Minimap8BehaviorEv                                                            = 0x020fa690;
+_ZN7Minimap6RenderEv                                                              = 0x020f9e98;
+_ZN7Minimap16OnPendingDestroyEv                                                   = 0x020f9e94;
+
+_ZN7Minimap19UpdateLevelSpecificEv                                                = 0x020f99a8;
+_ZN7Minimap21FixTHIPaintingRoomPosER7Vector3                                      = 0x020f97d0;
+_ZN7Minimap15GetPosOnMinimapER7Vector3S1_5Fix12IiEsS1_                            = 0x020fb85c;
+_ZN7Minimap20GetPosFromMinimapPosER7Vector3S1_5Fix12IiEsS1_                       = 0x020fb804;
+
+/* Actors/Player.h */
 _ZN6Player9ANIM_PTRSE                                                             = 0x020ff480;
 _ZN6Player13ST_LEDGE_HANGE                                                        = 0x0210ffec;
 _ZN6Player13ST_LEDGE_GRABE                                                        = 0x02110004;
